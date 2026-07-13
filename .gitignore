@@ -1,0 +1,29 @@
+# models & data (downloaded on AutoDL, never committed)
+models/
+data/
+*.safetensors
+*.bin
+*.pt
+*.gguf
+
+# outputs — keep manifests/results json, ignore heavy artifacts
+outputs/checkpoints/
+outputs/labels/*.jsonl
+outputs/**/*.parquet
+!outputs/**/.gitkeep
+
+# logs
+logs/*
+!logs/.gitkeep
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+.ipynb_checkpoints/
+
+# misc
+.DS_Store
+wandb/

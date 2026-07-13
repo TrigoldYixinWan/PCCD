@@ -1,0 +1,29 @@
+# Core training / inference
+torch>=2.4
+transformers==5.13.1
+trl==1.8.0
+peft==0.19.1
+vllm==0.25.0
+accelerate
+bitsandbytes
+datasets
+
+# Calibration / conformal
+mapie==1.4.1
+netcal==1.4.0
+
+# Reward-model eval
+rewardbench==0.1.4
+
+# Analysis / plotting
+numpy
+scipy
+scikit-learn
+pandas
+matplotlib
+seaborn
+
+# Utils
+huggingface_hub
+hf_transfer
+tqdm

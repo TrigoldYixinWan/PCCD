@@ -74,11 +74,26 @@ def _soft_pairs(n: int, rng: random.Random):
 
 
 # ------------------------------ HF loaders ------------------------------------
-def _load_pku(data_dir, n, rng):
+def _resolve_local(data_dir, subdir, hub_id, local_only):
+    """Prefer a local snapshot; fall back to Hub id only when local_only=False.
+    On a disconnected AutoDL box, local_only=True raises a clear error instead of
+    hanging on network retries."""
+    path = os.path.join(data_dir, subdir)
+    if os.path.isdir(path) and os.listdir(path):
+        return path
+    if local_only:
+        raise FileNotFoundError(
+            f"Local dataset not found at '{path}'. Instance may be offline; download first:\n"
+            f"  HF_ENDPOINT=https://hf-mirror.com huggingface-cli download {hub_id} "
+            f"--repo-type dataset --local-dir {path}\n"
+            f"(or run scripts/setup/download_data.sh, then re-run with --data_dir {data_dir})")
+    return hub_id
+
+
+def _load_pku(data_dir, n, rng, local_only=True):
     from datasets import load_dataset
-    path = os.path.join(data_dir, "pku-saferlhf")
-    ds = load_dataset(path, split="train") if os.path.isdir(path) else \
-        load_dataset("PKU-Alignment/PKU-SafeRLHF", split="train")
+    target = _resolve_local(data_dir, "pku-saferlhf", "PKU-Alignment/PKU-SafeRLHF", local_only)
+    ds = load_dataset(target, split="train")
     idx = list(range(len(ds)))
     rng.shuffle(idx)
     out = []
@@ -96,11 +111,10 @@ def _load_pku(data_dir, n, rng):
     return out
 
 
-def _load_uf(data_dir, n, rng):
+def _load_uf(data_dir, n, rng, local_only=True):
     from datasets import load_dataset
-    path = os.path.join(data_dir, "ultrafeedback")
-    ds = load_dataset(path, split="train") if os.path.isdir(path) else \
-        load_dataset("openbmb/UltraFeedback", split="train")
+    target = _resolve_local(data_dir, "ultrafeedback", "openbmb/UltraFeedback", local_only)
+    ds = load_dataset(target, split="train")
     idx = list(range(len(ds)))
     rng.shuffle(idx)
     out = []
@@ -135,11 +149,11 @@ def _uid(item):
     return f"{item['source'][:4]}_{h}"
 
 
-def build_pool(data_dir, seed=0):
+def build_pool(data_dir, seed=0, local_only=True):
     rng = random.Random(seed)
     # target composition (see plan): 6k hard-safety, 3k task, 1k soft + splits
-    pku = _load_pku(data_dir, 6200, rng)      # a bit extra for conflict split
-    uf = _load_uf(data_dir, 3200, rng)
+    pku = _load_pku(data_dir, 6200, rng, local_only=local_only)   # extra for conflict split
+    uf = _load_uf(data_dir, 3200, rng, local_only=local_only)
     soft = _soft_pairs(1300, rng)
     pool = pku + uf + soft
     rng.shuffle(pool)
@@ -171,12 +185,15 @@ def main():
     ap.add_argument("--data_dir", default="/root/data")
     ap.add_argument("--out", default="outputs/pool")
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--allow_hub", action="store_true",
+                    help="allow falling back to HF Hub download if local snapshot missing "
+                         "(default: local-only, fail fast when offline)")
     args = ap.parse_args()
     os.makedirs(args.out, exist_ok=True)
     rng = random.Random(args.seed)
 
     print("Building pool from PKU-SafeRLHF + UltraFeedback + self-built soft pairs ...")
-    pool = build_pool(args.data_dir, seed=args.seed)
+    pool = build_pool(args.data_dir, seed=args.seed, local_only=not args.allow_hub)
     print(f"  pool size after dedup: {len(pool)}")
     splits = split_pool(pool, rng)
 

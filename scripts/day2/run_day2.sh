@@ -15,7 +15,13 @@ DATA="${DATA:-/root/data}"
 
 echo "### PCCD Day-2 start $(date) ###"
 
-# 1) sample the pool (CPU, once)
+# 0) ensure datasets are present locally (download if missing)
+if [ ! -d "$DATA/pku-saferlhf" ] || [ ! -d "$DATA/ultrafeedback" ]; then
+  echo "[0] datasets missing under $DATA -> downloading ..."
+  bash scripts/setup/download_data.sh
+fi
+
+# 1) sample the pool (CPU, once). Local-only: fails fast with a clear message if offline.
 if [ ! -f outputs/pool/train.jsonl ]; then
   echo "[1] sampling pool ..."
   python src/sample_data.py --data_dir "$DATA" --out outputs/pool --seed 0

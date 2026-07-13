@@ -43,5 +43,21 @@ logs/              run logs (gitignored)
   transformers 5.13.1, vllm 0.25.0, unsloth.
 - APM (Spohn 2026) not public on HF → self-built soft-preference test set.
 
+## Day-2 teacher labeling
+```bash
+# 1) sample pool (CPU) + 2) dual-GPU label train/calib/test + 3) static audit
+bash scripts/day2/run_day2.sh          # MODEL=/root/models/qwen32b DATA=/root/data
+
+# Day-3: conflict split + perturbation audit (order-swap / paraphrase consistency)
+CUDA_VISIBLE_DEVICES=0 python src/audit_labels.py perturb \
+  --model /root/models/qwen32b --audit outputs/pool/audit.jsonl \
+  --out outputs/labels/audit_perturb.jsonl | tee logs/audit_perturb.log
+```
+- `src/policy_defs.py` — single source of truth for the 10 policies + teacher prompt
+- `src/sample_data.py` — PKU-SafeRLHF (H1-H5) + UltraFeedback (T1/T2) + self-built soft pairs (S1-S3)
+- `src/gen_labels.py` — vLLM label-only teacher, sharded across 2 GPUs, JSON-repair retries, resumable
+- `src/audit_labels.py` — static gate (JSON success, per-policy coverage, N/A share) + perturbation gate
+- Gates: JSON parse >=99%, order-swap consistency >=90%, paraphrase consistency >=90%
+
 ## 9-day plan
 See `configs/plan_9day.md`.

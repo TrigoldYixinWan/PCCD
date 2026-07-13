@@ -27,6 +27,10 @@ else
   echo "SKIP 03: /root/models/qwen32b not present yet. Run after model download." | tee logs/stress_03.log
 fi
 
+echo -e "\n===== auto-verdict ====="
+python scripts/stress/verdict.py 2>&1 | tee logs/stress_verdict.log
+
 echo -e "\n### PCCD stress suite done $(date) ###"
 echo "GATES: (a) 2x96GB visible  (b) no persistent throttle & temp<85C"
 echo "       (c) NVMe >1GB/s  (d) 32B loads on 1 card, throughput>=500/hr, JSON>=99%"
+echo "Paste logs/stress_*.log back to the assistant for analysis."

@@ -7,10 +7,11 @@ source scripts/setup/env.sh
 
 [ -f /etc/network_turbo ] && source /etc/network_turbo || true
 # Keep the proxy for Hub metadata, but bypass it for directly reachable Xet
-# data-plane hosts; the AutoDL proxy resets sustained Xet transfers.
-_xet_hosts="cas-server.xethub.hf.co,cas-bridge.xethub.hf.co,transfer.xethub.hf.co"
-export NO_PROXY="${NO_PROXY:+$NO_PROXY,}${_xet_hosts}"
-export no_proxy="${no_proxy:+$no_proxy,}${_xet_hosts}"
+# transfer data-plane host; the AutoDL proxy resets sustained transfers. The
+# authenticated CAS control plane must continue to use the proxy.
+_xet_transfer_host="transfer.xethub.hf.co"
+export NO_PROXY="${NO_PROXY:+$NO_PROXY,}${_xet_transfer_host}"
+export no_proxy="${no_proxy:+$no_proxy,}${_xet_transfer_host}"
 # hf_transfer disabled: its parallel fetch spiked temp usage in the earlier blowup.
 export HF_HUB_ENABLE_HF_TRANSFER=0
 

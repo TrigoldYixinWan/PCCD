@@ -9,11 +9,11 @@ source scripts/setup/env.sh
 # AutoDL academic acceleration (helps reach huggingface.co)
 [ -f /etc/network_turbo ] && source /etc/network_turbo || true
 # AutoDL's academic proxy is needed for the Hub control plane, but it resets
-# large Xet transfers. The Xet endpoints are directly reachable, so bypass the
-# proxy only for those data-plane hosts while keeping all other proxy settings.
-_xet_hosts="cas-server.xethub.hf.co,cas-bridge.xethub.hf.co,transfer.xethub.hf.co"
-export NO_PROXY="${NO_PROXY:+$NO_PROXY,}${_xet_hosts}"
-export no_proxy="${no_proxy:+$no_proxy,}${_xet_hosts}"
+# large Xet transfers. Keep the authenticated CAS control plane on the proxy,
+# and bypass it only for the directly reachable transfer data plane.
+_xet_transfer_host="transfer.xethub.hf.co"
+export NO_PROXY="${NO_PROXY:+$NO_PROXY,}${_xet_transfer_host}"
+export no_proxy="${no_proxy:+$no_proxy,}${_xet_transfer_host}"
 # NOTE: hf_transfer disabled on purpose — its parallel multi-file fetch spikes
 # temp usage and was a factor in the earlier disk blowup. Serial is safer here.
 export HF_HUB_ENABLE_HF_TRANSFER=0

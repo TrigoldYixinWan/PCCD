@@ -19,7 +19,7 @@ dl () {   # dl <hub_id> <local_subdir>
   echo "== downloading $hub -> $dst =="
   for endpoint in "https://huggingface.co" "https://hf-mirror.com"; do
     echo "  endpoint=$endpoint"
-    HF_ENDPOINT="$endpoint" hf download "$hub" --type dataset \
+    HF_ENDPOINT="$endpoint" hf download "$hub" --repo-type dataset \
       --local-dir "$dst" --max-workers 1 && { echo "  OK"; return 0; }
     echo "  failed, next endpoint..."
   done

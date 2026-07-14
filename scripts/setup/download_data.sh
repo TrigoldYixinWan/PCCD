@@ -14,20 +14,28 @@ export no_proxy="${no_proxy:+$no_proxy,}${_xet_hosts}"
 # hf_transfer disabled: its parallel fetch spiked temp usage in the earlier blowup.
 export HF_HUB_ENABLE_HF_TRANSFER=0
 
-dl () {   # dl <hub_id> <local_subdir>
-  local hub="$1" sub="$2" dst="$DATA_DIR/$2"
+dl () {   # dl <hub_id> <local_subdir> <expected_repo_files>
+  local hub="$1" sub="$2" expected="$3" dst="$DATA_DIR/$2"
   echo "== downloading $hub -> $dst =="
   for endpoint in "https://huggingface.co" "https://hf-mirror.com"; do
     echo "  endpoint=$endpoint"
-    HF_ENDPOINT="$endpoint" hf download "$hub" --repo-type dataset \
-      --local-dir "$dst" --max-workers 1 && { echo "  OK"; return 0; }
+    if HF_ENDPOINT="$endpoint" hf download "$hub" --repo-type dataset \
+      --local-dir "$dst" --max-workers 1; then
+      local incomplete files
+      incomplete="$(find "$dst" -type f -name "*.incomplete" -print -quit)"
+      files="$(find "$dst" -type f ! -path "$dst/.cache/*" | wc -l)"
+      if [ -z "$incomplete" ] && [ "$files" -ge "$expected" ]; then
+        echo "  OK ($files/$expected repository files)"; return 0
+      fi
+      echo "  incomplete snapshot: files=$files/$expected pending=${incomplete:-none}"
+    fi
     echo "  failed, next endpoint..."
   done
   echo "  ERROR: could not download $hub"; return 1
 }
 
-dl "PKU-Alignment/PKU-SafeRLHF" "pku-saferlhf"
-dl "openbmb/UltraFeedback"      "ultrafeedback"
+dl "PKU-Alignment/PKU-SafeRLHF" "pku-saferlhf" 9
+dl "openbmb/UltraFeedback"      "ultrafeedback" 8
 
 echo -e "\nDatasets on data disk:"
 du -sh "$DATA_DIR"/* 2>/dev/null || true

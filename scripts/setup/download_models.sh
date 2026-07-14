@@ -18,26 +18,34 @@ export no_proxy="${no_proxy:+$no_proxy,}${_xet_hosts}"
 # temp usage and was a factor in the earlier disk blowup. Serial is safer here.
 export HF_HUB_ENABLE_HF_TRANSFER=0
 
-dl_model () {   # dl_model <hub_id> <subdir>
-  local hub="$1" sub="$2" dst="$MODELS_DIR/$2"
+dl_model () {   # dl_model <hub_id> <subdir> <expected_safetensor_shards>
+  local hub="$1" sub="$2" expected="$3" dst="$MODELS_DIR/$2"
   if [ -d "$dst" ] && [ "$(ls "$dst"/*.safetensors 2>/dev/null | wc -l)" -gt 0 ]; then
     echo "== $sub already present, verifying/ resuming =="
   fi
   echo "== downloading $hub -> $dst =="
   for endpoint in "https://huggingface.co" "https://hf-mirror.com"; do
     echo "  endpoint=$endpoint"
-    HF_ENDPOINT="$endpoint" hf download "$hub" \
-      --local-dir "$dst" --max-workers 1 && { echo "  OK"; return 0; }
+    if HF_ENDPOINT="$endpoint" hf download "$hub" \
+      --local-dir "$dst" --max-workers 1; then
+      local incomplete shards
+      incomplete="$(find "$dst" -type f -name "*.incomplete" -print -quit)"
+      shards="$(find "$dst" -maxdepth 1 -type f -name "*.safetensors" | wc -l)"
+      if [ -z "$incomplete" ] && [ "$shards" -eq "$expected" ]; then
+        echo "  OK ($shards/$expected safetensor shards)"; return 0
+      fi
+      echo "  incomplete snapshot: shards=$shards/$expected pending=${incomplete:-none}"
+    fi
     echo "  failed, next endpoint..."
   done
   echo "  ERROR: $hub download failed"; return 1
 }
 
 # order: 32B teacher first (largest, most critical), then 7B, then optional 14B
-dl_model "Qwen/Qwen2.5-32B-Instruct" "qwen32b"
-dl_model "Qwen/Qwen2.5-7B-Instruct"  "qwen7b"
+dl_model "Qwen/Qwen2.5-32B-Instruct" "qwen32b" 17
+dl_model "Qwen/Qwen2.5-7B-Instruct"  "qwen7b" 4
 if [ "${WITH_14B:-0}" = "1" ]; then
-  dl_model "Qwen/Qwen2.5-14B-Instruct" "qwen14b"
+  dl_model "Qwen/Qwen2.5-14B-Instruct" "qwen14b" 8
 fi
 
 echo -e "\nModels on data disk:"

@@ -41,5 +41,7 @@ Reversibility: Revert the one-line count change and regenerate the entire pool a
 dependent labels. No results have been produced from either pool in this execution, so
 no result is provisional at the time of the change.
 
-Open question for PaperGuru: Confirm that allocating the missing 100 candidates to PKU
-is preferred over a proportional or UltraFeedback/soft allocation.
+Review resolution: PaperGuru approved the 6,400-PKU allocation on 2026-07-14 because
+hard-safety coverage is central to FN asymmetry and supports the conflict split. Commit
+`4f26ee9` subsequently clarified the audit-split docstring to match perturbation at label
+time; it made no logic or sample-allocation change. No Yellow question remains open.

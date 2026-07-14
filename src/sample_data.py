@@ -11,7 +11,10 @@ Each output item is a dict:
 written to outputs/pool/<split>.jsonl
 
 Splits: train(8000) / calib(1000) / test(1000) / audit(400) / conflict(400).
-The audit split is a copy of items reused with perturbations at labeling time.
+All five splits are mutually exclusive (disjoint item ids) to avoid leakage. The
+`audit` split is an INDEPENDENT 400-item set; at Day-3 the teacher re-labels each
+audit item under perturbations (see src/audit_labels.py `perturb`) to measure label
+stability for G1 — perturbations are applied at labeling time, not stored here.
 CPU-only; run once before teacher labeling.
 
 Usage:

@@ -17,6 +17,9 @@ export no_proxy="${no_proxy:+$no_proxy,}${_xet_transfer_host}"
 # Saturate the single active Xet file transfer. Outer file scheduling remains
 # serial via --max-workers 1, avoiding the previous multi-file disk spike.
 export HF_XET_HIGH_PERFORMANCE="${HF_XET_HIGH_PERFORMANCE:-1}"
+# The installed Xet controller otherwise drops to four connections during
+# successful long transfers and repeatedly stalls near shard completion.
+export HF_XET_CLIENT_AC_MIN_DOWNLOAD_CONCURRENCY="${HF_XET_CLIENT_AC_MIN_DOWNLOAD_CONCURRENCY:-16}"
 # NOTE: hf_transfer disabled on purpose — its parallel multi-file fetch spikes
 # temp usage and was a factor in the earlier disk blowup. Serial is safer here.
 export HF_HUB_ENABLE_HF_TRANSFER=0

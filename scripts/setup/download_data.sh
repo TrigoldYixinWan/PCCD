@@ -15,6 +15,7 @@ export no_proxy="${no_proxy:+$no_proxy,}${_xet_transfer_host}"
 # High performance applies within the one active Xet file; --max-workers 1
 # continues to prevent the prior multi-file disk blowup.
 export HF_XET_HIGH_PERFORMANCE="${HF_XET_HIGH_PERFORMANCE:-1}"
+export HF_XET_CLIENT_AC_MIN_DOWNLOAD_CONCURRENCY="${HF_XET_CLIENT_AC_MIN_DOWNLOAD_CONCURRENCY:-16}"
 # hf_transfer disabled: its parallel fetch spiked temp usage in the earlier blowup.
 export HF_HUB_ENABLE_HF_TRANSFER=0
 

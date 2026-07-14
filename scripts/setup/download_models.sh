@@ -14,6 +14,9 @@ source scripts/setup/env.sh
 _xet_transfer_host="transfer.xethub.hf.co"
 export NO_PROXY="${NO_PROXY:+$NO_PROXY,}${_xet_transfer_host}"
 export no_proxy="${no_proxy:+$no_proxy,}${_xet_transfer_host}"
+# Saturate the single active Xet file transfer. Outer file scheduling remains
+# serial via --max-workers 1, avoiding the previous multi-file disk spike.
+export HF_XET_HIGH_PERFORMANCE="${HF_XET_HIGH_PERFORMANCE:-1}"
 # NOTE: hf_transfer disabled on purpose — its parallel multi-file fetch spikes
 # temp usage and was a factor in the earlier disk blowup. Serial is safer here.
 export HF_HUB_ENABLE_HF_TRANSFER=0

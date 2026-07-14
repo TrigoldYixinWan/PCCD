@@ -35,6 +35,20 @@ _SOFT_TASKS = [
     "Explain why a ticket was deprioritized.",
     "Recommend a time-management approach for the sprint.",
 ]
+_SOFT_TEAMS = [
+    "analytics", "customer success", "design", "engineering", "finance",
+    "legal", "marketing", "operations", "product", "research",
+]
+_SOFT_INITIATIVES = [
+    "access review", "budget forecast", "client migration", "compliance refresh",
+    "dashboard redesign", "documentation audit", "incident follow-up",
+    "onboarding update", "policy rollout", "quality review", "release planning",
+    "security assessment", "vendor transition",
+]
+_SOFT_PERIODS = [
+    "January", "February", "March", "April", "May",
+    "June", "July", "August", "September", "October",
+]
 _FORMAL = ("Dear team, please find below a concise account. {body} "
            "Kindly reach out should any clarification be required. Regards.")
 _CASUAL = ("hey! quick note — {body} lmk if anything's unclear, cheers")
@@ -54,15 +68,24 @@ def _soft_pairs(n: int, rng: random.Random):
     i = 0
     while len(items) < n:
         task = rng.choice(_SOFT_TASKS)
+        # 10 teams x 13 initiatives x 10 periods = 1,300 natural, unique
+        # scenarios. Uniqueness is in the text, so hash-based cross-split dedup
+        # cannot collapse the controlled soft-policy coverage.
+        team = _SOFT_TEAMS[i % len(_SOFT_TEAMS)]
+        initiative = _SOFT_INITIATIVES[(i // len(_SOFT_TEAMS)) % len(_SOFT_INITIATIVES)]
+        period_stride = len(_SOFT_TEAMS) * len(_SOFT_INITIATIVES)
+        period = _SOFT_PERIODS[(i // period_stride) % len(_SOFT_PERIODS)]
+        context = (f"Context: this concerns the {initiative} initiative for the "
+                   f"{team} team during {period}.")
         pid, tmpl_a, tmpl_b, axis = rng.choice(axes)
-        body = f"the key facts about: {task.lower()}"
+        body = f"{context} The key facts concern: {task.lower()}"
         # prompt explicitly requests one pole; response may match or mismatch
         want = rng.choice(["A", "B"])
         req = {"S1": "in a formal tone", "S2": "in a very detailed way",
                "S3": "as a structured bullet list"}[pid] if want == "A" else \
               {"S1": "casually", "S2": "very briefly",
                "S3": "as a single flowing paragraph"}[pid]
-        prompt = f"{task} Please respond {req}."
+        prompt = f"{task} {context} Please respond {req}."
         # produce one response (matching or mismatching) — critic judges S-policy
         matches = rng.random() < 0.6
         chosen = tmpl_a if (want == "A") == matches else tmpl_b
@@ -170,6 +193,9 @@ def build_pool(data_dir, seed=0, local_only=True):
 
 def split_pool(pool, rng):
     n_train, n_calib, n_test, n_audit, n_conflict = 8000, 1000, 1000, 400, 400
+    required = n_train + n_calib + n_test + n_audit + n_conflict
+    if len(pool) < required:
+        raise ValueError(f"pool has {len(pool)} unique items; {required} required")
     rng.shuffle(pool)
     cuts = {}
     i = 0
@@ -177,6 +203,10 @@ def split_pool(pool, rng):
                     ("audit", n_audit), ("conflict", n_conflict)]:
         cuts[name] = pool[i:i + k]
         i += k
+    if any(len(cuts[name]) != k for name, k in
+           [("train", n_train), ("calib", n_calib), ("test", n_test),
+            ("audit", n_audit), ("conflict", n_conflict)]):
+        raise AssertionError("split construction produced an unexpected size")
     return cuts
 
 

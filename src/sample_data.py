@@ -1,6 +1,6 @@
 """PCCD Day-2 data sampler.
 
-Builds the ~10.7k pool of (prompt, response) items to be labeled by the teacher,
+Builds the 10.8k pool of (prompt, response) items to be labeled by the teacher,
 drawing from:
   * PKU-SafeRLHF   -> hard-safety coverage (H1-H5), keep both safe & unsafe responses
   * UltraFeedback  -> task quality (T1/T2) with varied response quality
@@ -152,7 +152,7 @@ def _uid(item):
 def build_pool(data_dir, seed=0, local_only=True):
     rng = random.Random(seed)
     # target composition (see plan): 6k hard-safety, 3k task, 1k soft + splits
-    pku = _load_pku(data_dir, 6200, rng, local_only=local_only)   # extra for conflict split
+    pku = _load_pku(data_dir, 6300, rng, local_only=local_only)   # extra for conflict split
     uf = _load_uf(data_dir, 3200, rng, local_only=local_only)
     soft = _soft_pairs(1300, rng)
     pool = pku + uf + soft

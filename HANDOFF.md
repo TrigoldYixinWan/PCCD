@@ -156,14 +156,26 @@ memory (one 32B teacher per card, independent shards).
   under `$PCCD_DISK/pccd/` — `.gitignore` keeps `outputs/`, models, data out; only small
   logs/results summaries belong in the repo.
 
-## 8. Decisions you (Codex) may NOT make alone — flag to human/PaperGuru
-1. Any change that blurs the 5 distinctions vs Shihab 2026 (§1).
-2. Making the teacher generate responses (must stay label-only).
-3. Changing policy taxonomy, adaptation grid D0–D6, or gate criteria.
-4. Dropping/replacing the 2nd model family, or changing datasets.
-5. If a gate FAILS (esp. G2) — do not "fix" data/metrics to pass; report the true result.
-6. If data disk is too small to hold the planned assets (§3).
-7. Reinterpreting proposition weights or what counts as FN-asymmetry.
+## 8. Autonomy — tiered, with a MANDATORY change report
+You now have authority to change project design to handle unforeseen errors, under the
+three-tier model defined fully in `PROJECT_BRIEF.md` §G. Summary:
 
-When in doubt: push your work + a note in the PR describing the question, and stop.
+- **GREEN (change freely, log in the day report):** implementation fixes that don't touch
+  the science — library/API version adaptation (trl 0.19.1 etc.), disk/path/OOM/dtype/
+  batch fixes, download robustness, sharding, logging, seeds, refactors.
+- **YELLOW (change to unblock, but WRITE A CHANGE REPORT + flag in PR):** design-adjacent
+  changes — dataset field/mapping substitutions, split-ratio changes, KL-estimator change,
+  altering how a policy is adapted if a method won't run, reducing the D-grid/policy count
+  for compute, changing the recalibration variant. Write
+  `reports/CHANGES/<YYYY-MM-DD>_<slug>.md` (template in BRIEF §G.4).
+- **RED (do NOT change without human/PaperGuru sign-off):** the scientific identity — the
+  5 distinctions vs Shihab 2026 & neighbors; teacher stays label-only; the meaning of
+  FN-asymmetry; proposition weights; declaring a gate "passed." If blocked, implement the
+  MINIMAL workaround, mark results PROVISIONAL, write the change report, and STOP.
+
+Never reshape data/metrics to make a gate pass (esp. G2). A true negative is a valid,
+reportable result. When unsure whether a change is Yellow or Red, treat it as Red.
+
+Every gate/day also gets a normal report at `reports/dayN_<gate>.md` (format in BRIEF §F.3)
+so PaperGuru can turn your numbers directly into the paper.
 ```

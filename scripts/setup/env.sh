@@ -7,6 +7,12 @@
 # which on AutoDL is /root/autodl-tmp. This file points everything there and
 # also redirects TMPDIR so /tmp on the system disk never fills up.
 
+# AutoDL exposes its managed Python through Miniconda in interactive login
+# shells, but detached/non-login SSH jobs do not always inherit that PATH.
+if [ -x /root/miniconda3/bin/python ]; then
+  export PATH="/root/miniconda3/bin:$PATH"
+fi
+
 # Pick the data disk: prefer autodl-tmp, fall back to autodl-fs, else /root.
 if [ -d /root/autodl-tmp ]; then
   export PCCD_DISK=/root/autodl-tmp

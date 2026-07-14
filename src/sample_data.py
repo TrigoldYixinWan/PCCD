@@ -175,7 +175,7 @@ def _uid(item):
 def build_pool(data_dir, seed=0, local_only=True):
     rng = random.Random(seed)
     # target composition (see plan): 6k hard-safety, 3k task, 1k soft + splits
-    pku = _load_pku(data_dir, 6300, rng, local_only=local_only)   # extra for conflict split
+    pku = _load_pku(data_dir, 6400, rng, local_only=local_only)   # dedup headroom + conflict
     uf = _load_uf(data_dir, 3200, rng, local_only=local_only)
     soft = _soft_pairs(1300, rng)
     pool = pku + uf + soft

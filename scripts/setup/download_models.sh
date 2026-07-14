@@ -6,6 +6,8 @@ set -euo pipefail
 cd "$(dirname "$0")/../.." || exit 1
 source scripts/setup/env.sh
 
+if [ "${MODEL_SOURCE:-huggingface}" != "modelscope" ]; then
+
 # AutoDL academic acceleration (helps reach huggingface.co)
 [ -f /etc/network_turbo ] && source /etc/network_turbo || true
 # AutoDL's academic proxy is needed for the Hub control plane, but it resets
@@ -20,6 +22,9 @@ export HF_XET_HIGH_PERFORMANCE="${HF_XET_HIGH_PERFORMANCE:-1}"
 # NOTE: hf_transfer disabled on purpose — its parallel multi-file fetch spikes
 # temp usage and was a factor in the earlier disk blowup. Serial is safer here.
 export HF_HUB_ENABLE_HF_TRANSFER=0
+else
+  unset HTTP_PROXY HTTPS_PROXY ALL_PROXY http_proxy https_proxy all_proxy
+fi
 
 verify_model () {  # verify_model <dst> <expected_safetensor_shards>
   local dst="$1" expected="$2" incomplete shards

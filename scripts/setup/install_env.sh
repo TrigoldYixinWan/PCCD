@@ -9,7 +9,8 @@ pip install -U pip
 pip install transformers==5.13.1 trl==1.8.0 peft==0.19.1 vllm==0.25.0 \
             accelerate bitsandbytes datasets
 pip install mapie==1.4.1 netcal==1.4.0 rewardbench==0.1.4
-pip install numpy scipy scikit-learn pandas matplotlib seaborn tqdm huggingface_hub hf_transfer
+pip install numpy scipy scikit-learn pandas matplotlib seaborn tqdm huggingface_hub hf_transfer \
+            'modelscope>=1.38,<2'
 
 echo -e "\nVerify:"
 python - <<'PY'

@@ -21,23 +21,40 @@ export HF_XET_HIGH_PERFORMANCE="${HF_XET_HIGH_PERFORMANCE:-1}"
 # temp usage and was a factor in the earlier disk blowup. Serial is safer here.
 export HF_HUB_ENABLE_HF_TRANSFER=0
 
+verify_model () {  # verify_model <dst> <expected_safetensor_shards>
+  local dst="$1" expected="$2" incomplete shards
+  incomplete="$(find "$dst" -type f -name "*.incomplete" -print -quit)"
+  shards="$(find "$dst" -maxdepth 1 -type f -name "*.safetensors" | wc -l)"
+  if [ -z "$incomplete" ] && [ "$shards" -eq "$expected" ]; then
+    echo "  OK ($shards/$expected safetensor shards)"
+    return 0
+  fi
+  echo "  incomplete snapshot: shards=$shards/$expected pending=${incomplete:-none}"
+  return 1
+}
+
 dl_model () {   # dl_model <hub_id> <subdir> <expected_safetensor_shards>
   local hub="$1" sub="$2" expected="$3" dst="$MODELS_DIR/$2"
   if [ -d "$dst" ] && [ "$(ls "$dst"/*.safetensors 2>/dev/null | wc -l)" -gt 0 ]; then
     echo "== $sub already present, verifying/ resuming =="
   fi
   echo "== downloading $hub -> $dst =="
+  if [ "${MODEL_SOURCE:-huggingface}" = "modelscope" ]; then
+    if ! command -v modelscope >/dev/null 2>&1; then
+      echo "  ERROR: modelscope CLI missing (install with: pip install modelscope)"
+      return 1
+    fi
+    echo "  source=modelscope workers=${MODELSCOPE_MAX_WORKERS:-8}"
+    modelscope download --model "$hub" --local_dir "$dst" \
+      --max-workers "${MODELSCOPE_MAX_WORKERS:-8}"
+    verify_model "$dst" "$expected"
+    return
+  fi
   for endpoint in "https://huggingface.co" "https://hf-mirror.com"; do
     echo "  endpoint=$endpoint"
     if HF_ENDPOINT="$endpoint" python scripts/setup/hf_download.py "$hub" \
       --local-dir "$dst" --max-workers 1; then
-      local incomplete shards
-      incomplete="$(find "$dst" -type f -name "*.incomplete" -print -quit)"
-      shards="$(find "$dst" -maxdepth 1 -type f -name "*.safetensors" | wc -l)"
-      if [ -z "$incomplete" ] && [ "$shards" -eq "$expected" ]; then
-        echo "  OK ($shards/$expected safetensor shards)"; return 0
-      fi
-      echo "  incomplete snapshot: shards=$shards/$expected pending=${incomplete:-none}"
+      if verify_model "$dst" "$expected"; then return 0; fi
     fi
     echo "  failed, next endpoint..."
   done

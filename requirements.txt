@@ -26,4 +26,5 @@ seaborn
 # Utils
 huggingface_hub
 hf_transfer
+modelscope>=1.38,<2
 tqdm

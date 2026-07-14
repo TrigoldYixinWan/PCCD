@@ -20,7 +20,7 @@ dl () {   # dl <hub_id> <local_subdir> <expected_repo_files>
   echo "== downloading $hub -> $dst =="
   for endpoint in "https://huggingface.co" "https://hf-mirror.com"; do
     echo "  endpoint=$endpoint"
-    if HF_ENDPOINT="$endpoint" hf download "$hub" --repo-type dataset \
+    if HF_ENDPOINT="$endpoint" python scripts/setup/hf_download.py "$hub" --repo-type dataset \
       --local-dir "$dst" --max-workers 1; then
       local incomplete files
       incomplete="$(find "$dst" -type f -name "*.incomplete" -print -quit)"

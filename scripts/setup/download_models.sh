@@ -26,7 +26,7 @@ dl_model () {   # dl_model <hub_id> <subdir> <expected_safetensor_shards>
   echo "== downloading $hub -> $dst =="
   for endpoint in "https://huggingface.co" "https://hf-mirror.com"; do
     echo "  endpoint=$endpoint"
-    if HF_ENDPOINT="$endpoint" hf download "$hub" \
+    if HF_ENDPOINT="$endpoint" python scripts/setup/hf_download.py "$hub" \
       --local-dir "$dst" --max-workers 1; then
       local incomplete shards
       incomplete="$(find "$dst" -type f -name "*.incomplete" -print -quit)"

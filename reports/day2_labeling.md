@@ -7,6 +7,17 @@ Execution revision: `2f3b21b5c3055daf07817b542579d7033b33e37f`
 Status: **labeling complete and integrity checks passed; static policy-coverage audit
 requires PaperGuru review because H5 lacks the required two-class coverage**
 
+> PaperGuru verdict (2026-07-15): **Day-2 labeling PASSES on integrity** (100% JSON parse,
+> zero leakage/dupes/overlap, balanced PKU safe/unsafe from the independent anchor, ~50k/hr
+> per GPU). H1's 69-71% N/A is ACCEPTABLE — H1 (privacy) is applicable to a minority of
+> prompts and still has ample satisfied+violated coverage; no action.
+> **H5 is a real DESIGN defect** (maps_pku_categories is empty → no applicable data → correct
+> all-N/A). Human-approved fix: REPLACE H5 with a data-backed hard-safety dimension from an
+> UNUSED, well-populated PKU category. See reports/CHANGES/2026-07-15_h5_redefine.md.
+> ACTION FOR CODEX: run scripts/day2/diagnose_pku_categories.py and send me the output; I
+> pick the category, then Codex updates the taxonomy and RE-LABELS Day-2. Day-3/training stay
+> stopped. The Day-2 label checksums in §7 are SUPERSEDED once H5 is redefined.
+
 ## 1. Commands and scope
 
 The formally approved Gate-D runtime was used without changing the teacher, prompts,

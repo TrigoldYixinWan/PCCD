@@ -18,7 +18,7 @@ import numpy as np
 import torch
 from peft import PeftModel
 from tqdm import tqdm
-from transformers import AutoModelForCausalLM
+from transformers import AutoModelForCausalLM, AutoTokenizer
 
 
 def parse_args() -> argparse.Namespace:
@@ -57,6 +57,31 @@ def main() -> None:
         raise ValueError("duplicate generation IDs")
     if any("base_prompt_token_ids" not in row for row in rows):
         raise ValueError("G2 KL requires stored base_prompt_token_ids")
+
+    # Early G2 response artifacts were produced under Transformers 5, whose
+    # apply_chat_template(tokenize=True) returns a BatchEncoding.  The
+    # serializer stored its field names instead of input_ids.  Reconstruct the
+    # deterministic user-only base context from the frozen prompt; responses
+    # and adapted prompt token IDs are left untouched.
+    invalid_base_ids = any(
+        not isinstance(row["base_prompt_token_ids"], list)
+        or not row["base_prompt_token_ids"]
+        or not all(isinstance(token, int) for token in row["base_prompt_token_ids"])
+        for row in rows
+    )
+    if invalid_base_ids:
+        tokenizer = AutoTokenizer.from_pretrained(args.model, local_files_only=True)
+        for row in rows:
+            encoded = tokenizer.apply_chat_template(
+                [{"role": "user", "content": row["prompt"]}],
+                tokenize=True,
+                add_generation_prompt=True,
+            )
+            if isinstance(encoded, dict):
+                encoded = encoded["input_ids"]
+            if hasattr(encoded, "tolist"):
+                encoded = encoded.tolist()
+            row["base_prompt_token_ids"] = list(encoded)
 
     base = AutoModelForCausalLM.from_pretrained(
         args.model,

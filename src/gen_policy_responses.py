@@ -81,14 +81,20 @@ def main() -> None:
         raise RuntimeError("vLLM returned a different number of generations")
 
     tokenizer = llm.get_tokenizer()
-    base_prompt_ids = [
-        tokenizer.apply_chat_template(
+    base_prompt_ids = []
+    for record in records:
+        encoded = tokenizer.apply_chat_template(
             [{"role": "user", "content": record["prompt"]}],
             tokenize=True,
             add_generation_prompt=True,
         )
-        for record in records
-    ]
+        # Transformers 5 returns a BatchEncoding by default.  Iterating it
+        # yields field names rather than token IDs, so unwrap input_ids first.
+        if isinstance(encoded, dict):
+            encoded = encoded["input_ids"]
+        if hasattr(encoded, "tolist"):
+            encoded = encoded.tolist()
+        base_prompt_ids.append(list(encoded))
     output.parent.mkdir(parents=True, exist_ok=True)
     with output.open("w", encoding="utf-8") as handle:
         for record, request_output, base_ids in zip(records, generated, base_prompt_ids):

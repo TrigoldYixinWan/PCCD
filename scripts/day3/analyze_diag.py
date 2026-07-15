@@ -30,6 +30,52 @@ EXPECTED_CALLS_PER_ITEM = {
 }
 
 
+def normalize_label(value: Any) -> str | None:
+    if not isinstance(value, str):
+        return None
+    normalized = value.strip().lower().replace("-", "_").replace(" ", "_").replace("/", "_")
+    aliases = {
+        "sat": "satisfied",
+        "pass": "satisfied",
+        "ok": "satisfied",
+        "yes": "satisfied",
+        "compliant": "satisfied",
+        "violation": "violated",
+        "fail": "violated",
+        "no": "violated",
+        "noncompliant": "violated",
+        "non_compliant": "violated",
+        "na": "not_applicable",
+        "n_a": "not_applicable",
+        "notapplicable": "not_applicable",
+        "none": "not_applicable",
+        "null": "not_applicable",
+    }
+    normalized = aliases.get(normalized, normalized)
+    return normalized if normalized in LABEL_TO_INT else None
+
+
+def recover_partial_labels(raw_text: Any, policies: Iterable[str]) -> dict[str, str]:
+    """Recover only individually valid requested cells from a non-strict call."""
+    if not isinstance(raw_text, str):
+        return {}
+    start, end = raw_text.find("{"), raw_text.rfind("}")
+    if start < 0 or end <= start:
+        return {}
+    try:
+        raw = json.loads(raw_text[start : end + 1])
+    except (TypeError, json.JSONDecodeError):
+        return {}
+    if not isinstance(raw, dict):
+        return {}
+    recovered: dict[str, str] = {}
+    for pid in policies:
+        label = normalize_label(raw.get(pid))
+        if label is not None:
+            recovered[pid] = label
+    return recovered
+
+
 def read_jsonl(path: Path) -> list[dict[str, Any]]:
     records: list[dict[str, Any]] = []
     with path.open("r", encoding="utf-8") as handle:
@@ -146,6 +192,58 @@ def chosen_soft_pole(meta: dict[str, Any]) -> str | None:
     return "B" if target == "A" else "A"
 
 
+def d3_summary(records: list[dict[str, Any]]) -> dict[str, Any]:
+    by_source: defaultdict[str, list[dict[str, Any]]] = defaultdict(list)
+    by_soft_axis: defaultdict[str, list[dict[str, Any]]] = defaultdict(list)
+    for record in records:
+        by_source[record["source"]].append(record)
+        if record["source"] == "soft_style":
+            axis = str(record.get("meta", {}).get("axis", "missing"))
+            by_soft_axis[axis].append(record)
+    soft_records = by_source.get("soft_style", [])
+    explicit_dual_axis = 0
+    potential_joint_template = 0
+    chosen_poles = Counter()
+    axis_counts = Counter()
+    for record in soft_records:
+        meta = record.get("meta", {})
+        axis = meta.get("axis")
+        axis_counts[str(axis)] += 1
+        # The generator selects one registered axis. Its structure templates
+        # also alter layout/length cues; count that as a potential confound,
+        # not as an explicit dual-axis intervention.
+        if isinstance(axis, (list, tuple, set)) and {"verbosity", "structure"} <= set(axis):
+            explicit_dual_axis += 1
+        if axis == "structure":
+            potential_joint_template += 1
+        chosen_poles[str(chosen_soft_pole(meta))] += 1
+    return {
+        "overall": contingency(records),
+        "by_source": {source: contingency(group) for source, group in sorted(by_source.items())},
+        "soft_style_by_registered_axis": {
+            axis: contingency(group) for axis, group in sorted(by_soft_axis.items())
+        },
+        "generator_audit": {
+            "soft_style_items": len(soft_records),
+            "registered_axis_counts": dict(sorted(axis_counts.items())),
+            "explicitly_manipulated_axes_per_item": 1,
+            "explicit_s2_and_s3_dual_axis_items": explicit_dual_axis,
+            "explicit_s2_and_s3_dual_axis_fraction": (
+                explicit_dual_axis / len(soft_records) if soft_records else None
+            ),
+            "potential_s2_s3_template_confound_items": potential_joint_template,
+            "potential_s2_s3_template_confound_fraction": (
+                potential_joint_template / len(soft_records) if soft_records else None
+            ),
+            "potential_confound_definition": (
+                "registered axis=structure: structured/unstructured response templates also "
+                "change layout and some length cues"
+            ),
+            "chosen_response_pole_counts": dict(sorted(chosen_poles.items())),
+        },
+    }
+
+
 def analyze(args: argparse.Namespace) -> dict[str, Any]:
     reference_records = read_jsonl(args.reference)
     if len(reference_records) != 100:
@@ -184,6 +282,7 @@ def analyze(args: argparse.Namespace) -> dict[str, Any]:
     }
     call_counts: Counter[tuple[str, str]] = Counter()
     parse_counts: Counter[str] = Counter()
+    partial_recovery_counts: Counter[str] = Counter()
     latin_positions = np.full((len(ids), len(POLICY_IDS)), -1, dtype=np.int8)
 
     for call_number, call in enumerate(calls, 1):
@@ -207,13 +306,17 @@ def analyze(args: argparse.Namespace) -> dict[str, Any]:
             parse_counts[structure] += 1
         elif labels is not None:
             raise ValueError(f"{where}: parse_ok false but labels present")
+        else:
+            labels = recover_partial_labels(call.get("raw_text"), policies)
+            if labels:
+                partial_recovery_counts[structure] += 1
         row = id_to_index[item_id]
         for pid in policies:
             column = POLICY_IDS.index(pid)
             if cell_seen[structure][row, column]:
                 raise ValueError(f"{where}: duplicate output cell {item_id}/{structure}/{pid}")
             cell_seen[structure][row, column] = 1
-            if labels is not None:
+            if labels and pid in labels:
                 outputs[structure][row, column] = LABEL_TO_INT[labels[pid]]
             if structure == "latin_square_order":
                 latin_positions[row, column] = order.index(pid)
@@ -245,10 +348,15 @@ def analyze(args: argparse.Namespace) -> dict[str, Any]:
         observed = outputs[structure] >= 0
         agree = (outputs[structure] == reference) & observed
         result: dict[str, Any] = {
-            "parsed_calls": int(parse_counts[structure]),
+            "strict_parsed_calls": int(parse_counts[structure]),
+            "partially_recovered_calls": int(partial_recovery_counts[structure]),
             "total_calls": len(ids) * EXPECTED_CALLS_PER_ITEM[structure],
             "parsed_cells": int(observed.sum()),
             "total_cells": len(ids) * len(POLICY_IDS),
+            "missing_cells_by_policy": {
+                pid: int((~observed[:, column]).sum())
+                for column, pid in enumerate(POLICY_IDS)
+            },
             "cell_micro_agreement": bootstrap_ratio(
                 agree.sum(axis=1),
                 observed.sum(axis=1),
@@ -272,6 +380,18 @@ def analyze(args: argparse.Namespace) -> dict[str, Any]:
                     replicates=args.bootstrap_replicates,
                 ),
                 "reference_not_applicable_rate": float((reference[:, column] == 2).mean()),
+                "transition_table": [
+                    [
+                        int(
+                            (
+                                (reference[:, column] == reference_state)
+                                & (outputs[structure][:, column] == output_state)
+                            ).sum()
+                        )
+                        for output_state in range(len(LABEL_STATES))
+                    ]
+                    for reference_state in range(len(LABEL_STATES))
+                ],
             }
         structure_results[structure] = result
 
@@ -288,51 +408,21 @@ def analyze(args: argparse.Namespace) -> dict[str, Any]:
         )
 
     d3_records = [reference_by_id[item_id] for item_id in ids]
-    by_source: defaultdict[str, list[dict[str, Any]]] = defaultdict(list)
-    by_soft_axis: defaultdict[str, list[dict[str, Any]]] = defaultdict(list)
-    for record in d3_records:
-        by_source[record["source"]].append(record)
-        if record["source"] == "soft_style":
-            by_soft_axis[str(record.get("meta", {}).get("axis", "missing"))].append(record)
-    soft_records = by_source.get("soft_style", [])
-    explicit_dual_axis = 0
-    potential_joint_template = 0
-    chosen_poles = Counter()
-    for record in soft_records:
-        meta = record.get("meta", {})
-        axis = meta.get("axis")
-        # The generator chooses exactly one registered axis.  Its structure
-        # templates also alter layout/length cues, so flag those separately as
-        # a potential S2/S3 template confound rather than calling them dual-axis.
-        if isinstance(axis, (list, tuple, set)) and {"verbosity", "structure"} <= set(axis):
-            explicit_dual_axis += 1
-        if axis == "structure":
-            potential_joint_template += 1
-        chosen_poles[str(chosen_soft_pole(meta))] += 1
+    from scripts.day3.build_diag100 import load_universe
 
+    universe = load_universe(args.pool_dir, args.label_dir)
+    universe_records = [
+        {
+            "id": item["id"],
+            "source": item["pool"]["source"],
+            "meta": item["pool"].get("meta", {}),
+            "labels": item["labels"],
+        }
+        for item in universe
+    ]
     d3 = {
-        "overall": contingency(d3_records),
-        "by_source": {source: contingency(records) for source, records in sorted(by_source.items())},
-        "soft_style_by_registered_axis": {
-            axis: contingency(records) for axis, records in sorted(by_soft_axis.items())
-        },
-        "generator_audit": {
-            "soft_style_items": len(soft_records),
-            "explicitly_manipulated_axes_per_item": 1,
-            "explicit_s2_and_s3_dual_axis_items": explicit_dual_axis,
-            "explicit_s2_and_s3_dual_axis_fraction": (
-                explicit_dual_axis / len(soft_records) if soft_records else None
-            ),
-            "potential_s2_s3_template_confound_items": potential_joint_template,
-            "potential_s2_s3_template_confound_fraction": (
-                potential_joint_template / len(soft_records) if soft_records else None
-            ),
-            "potential_confound_definition": (
-                "registered axis=structure: structured/unstructured response templates also "
-                "change layout and some length cues"
-            ),
-            "chosen_response_pole_counts": dict(sorted(chosen_poles.items())),
-        },
+        "diag100_balanced_view": d3_summary(d3_records),
+        "full_frozen_universe": d3_summary(universe_records),
     }
 
     return {
@@ -361,6 +451,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--reference", type=Path, required=True)
     parser.add_argument("--manifest", type=Path, required=True)
     parser.add_argument("--ablation", type=Path, required=True)
+    parser.add_argument("--pool-dir", type=Path, required=True)
+    parser.add_argument("--label-dir", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--bootstrap-replicates", type=int, default=10_000)
     parser.add_argument("--bootstrap-seed", type=int, default=20260715)
@@ -388,7 +480,7 @@ def main() -> None:
             f"[{100 * metric['ci_lower']:.2f}, {100 * metric['ci_upper']:.2f}] "
             f"cells={metric['denominator']}"
         )
-    d3 = result["d3_s2_s3"]["overall"]
+    d3 = result["d3_s2_s3"]["diag100_balanced_view"]["overall"]
     print(f"D-3 S2xS3: n={d3['n']} Cramer's V={d3.get('cramers_v', float('nan')):.4f}")
     print(f"wrote: {args.out}")
 

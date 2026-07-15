@@ -408,7 +408,7 @@ def analyze(args: argparse.Namespace) -> dict[str, Any]:
         )
 
     d3_records = [reference_by_id[item_id] for item_id in ids]
-    from scripts.day3.build_diag100 import load_universe
+    from build_diag100 import load_universe
 
     universe = load_universe(args.pool_dir, args.label_dir)
     universe_records = [

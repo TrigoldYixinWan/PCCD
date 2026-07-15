@@ -50,3 +50,66 @@
   archivePrefix = {arXiv},
   url = {http://arxiv.org/abs/2509.18658v1},
 }
+
+% ===== multi-head safety reward model architecture (D0 critic design basis) =====
+
+@misc{li2025encore,
+  title = {ENCORE: Entropy-guided Reward Composition for Multi-head Safety Reward Models},
+  author = {Xiaomin Li and Xupeng Chen and Jingxuan Fan and Eric Hanchen Jiang and Mingye Gao},
+  year = {2025},
+  howpublished = {arXiv:2503.20995},
+  eprint = {2503.20995},
+  archivePrefix = {arXiv},
+  url = {http://arxiv.org/abs/2503.20995v2},
+}
+
+% ===== reward hacking / fine-tuning-induced degradation (basis for the hidden-violation
+%       adaptation direction in G2 — adaptation can push a policy off the critic's
+%       training distribution and evade detection) =====
+% NOTE: Wolf et al. 2025 "Reward Model Overoptimisation in Iterated RLHF" (arXiv:2505.18126)
+% is relevant here but was UNVERIFIED by CrossRef/OpenAlex; held out until indexed.
+
+@misc{zhang2024policy,
+  title = {Policy Filtration for RLHF to Mitigate Noise in Reward Models},
+  author = {Chuheng Zhang and Wei Shen and Li Zhao and Xuyun Zhang and Xiaolong Xu and Wanchun Dou and Jiang Bian},
+   year = {2024},
+   howpublished = {arXiv:2409.06957},
+   eprint = {2409.06957},
+   archivePrefix = {arXiv},
+   url = {http://arxiv.org/abs/2409.06957v5},
+}
+
+% ===== calibration under distribution shift / fine-tuning; recalibration
+%       (basis for the reframed thesis: heterogeneous calibration degradation +
+%       per-policy temperature recovery; and nearest neighbors we differentiate from) =====
+% NOTE: Wong et al. 2026 "Toward Calibrated Mixture-of-Experts Under Distribution Shift"
+% (ICML 2026, arXiv:2606.20544) is relevant but UNVERIFIED by CrossRef/OpenAlex; held out.
+
+@misc{siahkali2026coverage,
+  title = {Coverage Guarantees for Pseudo-Calibrated Conformal Prediction under Distribution Shift},
+  author = {Farbod Siahkali and Ashwin Verma and Vijay Gupta},
+  year = {2026},
+  howpublished = {arXiv:2602.14913},
+  eprint = {2602.14913},
+  archivePrefix = {arXiv},
+  url = {http://arxiv.org/abs/2602.14913v2},
+}
+
+@misc{sahoo2026calibration,
+  title = {Calibration Collapse Under Sycophancy Fine-Tuning: How Reward Hacking Breaks Uncertainty Quantification in LLMs},
+  author = {Subramanyam Sahoo},
+  year = {2026},
+  howpublished = {arXiv:2604.10585},
+  eprint = {2604.10585},
+  archivePrefix = {arXiv},
+  url = {http://arxiv.org/abs/2604.10585v1},
+}
+
+@article{borah2025alignment,
+  title = {Alignment Quality Index (AQI) : Beyond Refusals: AQI as an Intrinsic Alignment Diagnostic via Latent Geometry, Cluster Divergence, and Layer wise Pooled Representations},
+  author = {Abhilekh Borah and Chhavi Sharma and Danush Khanna and Utkarsh Bhatt and Gurpreet Singh and Hasnat Md Abdullah and R. Ravi and Vinija Jain and Jyoti Patel and Shubham Singh and Vasu Sharma and Arpita Vats and Rahul Raja and Aman Chadha and Amitava Das},
+  year = {2025},
+  pages = {2888--2947},
+  doi = {10.18653/v1/2025.emnlp-main.145},
+  url = {https://aclanthology.org/2025.emnlp-main.145.pdf},
+}

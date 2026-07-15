@@ -255,10 +255,15 @@ def parse_args() -> argparse.Namespace:
     outputs = Path(os.environ.get("PCCD_OUT", "outputs"))
     parser = argparse.ArgumentParser()
     parser.add_argument("--checkpoint", default=str(outputs / "critic" / "d0"))
-    parser.add_argument("--data", default=str(outputs / "labels" / "test.jsonl"))
-    parser.add_argument("--out", default=str(outputs / "critic" / "d0_test_logits.jsonl"))
-    parser.add_argument("--metrics", default=str(outputs / "critic" / "d0_test_metrics.json"))
-    parser.add_argument("--plot", default=str(outputs / "critic" / "d0_reliability.png"))
+    parser.add_argument(
+        "--labels",
+        "--data",
+        dest="data",
+        default=str(outputs / "labels" / "test.jsonl"),
+    )
+    parser.add_argument("--out", default=str(outputs / "results" / "d0_eval.json"))
+    parser.add_argument("--logits", default=str(outputs / "results" / "d0_test_logits.jsonl"))
+    parser.add_argument("--plot", default=str(outputs / "results" / "d0_reliability.png"))
     parser.add_argument("--batch", type=int, default=1)
     parser.add_argument("--max_len", type=int, default=4096)
     parser.add_argument("--bootstrap", type=int, default=10_000)
@@ -329,7 +334,7 @@ def main() -> None:
         probabilities = torch.softmax(torch.from_numpy(logits), dim=-1).numpy()
         predictions = logits.argmax(axis=-1)
 
-        output_path = Path(args.out)
+        output_path = Path(args.logits)
         output_path.parent.mkdir(parents=True, exist_ok=True)
         with output_path.open("w", encoding="utf-8") as handle:
             for row_index, record in enumerate(records):
@@ -363,7 +368,7 @@ def main() -> None:
                 labels, probabilities, args.bootstrap, args.seed
             ),
         }
-        metrics_path = Path(args.metrics)
+        metrics_path = Path(args.out)
         metrics_path.parent.mkdir(parents=True, exist_ok=True)
         metrics_path.write_text(json.dumps(metrics, indent=2) + "\n", encoding="utf-8")
         save_reliability_diagrams(probabilities, labels, args.plot)

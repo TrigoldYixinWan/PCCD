@@ -53,7 +53,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--model", default=default_model, required=default_model is None)
     parser.add_argument("--train", default=str(labels_dir / "train.jsonl"))
     parser.add_argument("--calib", default=str(labels_dir / "calib.jsonl"))
-    parser.add_argument("--output", default=str(Path(outputs) / "critic" / "d0"))
+    parser.add_argument(
+        "--out",
+        "--output",
+        dest="output",
+        default=str(Path(outputs) / "critic" / "d0"),
+    )
     parser.add_argument("--epochs", type=int, choices=(1, 2, 3), default=3)
     parser.add_argument("--per_device_batch", type=int, default=1)
     parser.add_argument("--effective_batch", type=int, default=32)

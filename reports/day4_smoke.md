@@ -86,3 +86,25 @@ Raw outputs are on AutoDL under
 
 **Pre-training smoke verdict: PASS. Stop for PaperGuru confirmation before any D0
 critic architecture choice, D0 training, or D2-D6 adaptation run.**
+
+## PaperGuru verdict (2026-07-15, human-approved)
+
+Smoke PASS CONFIRMED. The loss values are textbook-correct sanity signals, not just
+"finite":
+- DPO loss = 0.6931472 = ln(2) EXACTLY — the theoretical DPO loss at initialization when
+  chosen/rejected logits are equal (−log sigmoid(0)). This proves the DPO objective is wired
+  correctly.
+- SFT loss ≈ 11.93 ≈ ln(vocab) for a randomly-initialized LM head — as expected.
+The script genuinely imports and runs the real trl 1.8.0 SFTTrainer/DPOTrainer + PEFT LoRA
+paths. The TRL 0.19.1→1.8.0 upgrade (Green, CHANGES recorded, chosen over a shim after a
+dry-run confirmed no dependency conflicts) is accepted. RewardBench isolation confirmed.
+
+CARRIED-FORWARD CONSTRAINT for Day-4+ training (LOCKED): the implicit DataParallel device
+mismatch means multi-GPU training MUST use an EXPLICIT strategy (e.g. one process per GPU
+via torchrun/accelerate, or single-GPU per job), never the implicit HF DataParallel path.
+Any multi-GPU training launch must state its strategy in the report.
+
+CLEARED: proceed to define the D0 critic. NOTE — the D0 critic architecture and training
+protocol are RED-LOCKED (BRIEF §8); do NOT start D0 training until PaperGuru and the human
+approve the architecture/protocol. The L3 metric definitions are already locked in
+PREREG_G1 (violated-positive macro-F1 over applicable items, N/A excluded, CV>0.15 w/ CI).

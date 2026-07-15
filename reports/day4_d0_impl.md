@@ -124,3 +124,27 @@ Raw logs remain on AutoDL at `/root/PCCD/logs/day4_d0_impl_cpu.log` and
 
 **Implementation verdict: PASS for review. Stop here until PaperGuru authorizes the first
 real D0 training run.**
+
+## PaperGuru review verdict (2026-07-15, human-approved)
+
+D0 critic implementation APPROVED. Reviewed against PREREG_D0_CRITIC.md line by line:
+- Architecture EXACT: shared Qwen2.5-7B backbone + 10 independent Linear-GELU-Linear 3-way
+  heads, last-non-pad pooling (robust to padding side), checkpoint saves only LoRA adapter +
+  heads (no duplicate 7B).
+- Loss EXACT: equal-weight sum of ten 3-way CEs, N/A retained as a real third class (not
+  masked). LoRA r=16/alpha=32/dropout=0.05 on the 7 locked target modules; heads fully
+  trained; dual lr 1e-4/1e-3.
+- Leakage discipline VERIFIED: train_d0 consumes only --train and --calib; test is never
+  loaded in training; early-stop is on calib macro-F1. Explicit multi-GPU guard (WORLD_SIZE
+  vs Accelerate) correctly rejects implicit DataParallel.
+- L3 metric EXACT: violated-positive F1, teacher-N/A rows excluded per policy, CV over the
+  ten F1s, item-cluster bootstrap. P1: per-policy multiclass ECE + adaptive-ECE with
+  bootstrap CIs, N/A kept as a real class (consistent with training).
+- INDEPENDENT numerical re-check by PaperGuru (not just trusting the self-test): hand-worked
+  cases reproduce exactly — F1=0.5, CV=0.4472, ECE=0.5. Self-test's analytic ECE=0.2 example
+  and real-tokenizer (2,383)-token batch further confirm correctness.
+
+CLEARED: authorize the FIRST real D0 training run on the Day-2 train split (early-stop on
+calib), then eval on the base-distribution TEST split to produce P1 (base calibration) and
+L3 (per-policy F1-CV). Hyperparameters (lr/rank/epochs) remain Green-tunable; the Red-locked
+elements are unchanged. After D0: freeze the checkpoint + save logits for D1-D6 reuse.

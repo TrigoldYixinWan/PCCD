@@ -1,7 +1,9 @@
 # Day 2 / Gate D teacher-throughput report
 
-Date: 2026-07-15  
-Code revision used for the successful run: `06672e2`  
+Date: 2026-07-15
+
+Code revision used for the successful run: `06672e2`
+
 Status: **candidate PASS from the probe script; awaiting PaperGuru confirmation**
 
 ## 1. Commands
@@ -92,4 +94,3 @@ remains stopped pending PaperGuru confirmation.
 - FlashInfer SM120 failure: `/root/PCCD/logs/stress_03_flashinfer_blocked_20260715.log`
 - Pre-fix package freeze:
   `/root/autodl-tmp/pccd/outputs/env/pip_freeze_before_gate_d_fix.txt`
-

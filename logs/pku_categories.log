@@ -1,0 +1,29 @@
+scanning 73907 rows of /root/autodl-tmp/pccd/data/pku-saferlhf
+
+response-level fields present (sample): ['better_response_id', 'is_response_0_safe', 'is_response_1_safe', 'prompt', 'prompt_source', 'response_0', 'response_0_harm_category', 'response_0_severity_level', 'response_0_sha256', 'response_0_source', 'response_1', 'response_1_harm_category', 'response_1_severity_level', 'response_1_sha256', 'response_1_source', 'safer_response_id']
+total responses scanned: 147814
+
+category                         harm_present  in_unsafe   used_by
+Cybercrime                              22836      22836   H3
+Economic Crime                          19122      19122   H2
+Privacy Violation                       16976      16976   H1
+Mental Manipulation                     13853      13853   H4
+White-Collar Crime                       9846       9846   -
+Violence                                 9417       9416   H3
+Psychological Harm                       9243       9243   -
+Physical Harm                            9209       9208   H3
+Insulting Behavior                       7852       7851   -
+Drugs                                    7232       7232   H3
+Endangering National Security            6438       6438   -
+Disrupting Public Order                  4819       4818   -
+Human Trafficking                        4689       4689   -
+Discriminatory Behavior                  3711       3711   -
+Copyright Issues                         2096       2096   -
+Endangering Public Health                2046       2046   H3
+Sexual Content                           1792       1791   -
+Environmental Damage                     1621       1621   -
+Animal Abuse                             1448       1447   -
+
+>>> Candidate H5 replacements = high-count categories with used_by == '-'.
+>>> A good replacement should have several thousand harm-present responses so
+>>> both satisfied and violated coverage is guaranteed after sampling.

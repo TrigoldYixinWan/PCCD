@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate one fixed-seed response per held-out test prompt from base or D3 policy."""
+"""Generate paired fixed-seed responses for any G2 policy variant."""
 
 from __future__ import annotations
 
@@ -16,7 +16,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--model", default=str(models / "qwen7b"))
     parser.add_argument("--prompts", default=str(outputs / "labels" / "test.jsonl"))
     parser.add_argument("--adapter")
-    parser.add_argument("--variant", required=True, choices=("base", "d3"))
+    parser.add_argument("--variant", required=True)
+    parser.add_argument("--system_prompt")
+    parser.add_argument("--max_lora_rank", type=int, default=64)
+    parser.add_argument("--expected_count", type=int)
     parser.add_argument("--out", required=True)
     parser.add_argument("--max_tokens", type=int, default=256)
     parser.add_argument("--seed", type=int, default=20260716)
@@ -26,14 +29,18 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    if (args.variant == "d3") != bool(args.adapter):
-        raise ValueError("D3 requires --adapter; base must not receive one")
+    if args.adapter and args.system_prompt:
+        raise ValueError("an adapter and a system-prompt intervention cannot be combined")
     output = Path(args.out)
     if output.exists():
         raise FileExistsError(f"refusing to overwrite generation: {output}")
     records = [json.loads(line) for line in Path(args.prompts).open(encoding="utf-8")]
-    if len(records) != 1000 or len({record["id"] for record in records}) != 1000:
-        raise ValueError("fixed held-out prompt set must contain exactly 1000 unique test IDs")
+    if not records or len({record["id"] for record in records}) != len(records):
+        raise ValueError("fixed held-out prompt set must contain unique IDs")
+    if args.expected_count is not None and len(records) != args.expected_count:
+        raise ValueError(
+            f"expected {args.expected_count} fixed prompts, observed {len(records)}"
+        )
 
     from vllm import LLM, SamplingParams
 
@@ -45,7 +52,7 @@ def main() -> None:
         gpu_memory_utilization=args.gpu_mem_util,
     )
     if args.adapter:
-        llm_kwargs.update(enable_lora=True, max_lora_rank=8)
+        llm_kwargs.update(enable_lora=True, max_lora_rank=args.max_lora_rank)
     llm = LLM(**llm_kwargs)
     sampling = SamplingParams(
         temperature=1.0,
@@ -53,23 +60,38 @@ def main() -> None:
         max_tokens=args.max_tokens,
         seed=args.seed,
     )
-    messages = [[{"role": "user", "content": record["prompt"]}] for record in records]
+    messages = []
+    for record in records:
+        conversation = []
+        if args.system_prompt:
+            conversation.append({"role": "system", "content": args.system_prompt})
+        conversation.append({"role": "user", "content": record["prompt"]})
+        messages.append(conversation)
     if args.adapter:
         from vllm.lora.request import LoRARequest
 
         generated = llm.chat(
             messages,
             sampling_params=sampling,
-            lora_request=LoRARequest("d3_r8", 1, args.adapter),
+            lora_request=LoRARequest(args.variant, 1, args.adapter),
         )
     else:
         generated = llm.chat(messages, sampling_params=sampling)
     if len(generated) != len(records):
         raise RuntimeError("vLLM returned a different number of generations")
 
+    tokenizer = llm.get_tokenizer()
+    base_prompt_ids = [
+        tokenizer.apply_chat_template(
+            [{"role": "user", "content": record["prompt"]}],
+            tokenize=True,
+            add_generation_prompt=True,
+        )
+        for record in records
+    ]
     output.parent.mkdir(parents=True, exist_ok=True)
     with output.open("w", encoding="utf-8") as handle:
-        for record, request_output in zip(records, generated):
+        for record, request_output, base_ids in zip(records, generated, base_prompt_ids):
             candidate = request_output.outputs[0]
             handle.write(
                 json.dumps(
@@ -79,17 +101,19 @@ def main() -> None:
                         "prompt": record["prompt"],
                         "response": candidate.text,
                         "prompt_token_ids": list(request_output.prompt_token_ids),
+                        "base_prompt_token_ids": list(base_ids),
                         "generated_token_ids": list(candidate.token_ids),
                         "finish_reason": candidate.finish_reason,
                         "policy_variant": args.variant,
                         "meta": {
-                            "original_test_id": record["id"],
+                            "original_prompt_id": record["id"],
                             "generation": {
                                 "temperature": 1.0,
                                 "top_p": 1.0,
                                 "max_tokens": args.max_tokens,
                                 "seed": args.seed,
                                 "adapter": args.adapter,
+                                "system_prompt": args.system_prompt,
                             },
                         },
                     },

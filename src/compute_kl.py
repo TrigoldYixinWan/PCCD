@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Estimate KL(adapted||base) on D3-generated held-out continuations.
+"""Estimate KL(adapted||base) on a G2 variant's held-out continuations.
 
 Primary estimator (fixed for later D points): ancestral Monte Carlo under the
 adapted policy, teacher-forced under both policies, aggregated as the token-weighted
@@ -26,7 +26,7 @@ def parse_args() -> argparse.Namespace:
     outputs = Path(os.environ.get("PCCD_OUT", "outputs"))
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", default=str(models / "qwen7b"))
-    parser.add_argument("--adapter", default=str(outputs / "policy" / "d3_lora_r8"))
+    parser.add_argument("--adapter")
     parser.add_argument("--generations", required=True)
     parser.add_argument("--out", required=True)
     parser.add_argument("--items_out")
@@ -50,8 +50,13 @@ def main() -> None:
     if not torch.cuda.is_available():
         raise RuntimeError("KL computation requires CUDA")
     rows = [json.loads(line) for line in Path(args.generations).open(encoding="utf-8")]
-    if len(rows) != 1000 or any(row.get("policy_variant") != "d3" for row in rows):
-        raise ValueError("KL requires exactly the 1000 adapted-policy generations")
+    variants = {row.get("policy_variant") for row in rows}
+    if not rows or len(variants) != 1 or None in variants:
+        raise ValueError("KL requires one non-empty, single-variant generation file")
+    if len({row["id"] for row in rows}) != len(rows):
+        raise ValueError("duplicate generation IDs")
+    if any("base_prompt_token_ids" not in row for row in rows):
+        raise ValueError("G2 KL requires stored base_prompt_token_ids")
 
     base = AutoModelForCausalLM.from_pretrained(
         args.model,
@@ -59,22 +64,35 @@ def main() -> None:
         trust_remote_code=True,
         dtype=torch.bfloat16,
     )
-    model = PeftModel.from_pretrained(base, args.adapter, is_trainable=False).cuda().eval()
+    if args.adapter:
+        model = PeftModel.from_pretrained(base, args.adapter, is_trainable=False).cuda().eval()
+    else:
+        model = base.cuda().eval()
     item_results = []
     with torch.inference_mode():
         for row in tqdm(rows, desc="KL teacher-forcing"):
-            prompt_ids = list(row["prompt_token_ids"])
+            adapted_prompt_ids = list(row["prompt_token_ids"])
+            base_prompt_ids = list(row["base_prompt_token_ids"])
             generated_ids = list(row["generated_token_ids"])
             if not generated_ids:
                 raise ValueError(f"empty adapted continuation for {row['id']}")
             available_prompt = args.max_length - len(generated_ids)
             if available_prompt < 1:
                 raise ValueError(f"continuation exceeds max length for {row['id']}")
-            prompt_ids = prompt_ids[-available_prompt:]
-            ids = torch.tensor([prompt_ids + generated_ids], dtype=torch.long, device="cuda")
-            adapted = continuation_log_probs(model, ids, len(prompt_ids))
-            with model.disable_adapter():
-                base_logp = continuation_log_probs(model, ids, len(prompt_ids))
+            adapted_prompt_ids = adapted_prompt_ids[-available_prompt:]
+            base_prompt_ids = base_prompt_ids[-available_prompt:]
+            adapted_ids = torch.tensor(
+                [adapted_prompt_ids + generated_ids], dtype=torch.long, device="cuda"
+            )
+            base_ids = torch.tensor(
+                [base_prompt_ids + generated_ids], dtype=torch.long, device="cuda"
+            )
+            adapted = continuation_log_probs(model, adapted_ids, len(adapted_prompt_ids))
+            if args.adapter:
+                with model.disable_adapter():
+                    base_logp = continuation_log_probs(model, base_ids, len(base_prompt_ids))
+            else:
+                base_logp = continuation_log_probs(model, base_ids, len(base_prompt_ids))
             differences = (adapted - base_logp).double().cpu().numpy()
             item_results.append(
                 {
@@ -103,6 +121,7 @@ def main() -> None:
         "units": "nats/token",
         "n_prompts": len(rows),
         "n_generated_tokens": int(counts.sum()),
+        "variant": next(iter(variants)),
         "kl_adapted_base": primary,
         "kl_95ci_prompt_bootstrap": ci,
         "mean_item_log_ratio": prompt_mean,
@@ -110,7 +129,7 @@ def main() -> None:
         "bootstrap_replicates": args.bootstrap,
         "bootstrap_seed": args.seed,
         "model": str(Path(args.model).resolve()),
-        "adapter": str(Path(args.adapter).resolve()),
+        "adapter": str(Path(args.adapter).resolve()) if args.adapter else None,
         "generations": str(Path(args.generations).resolve()),
     }
     output = Path(args.out)

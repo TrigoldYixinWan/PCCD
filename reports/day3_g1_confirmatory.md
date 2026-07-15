@@ -169,3 +169,39 @@ repeat agreement (98.85%), but order and paraphrase sensitivity remain far below
 paper should report L1 as PARTIAL and retain the two earmarked findings: strong joint-context
 consistency and genuine wording/order sensitivity. Any causal claims relying on perfect
 teacher-label invariance should be narrowed accordingly.
+
+## PaperGuru FINAL L1 verdict + literature positioning (2026-07-15, human-approved)
+
+L1 = **PARTIAL**, ACCEPTED. Decision: the teacher is adopted as a FIXED, internally
+self-consistent critic-oracle — NOT a claim of absolute objective truth. Justification and
+literature check:
+
+- Under the FIXED production prompt (fixed order, fixed wording) the teacher is highly
+  reproducible (repeat 98.85%). Every PCCD label — training target AND calibration reference —
+  is produced with this single fixed prompt, so the training target and the evaluation
+  baseline are INTERNALLY CONSISTENT. P2/P3/P5/P6 concern the frozen critic's calibration
+  transfer relative to THIS fixed oracle and remain measurable.
+- The order/paraphrase sensitivity is a documented, EXPECTED property of LLM judges, not an
+  implementation error. It is consistent with and does not conflict with prior work:
+  semantically-equivalent wording steers judgments (framing bias, \cite{hwang2026when};
+  prompt sensitivity, \cite{hua2025flaw}) and position bias is among the most-documented judge
+  biases (\cite{shi2024judging}). Our 98.85% fixed-prompt reproducibility sits at the high end
+  of that literature. NOTE: three closely-related 2026 preprints (Yagubyan, "Coin Flip Judge";
+  Norman, "Reliability without Validity"; Xu, "Pointwise or Pairwise position bias") were found
+  via paper_search but are not yet indexed in CrossRef/OpenAlex; they are held out of refs.bib
+  until verified and must NOT be cited in the paper until then.
+- Framing (LOCKED for the paper): "we use a single fixed teacher prompt as a reliable oracle;
+  we explicitly measure and report its wording/order sensitivity (F1: multi-policy judges are
+  MORE self-consistent under joint than isolated prompting; F2: position-dependent output-
+  schema failures), and we do NOT claim the teacher is an absolute ground truth." The
+  reliability-vs-validity distinction (that a judge can be highly self-consistent yet not an
+  absolute truth) is well established in the LLM-judge literature and lets us report the
+  PARTIAL as a measurement-methodology contribution rather than a threat.
+- Novelty note: F2 (a specific policy dropping its JSON key at a specific position in a
+  multi-policy joint judgment) is finer-grained than the pairwise/scoring position bias in
+  \cite{shi2024judging}; report it as a distinct structured-output failure mode.
+
+Consequence for the study: PROCEED. L2 stays frozen at 44/45; L3 (D0 critic F1-CV) proceeds
+at Day-4 with locked definitions; the frozen-oracle framing is now the paper's stated
+position. References added to refs.bib (verbatim from paper_search); run ref_verify before
+finalizing. Training still gated behind the trl/peft@transformers-5 smoke test.

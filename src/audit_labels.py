@@ -11,9 +11,10 @@ Two modes:
       CUDA_VISIBLE_DEVICES=0 python src/audit_labels.py perturb \
         --model /root/models/qwen32b --audit outputs/pool/audit.jsonl \
         --out outputs/labels/audit_perturb.jsonl
-    Re-labels each item 3 ways — canonical, policy-order-swapped, policy-paraphrased —
-    and reports agreement, i.e. how stable teacher judgments are to superficial
-    prompt changes. This is the Day-3 Go/No-Go for label reliability.
+    Labels each item once canonically and under 3 registered perturbations — an
+    independent repeat of the canonical call, policy-order swap, and policy
+    paraphrase — and reports agreement with the canonical labels. This is the
+    Day-3 Go/No-Go for label reliability.
 
 Gates (from configs/teacher_schema.json):
     json_parse_success >= 0.99
@@ -87,13 +88,19 @@ def perturb_audit(model, audit_path, out_path, max_tokens=256,
               max_model_len=max_model_len, trust_remote_code=True)
     sp = SamplingParams(temperature=0.0, max_tokens=max_tokens)
 
-    # build 3 variants per item
-    canon, swapped, para = [], [], []
+    # Build canonical plus the two prompt-changing perturbations. The repeat-
+    # sampling perturbation deliberately reuses `canon` in a separate llm.chat
+    # call below; canonical itself must not be counted as the repeat.
+    canon, swapped, para, swap_orders = [], [], [], []
     for it in items:
         p, r = it["prompt"], it["response"]
         canon.append(build_messages(p, r))
         order = POLICY_IDS[:]
         rng.shuffle(order)
+        if order == POLICY_IDS:
+            # A swap perturbation must actually change the presentation order.
+            order = order[1:] + order[:1]
+        swap_orders.append(order)
         swapped.append(build_messages(p, r, order=order))
         para.append(build_messages(p, r, paraphrase=True))
 
@@ -101,10 +108,18 @@ def perturb_audit(model, audit_path, out_path, max_tokens=256,
         outs = llm.chat(msgs, sp)
         return [parse_judgment(o.outputs[0].text) for o in outs]
 
-    lc, ls, lp = _label(canon), _label(swapped), _label(para)
+    lc = _label(canon)
+    lr = _label(canon)  # independent repeat_sampling call at registered temperature=0
+    ls = _label(swapped)
+    lp = _label(para)
 
     n = len(items)
-    ok_c = sum(1 for x in lc if x is not None)
+    parse_ok = {
+        "canonical": sum(1 for x in lc if x is not None),
+        "repeat_sampling": sum(1 for x in lr if x is not None),
+        "policy_order_swap": sum(1 for x in ls if x is not None),
+        "policy_paraphrase": sum(1 for x in lp if x is not None),
+    }
     # consistency: canonical vs perturbed, over items where both parsed
     def _consistency(base, other, ids=None):
         num = den = 0
@@ -121,32 +136,62 @@ def perturb_audit(model, audit_path, out_path, max_tokens=256,
                     per_policy[pid][0] += 1
         return (num / den if den else 0.0), per_policy, den
 
+    repeat_cons, repeat_pp, repeat_den = _consistency(lc, lr)
     swap_cons, swap_pp, swap_den = _consistency(lc, ls)
     para_cons, para_pp, para_den = _consistency(lc, lp)
 
     gates = schema()["gates"]
     print(f"=== PERTURBATION AUDIT (n={n}) ===")
-    print(f"json parse-success (canonical): {ok_c}/{n} = {100*ok_c/n:.2f}%  "
+    ok_c = parse_ok["canonical"]
+    print(f"json parse-success (canonical      ): {ok_c}/{n} = {100*ok_c/n:.2f}%  "
           f"(gate >={100*gates['json_parse_success']:.0f}%: "
           f"{'PASS' if ok_c/n >= gates['json_parse_success'] else 'FAIL'})")
-    print(f"order-swap consistency  : {100*swap_cons:.1f}%  (n={swap_den})  "
+    for variant in ("repeat_sampling", "policy_order_swap", "policy_paraphrase"):
+        ok = parse_ok[variant]
+        print(f"json parse-success ({variant:15s}): {ok}/{n} = {100*ok/n:.2f}%  "
+              "(descriptive; no separate registered threshold)")
+
+    def _micro_agreement(per_policy):
+        agree = sum(a for a, _ in per_policy.values())
+        total = sum(t for _, t in per_policy.values())
+        return agree / total if total else 0.0, total
+
+    repeat_micro, repeat_cells = _micro_agreement(repeat_pp)
+    swap_micro, swap_cells = _micro_agreement(swap_pp)
+    para_micro, para_cells = _micro_agreement(para_pp)
+    print(f"repeat-sampling whole-record exact-match: {100*repeat_cons:.1f}%  "
+          f"(n={repeat_den}); policy-cell agreement: {100*repeat_micro:.1f}% "
+          f"(n={repeat_cells})")
+    print(f"order-swap whole-record exact-match  : {100*swap_cons:.1f}%  (n={swap_den})  "
           f"(gate >={100*gates['order_swap_consistency']:.0f}%: "
-          f"{'PASS' if swap_cons >= gates['order_swap_consistency'] else 'FAIL'})")
-    print(f"paraphrase consistency  : {100*para_cons:.1f}%  (n={para_den})  "
+          f"{'PASS' if swap_cons >= gates['order_swap_consistency'] else 'FAIL'}); "
+          f"policy-cell agreement: {100*swap_micro:.1f}% (n={swap_cells})")
+    print(f"paraphrase whole-record exact-match : {100*para_cons:.1f}%  (n={para_den})  "
           f"(gate >={100*gates['paraphrase_consistency']:.0f}%: "
-          f"{'PASS' if para_cons >= gates['paraphrase_consistency'] else 'FAIL'})")
-    print("\nper-policy paraphrase agreement (lowest first):")
-    rows = sorted(((pid, a / t if t else 0) for pid, (a, t) in para_pp.items()),
-                  key=lambda x: x[1])
-    for pid, ag in rows:
-        print(f"  {pid}: {100*ag:.1f}%")
+          f"{'PASS' if para_cons >= gates['paraphrase_consistency'] else 'FAIL'}); "
+          f"policy-cell agreement: {100*para_micro:.1f}% (n={para_cells})")
+    print("\nper-policy agreement with canonical:")
+    print("  policy  repeat_sampling  order_swap  paraphrase")
+    for pid in POLICY_IDS:
+        ra, rt = repeat_pp[pid]
+        sa, st = swap_pp[pid]
+        pa, pt = para_pp[pid]
+        rag = ra / rt if rt else 0.0
+        sag = sa / st if st else 0.0
+        pag = pa / pt if pt else 0.0
+        print(f"  {pid:>4s}       {100*rag:6.1f}%       {100*sag:6.1f}%      {100*pag:6.1f}%")
 
     # persist raw for later inspection
-    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    out_dir = os.path.dirname(out_path)
+    if out_dir:
+        os.makedirs(out_dir, exist_ok=True)
     with open(out_path, "w") as f:
-        for it, a, b, c in zip(items, lc, ls, lp):
+        for it, order, a, r, b, c in zip(items, swap_orders, lc, lr, ls, lp):
             f.write(json.dumps({"id": it["id"], "canonical": a,
-                                "order_swap": b, "paraphrase": c},
+                                "repeat_sampling": r,
+                                "policy_order_swap_order": order,
+                                "policy_order_swap": b,
+                                "policy_paraphrase": c},
                                ensure_ascii=False) + "\n")
     print(f"\nWrote per-item perturbation labels -> {out_path}")
 

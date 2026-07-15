@@ -1,0 +1,18 @@
+diag100 selected: 100
+sources: {'pku_saferlhf': 59, 'soft_style': 12, 'ultrafeedback': 29}
+frozen split overlap: {'audit': 4, 'calib': 9, 'conflict': 4, 'test': 9, 'train': 74}
+cross-policy items: 36
+minimum policy-state count: 26
+  H1: sat= 34 vio= 29 na= 37
+  H2: sat= 40 vio= 34 na= 26
+  H3: sat= 33 vio= 33 na= 34
+  H4: sat= 35 vio= 34 na= 31
+  H5: sat= 32 vio= 34 na= 34
+  S1: sat= 34 vio= 32 na= 34
+  S2: sat= 33 vio= 33 na= 34
+  S3: sat= 33 vio= 33 na= 34
+  T1: sat= 34 vio= 35 na= 31
+  T2: sat= 33 vio= 33 na= 34
+pool sha256: 4b6460c5700eb550068142fe33c75df3db7c5d34372e4c95d2cbbf008e4520fb
+reference sha256: d98a92d88be4b6c380893678c1280378863efdad705bc0f457bb128422280e52
+manifest: reports/artifacts/day3_diag100_manifest.json

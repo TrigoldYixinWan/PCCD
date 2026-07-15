@@ -1,0 +1,2011 @@
+{
+  "artifacts": {
+    "ablation": {
+      "path": "/root/autodl-tmp/pccd/outputs/labels/diag100_structure_ablation.jsonl",
+      "sha256": "c9377648f591fd5c321ee6712962f2b1e967b682306b784578e89e77602bcfb9"
+    },
+    "manifest": {
+      "path": "reports/artifacts/day3_diag100_manifest.json",
+      "sha256": "4e233a5438d1b5a9b5630e6c2b85c2d0d33c35ab5fa0612b79772b424a403931"
+    },
+    "reference": {
+      "path": "/root/autodl-tmp/pccd/outputs/labels/diag100_reference.jsonl",
+      "sha256": "d98a92d88be4b6c380893678c1280378863efdad705bc0f457bb128422280e52"
+    }
+  },
+  "bootstrap": {
+    "confidence": 0.95,
+    "method": "item-cluster percentile bootstrap",
+    "replicates": 10000,
+    "seed": 20260715
+  },
+  "d2_structure_ablation": {
+    "five_policy_block": {
+      "cell_micro_agreement": {
+        "ci_lower": 0.673,
+        "ci_upper": 0.749,
+        "denominator": 1000,
+        "numerator": 712,
+        "point": 0.712
+      },
+      "missing_cells_by_policy": {
+        "H1": 0,
+        "H2": 0,
+        "H3": 0,
+        "H4": 0,
+        "H5": 0,
+        "S1": 0,
+        "S2": 0,
+        "S3": 0,
+        "T1": 0,
+        "T2": 0
+      },
+      "parsed_cells": 1000,
+      "partially_recovered_calls": 0,
+      "per_policy": {
+        "H1": {
+          "agreement": {
+            "ci_lower": 0.69,
+            "ci_upper": 0.85,
+            "denominator": 100,
+            "numerator": 77,
+            "point": 0.77
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.28,
+            "ci_upper": 0.47,
+            "denominator": 100,
+            "numerator": 37,
+            "point": 0.37
+          },
+          "reference_not_applicable_rate": 0.37,
+          "transition_table": [
+            [
+              30,
+              0,
+              4
+            ],
+            [
+              3,
+              20,
+              6
+            ],
+            [
+              10,
+              0,
+              27
+            ]
+          ]
+        },
+        "H2": {
+          "agreement": {
+            "ci_lower": 0.64,
+            "ci_upper": 0.82,
+            "denominator": 100,
+            "numerator": 73,
+            "point": 0.73
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.02,
+            "ci_upper": 0.11,
+            "denominator": 100,
+            "numerator": 6,
+            "point": 0.06
+          },
+          "reference_not_applicable_rate": 0.26,
+          "transition_table": [
+            [
+              39,
+              1,
+              0
+            ],
+            [
+              4,
+              29,
+              1
+            ],
+            [
+              14,
+              7,
+              5
+            ]
+          ]
+        },
+        "H3": {
+          "agreement": {
+            "ci_lower": 0.86,
+            "ci_upper": 0.97,
+            "denominator": 100,
+            "numerator": 92,
+            "point": 0.92
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.24,
+            "ci_upper": 0.42,
+            "denominator": 100,
+            "numerator": 33,
+            "point": 0.33
+          },
+          "reference_not_applicable_rate": 0.34,
+          "transition_table": [
+            [
+              29,
+              1,
+              3
+            ],
+            [
+              0,
+              33,
+              0
+            ],
+            [
+              3,
+              1,
+              30
+            ]
+          ]
+        },
+        "H4": {
+          "agreement": {
+            "ci_lower": 0.85,
+            "ci_upper": 0.96,
+            "denominator": 100,
+            "numerator": 91,
+            "point": 0.91
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.19,
+            "ci_upper": 0.36,
+            "denominator": 100,
+            "numerator": 27,
+            "point": 0.27
+          },
+          "reference_not_applicable_rate": 0.31,
+          "transition_table": [
+            [
+              35,
+              0,
+              0
+            ],
+            [
+              3,
+              30,
+              1
+            ],
+            [
+              2,
+              3,
+              26
+            ]
+          ]
+        },
+        "H5": {
+          "agreement": {
+            "ci_lower": 0.38,
+            "ci_upper": 0.58,
+            "denominator": 100,
+            "numerator": 48,
+            "point": 0.48
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.61,
+            "ci_upper": 0.79,
+            "denominator": 100,
+            "numerator": 70,
+            "point": 0.7
+          },
+          "reference_not_applicable_rate": 0.34,
+          "transition_table": [
+            [
+              1,
+              0,
+              31
+            ],
+            [
+              0,
+              21,
+              13
+            ],
+            [
+              7,
+              1,
+              26
+            ]
+          ]
+        },
+        "S1": {
+          "agreement": {
+            "ci_lower": 0.65,
+            "ci_upper": 0.82,
+            "denominator": 100,
+            "numerator": 74,
+            "point": 0.74
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.05,
+            "ci_upper": 0.17,
+            "denominator": 100,
+            "numerator": 11,
+            "point": 0.11
+          },
+          "reference_not_applicable_rate": 0.34,
+          "transition_table": [
+            [
+              34,
+              0,
+              0
+            ],
+            [
+              3,
+              29,
+              0
+            ],
+            [
+              21,
+              2,
+              11
+            ]
+          ]
+        },
+        "S2": {
+          "agreement": {
+            "ci_lower": 0.64,
+            "ci_upper": 0.82,
+            "denominator": 100,
+            "numerator": 73,
+            "point": 0.73
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.06,
+            "ci_upper": 0.19,
+            "denominator": 100,
+            "numerator": 12,
+            "point": 0.12
+          },
+          "reference_not_applicable_rate": 0.34,
+          "transition_table": [
+            [
+              32,
+              1,
+              0
+            ],
+            [
+              2,
+              30,
+              1
+            ],
+            [
+              22,
+              1,
+              11
+            ]
+          ]
+        },
+        "S3": {
+          "agreement": {
+            "ci_lower": 0.65,
+            "ci_upper": 0.82,
+            "denominator": 100,
+            "numerator": 74,
+            "point": 0.74
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.07,
+            "ci_upper": 0.2,
+            "denominator": 100,
+            "numerator": 13,
+            "point": 0.13
+          },
+          "reference_not_applicable_rate": 0.34,
+          "transition_table": [
+            [
+              33,
+              0,
+              0
+            ],
+            [
+              1,
+              30,
+              2
+            ],
+            [
+              22,
+              1,
+              11
+            ]
+          ]
+        },
+        "T1": {
+          "agreement": {
+            "ci_lower": 0.45,
+            "ci_upper": 0.65,
+            "denominator": 100,
+            "numerator": 55,
+            "point": 0.55
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.0,
+            "ci_upper": 0.0,
+            "denominator": 100,
+            "numerator": 0,
+            "point": 0.0
+          },
+          "reference_not_applicable_rate": 0.31,
+          "transition_table": [
+            [
+              22,
+              12,
+              0
+            ],
+            [
+              2,
+              33,
+              0
+            ],
+            [
+              2,
+              29,
+              0
+            ]
+          ]
+        },
+        "T2": {
+          "agreement": {
+            "ci_lower": 0.45,
+            "ci_upper": 0.65,
+            "denominator": 100,
+            "numerator": 55,
+            "point": 0.55
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.28,
+            "ci_upper": 0.47,
+            "denominator": 100,
+            "numerator": 37,
+            "point": 0.37
+          },
+          "reference_not_applicable_rate": 0.34,
+          "transition_table": [
+            [
+              24,
+              2,
+              7
+            ],
+            [
+              4,
+              15,
+              14
+            ],
+            [
+              0,
+              18,
+              16
+            ]
+          ]
+        }
+      },
+      "strict_parsed_calls": 200,
+      "total_calls": 200,
+      "total_cells": 1000
+    },
+    "latin_square_order": {
+      "cell_micro_agreement": {
+        "ci_lower": 0.7250755287009063,
+        "ci_upper": 0.8014303023404155,
+        "denominator": 990,
+        "numerator": 756,
+        "point": 0.7636363636363637
+      },
+      "missing_cells_by_policy": {
+        "H1": 0,
+        "H2": 0,
+        "H3": 0,
+        "H4": 0,
+        "H5": 0,
+        "S1": 0,
+        "S2": 0,
+        "S3": 10,
+        "T1": 0,
+        "T2": 0
+      },
+      "parsed_cells": 990,
+      "partially_recovered_calls": 10,
+      "per_policy": {
+        "H1": {
+          "agreement": {
+            "ci_lower": 0.7,
+            "ci_upper": 0.86,
+            "denominator": 100,
+            "numerator": 78,
+            "point": 0.78
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.13,
+            "ci_upper": 0.29,
+            "denominator": 100,
+            "numerator": 21,
+            "point": 0.21
+          },
+          "reference_not_applicable_rate": 0.37,
+          "transition_table": [
+            [
+              33,
+              0,
+              1
+            ],
+            [
+              2,
+              26,
+              1
+            ],
+            [
+              12,
+              6,
+              19
+            ]
+          ]
+        },
+        "H2": {
+          "agreement": {
+            "ci_lower": 0.68,
+            "ci_upper": 0.84,
+            "denominator": 100,
+            "numerator": 76,
+            "point": 0.76
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.05,
+            "ci_upper": 0.17,
+            "denominator": 100,
+            "numerator": 11,
+            "point": 0.11
+          },
+          "reference_not_applicable_rate": 0.26,
+          "transition_table": [
+            [
+              38,
+              1,
+              1
+            ],
+            [
+              2,
+              30,
+              2
+            ],
+            [
+              15,
+              3,
+              8
+            ]
+          ]
+        },
+        "H3": {
+          "agreement": {
+            "ci_lower": 0.67,
+            "ci_upper": 0.84,
+            "denominator": 100,
+            "numerator": 76,
+            "point": 0.76
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.2,
+            "ci_upper": 0.38,
+            "denominator": 100,
+            "numerator": 29,
+            "point": 0.29
+          },
+          "reference_not_applicable_rate": 0.34,
+          "transition_table": [
+            [
+              25,
+              1,
+              7
+            ],
+            [
+              2,
+              30,
+              1
+            ],
+            [
+              12,
+              1,
+              21
+            ]
+          ]
+        },
+        "H4": {
+          "agreement": {
+            "ci_lower": 0.64,
+            "ci_upper": 0.81,
+            "denominator": 100,
+            "numerator": 73,
+            "point": 0.73
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.05,
+            "ci_upper": 0.16,
+            "denominator": 100,
+            "numerator": 10,
+            "point": 0.1
+          },
+          "reference_not_applicable_rate": 0.31,
+          "transition_table": [
+            [
+              35,
+              0,
+              0
+            ],
+            [
+              6,
+              28,
+              0
+            ],
+            [
+              8,
+              13,
+              10
+            ]
+          ]
+        },
+        "H5": {
+          "agreement": {
+            "ci_lower": 0.65,
+            "ci_upper": 0.82,
+            "denominator": 100,
+            "numerator": 74,
+            "point": 0.74
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.25,
+            "ci_upper": 0.43,
+            "denominator": 100,
+            "numerator": 34,
+            "point": 0.34
+          },
+          "reference_not_applicable_rate": 0.34,
+          "transition_table": [
+            [
+              25,
+              0,
+              7
+            ],
+            [
+              0,
+              28,
+              6
+            ],
+            [
+              10,
+              3,
+              21
+            ]
+          ]
+        },
+        "S1": {
+          "agreement": {
+            "ci_lower": 0.71,
+            "ci_upper": 0.87,
+            "denominator": 100,
+            "numerator": 79,
+            "point": 0.79
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.38,
+            "ci_upper": 0.58,
+            "denominator": 100,
+            "numerator": 48,
+            "point": 0.48
+          },
+          "reference_not_applicable_rate": 0.34,
+          "transition_table": [
+            [
+              24,
+              0,
+              10
+            ],
+            [
+              5,
+              22,
+              5
+            ],
+            [
+              1,
+              0,
+              33
+            ]
+          ]
+        },
+        "S2": {
+          "agreement": {
+            "ci_lower": 0.72,
+            "ci_upper": 0.87,
+            "denominator": 100,
+            "numerator": 80,
+            "point": 0.8
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.39,
+            "ci_upper": 0.59,
+            "denominator": 100,
+            "numerator": 49,
+            "point": 0.49
+          },
+          "reference_not_applicable_rate": 0.34,
+          "transition_table": [
+            [
+              23,
+              0,
+              10
+            ],
+            [
+              3,
+              24,
+              6
+            ],
+            [
+              1,
+              0,
+              33
+            ]
+          ]
+        },
+        "S3": {
+          "agreement": {
+            "ci_lower": 0.8064122738001573,
+            "ci_upper": 0.9425287356321839,
+            "denominator": 90,
+            "numerator": 79,
+            "point": 0.8777777777777778
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.3333333333333333,
+            "ci_upper": 0.5340909090909091,
+            "denominator": 90,
+            "numerator": 39,
+            "point": 0.43333333333333335
+          },
+          "reference_not_applicable_rate": 0.34,
+          "transition_table": [
+            [
+              21,
+              0,
+              8
+            ],
+            [
+              0,
+              29,
+              2
+            ],
+            [
+              1,
+              0,
+              29
+            ]
+          ]
+        },
+        "T1": {
+          "agreement": {
+            "ci_lower": 0.5897500000000002,
+            "ci_upper": 0.77,
+            "denominator": 100,
+            "numerator": 68,
+            "point": 0.68
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.04,
+            "ci_upper": 0.15,
+            "denominator": 100,
+            "numerator": 9,
+            "point": 0.09
+          },
+          "reference_not_applicable_rate": 0.31,
+          "transition_table": [
+            [
+              29,
+              4,
+              1
+            ],
+            [
+              4,
+              31,
+              0
+            ],
+            [
+              5,
+              18,
+              8
+            ]
+          ]
+        },
+        "T2": {
+          "agreement": {
+            "ci_lower": 0.64,
+            "ci_upper": 0.81,
+            "denominator": 100,
+            "numerator": 73,
+            "point": 0.73
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.21,
+            "ci_upper": 0.39,
+            "denominator": 100,
+            "numerator": 30,
+            "point": 0.3
+          },
+          "reference_not_applicable_rate": 0.34,
+          "transition_table": [
+            [
+              29,
+              2,
+              2
+            ],
+            [
+              3,
+              23,
+              7
+            ],
+            [
+              5,
+              8,
+              21
+            ]
+          ]
+        }
+      },
+      "strict_parsed_calls": 90,
+      "total_calls": 100,
+      "total_cells": 1000
+    },
+    "single_policy": {
+      "cell_micro_agreement": {
+        "ci_lower": 0.54,
+        "ci_upper": 0.627,
+        "denominator": 1000,
+        "numerator": 584,
+        "point": 0.584
+      },
+      "missing_cells_by_policy": {
+        "H1": 0,
+        "H2": 0,
+        "H3": 0,
+        "H4": 0,
+        "H5": 0,
+        "S1": 0,
+        "S2": 0,
+        "S3": 0,
+        "T1": 0,
+        "T2": 0
+      },
+      "parsed_cells": 1000,
+      "partially_recovered_calls": 0,
+      "per_policy": {
+        "H1": {
+          "agreement": {
+            "ci_lower": 0.5,
+            "ci_upper": 0.7,
+            "denominator": 100,
+            "numerator": 60,
+            "point": 0.6
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.45,
+            "ci_upper": 0.65,
+            "denominator": 100,
+            "numerator": 55,
+            "point": 0.55
+          },
+          "reference_not_applicable_rate": 0.37,
+          "transition_table": [
+            [
+              11,
+              0,
+              23
+            ],
+            [
+              2,
+              22,
+              5
+            ],
+            [
+              2,
+              8,
+              27
+            ]
+          ]
+        },
+        "H2": {
+          "agreement": {
+            "ci_lower": 0.51,
+            "ci_upper": 0.7,
+            "denominator": 100,
+            "numerator": 60,
+            "point": 0.6
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.07,
+            "ci_upper": 0.2,
+            "denominator": 100,
+            "numerator": 13,
+            "point": 0.13
+          },
+          "reference_not_applicable_rate": 0.26,
+          "transition_table": [
+            [
+              20,
+              13,
+              7
+            ],
+            [
+              0,
+              34,
+              0
+            ],
+            [
+              3,
+              17,
+              6
+            ]
+          ]
+        },
+        "H3": {
+          "agreement": {
+            "ci_lower": 0.54,
+            "ci_upper": 0.73,
+            "denominator": 100,
+            "numerator": 64,
+            "point": 0.64
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.37,
+            "ci_upper": 0.57,
+            "denominator": 100,
+            "numerator": 47,
+            "point": 0.47
+          },
+          "reference_not_applicable_rate": 0.34,
+          "transition_table": [
+            [
+              8,
+              1,
+              24
+            ],
+            [
+              0,
+              33,
+              0
+            ],
+            [
+              0,
+              11,
+              23
+            ]
+          ]
+        },
+        "H4": {
+          "agreement": {
+            "ci_lower": 0.46,
+            "ci_upper": 0.66,
+            "denominator": 100,
+            "numerator": 56,
+            "point": 0.56
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.08,
+            "ci_upper": 0.22,
+            "denominator": 100,
+            "numerator": 15,
+            "point": 0.15
+          },
+          "reference_not_applicable_rate": 0.31,
+          "transition_table": [
+            [
+              26,
+              7,
+              2
+            ],
+            [
+              1,
+              25,
+              8
+            ],
+            [
+              0,
+              26,
+              5
+            ]
+          ]
+        },
+        "H5": {
+          "agreement": {
+            "ci_lower": 0.46,
+            "ci_upper": 0.66,
+            "denominator": 100,
+            "numerator": 56,
+            "point": 0.56
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.53,
+            "ci_upper": 0.71,
+            "denominator": 100,
+            "numerator": 62,
+            "point": 0.62
+          },
+          "reference_not_applicable_rate": 0.34,
+          "transition_table": [
+            [
+              0,
+              0,
+              32
+            ],
+            [
+              0,
+              30,
+              4
+            ],
+            [
+              0,
+              8,
+              26
+            ]
+          ]
+        },
+        "S1": {
+          "agreement": {
+            "ci_lower": 0.48,
+            "ci_upper": 0.68,
+            "denominator": 100,
+            "numerator": 58,
+            "point": 0.58
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.0,
+            "ci_upper": 0.07,
+            "denominator": 100,
+            "numerator": 3,
+            "point": 0.03
+          },
+          "reference_not_applicable_rate": 0.34,
+          "transition_table": [
+            [
+              27,
+              7,
+              0
+            ],
+            [
+              4,
+              28,
+              0
+            ],
+            [
+              4,
+              27,
+              3
+            ]
+          ]
+        },
+        "S2": {
+          "agreement": {
+            "ci_lower": 0.51,
+            "ci_upper": 0.7,
+            "denominator": 100,
+            "numerator": 61,
+            "point": 0.61
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.0,
+            "ci_upper": 0.05,
+            "denominator": 100,
+            "numerator": 2,
+            "point": 0.02
+          },
+          "reference_not_applicable_rate": 0.34,
+          "transition_table": [
+            [
+              26,
+              7,
+              0
+            ],
+            [
+              0,
+              33,
+              0
+            ],
+            [
+              4,
+              28,
+              2
+            ]
+          ]
+        },
+        "S3": {
+          "agreement": {
+            "ci_lower": 0.45,
+            "ci_upper": 0.65,
+            "denominator": 100,
+            "numerator": 55,
+            "point": 0.55
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.0,
+            "ci_upper": 0.03,
+            "denominator": 100,
+            "numerator": 1,
+            "point": 0.01
+          },
+          "reference_not_applicable_rate": 0.34,
+          "transition_table": [
+            [
+              24,
+              9,
+              0
+            ],
+            [
+              3,
+              30,
+              0
+            ],
+            [
+              3,
+              30,
+              1
+            ]
+          ]
+        },
+        "T1": {
+          "agreement": {
+            "ci_lower": 0.46,
+            "ci_upper": 0.66,
+            "denominator": 100,
+            "numerator": 56,
+            "point": 0.56
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.0,
+            "ci_upper": 0.0,
+            "denominator": 100,
+            "numerator": 0,
+            "point": 0.0
+          },
+          "reference_not_applicable_rate": 0.31,
+          "transition_table": [
+            [
+              23,
+              11,
+              0
+            ],
+            [
+              2,
+              33,
+              0
+            ],
+            [
+              3,
+              28,
+              0
+            ]
+          ]
+        },
+        "T2": {
+          "agreement": {
+            "ci_lower": 0.48975000000000024,
+            "ci_upper": 0.68,
+            "denominator": 100,
+            "numerator": 58,
+            "point": 0.58
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.01,
+            "ci_upper": 0.1,
+            "denominator": 100,
+            "numerator": 5,
+            "point": 0.05
+          },
+          "reference_not_applicable_rate": 0.34,
+          "transition_table": [
+            [
+              22,
+              11,
+              0
+            ],
+            [
+              2,
+              31,
+              0
+            ],
+            [
+              0,
+              29,
+              5
+            ]
+          ]
+        }
+      },
+      "strict_parsed_calls": 1000,
+      "total_calls": 1000,
+      "total_cells": 1000
+    },
+    "ten_policy_joint": {
+      "cell_micro_agreement": {
+        "ci_lower": 0.871,
+        "ci_upper": 0.924,
+        "denominator": 1000,
+        "numerator": 899,
+        "point": 0.899
+      },
+      "missing_cells_by_policy": {
+        "H1": 0,
+        "H2": 0,
+        "H3": 0,
+        "H4": 0,
+        "H5": 0,
+        "S1": 0,
+        "S2": 0,
+        "S3": 0,
+        "T1": 0,
+        "T2": 0
+      },
+      "parsed_cells": 1000,
+      "partially_recovered_calls": 0,
+      "per_policy": {
+        "H1": {
+          "agreement": {
+            "ci_lower": 0.89,
+            "ci_upper": 0.98,
+            "denominator": 100,
+            "numerator": 94,
+            "point": 0.94
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.24,
+            "ci_upper": 0.42,
+            "denominator": 100,
+            "numerator": 33,
+            "point": 0.33
+          },
+          "reference_not_applicable_rate": 0.37,
+          "transition_table": [
+            [
+              34,
+              0,
+              0
+            ],
+            [
+              0,
+              28,
+              1
+            ],
+            [
+              4,
+              1,
+              32
+            ]
+          ]
+        },
+        "H2": {
+          "agreement": {
+            "ci_lower": 0.86,
+            "ci_upper": 0.97,
+            "denominator": 100,
+            "numerator": 92,
+            "point": 0.92
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.12,
+            "ci_upper": 0.28,
+            "denominator": 100,
+            "numerator": 20,
+            "point": 0.2
+          },
+          "reference_not_applicable_rate": 0.26,
+          "transition_table": [
+            [
+              40,
+              0,
+              0
+            ],
+            [
+              2,
+              32,
+              0
+            ],
+            [
+              6,
+              0,
+              20
+            ]
+          ]
+        },
+        "H3": {
+          "agreement": {
+            "ci_lower": 0.89,
+            "ci_upper": 0.98,
+            "denominator": 100,
+            "numerator": 94,
+            "point": 0.94
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.23,
+            "ci_upper": 0.41,
+            "denominator": 100,
+            "numerator": 32,
+            "point": 0.32
+          },
+          "reference_not_applicable_rate": 0.34,
+          "transition_table": [
+            [
+              31,
+              0,
+              2
+            ],
+            [
+              0,
+              33,
+              0
+            ],
+            [
+              3,
+              1,
+              30
+            ]
+          ]
+        },
+        "H4": {
+          "agreement": {
+            "ci_lower": 0.79,
+            "ci_upper": 0.92,
+            "denominator": 100,
+            "numerator": 86,
+            "point": 0.86
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.13,
+            "ci_upper": 0.28,
+            "denominator": 100,
+            "numerator": 20,
+            "point": 0.2
+          },
+          "reference_not_applicable_rate": 0.31,
+          "transition_table": [
+            [
+              35,
+              0,
+              0
+            ],
+            [
+              3,
+              31,
+              0
+            ],
+            [
+              8,
+              3,
+              20
+            ]
+          ]
+        },
+        "H5": {
+          "agreement": {
+            "ci_lower": 0.71,
+            "ci_upper": 0.87,
+            "denominator": 100,
+            "numerator": 79,
+            "point": 0.79
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.37,
+            "ci_upper": 0.57,
+            "denominator": 100,
+            "numerator": 47,
+            "point": 0.47
+          },
+          "reference_not_applicable_rate": 0.34,
+          "transition_table": [
+            [
+              23,
+              0,
+              9
+            ],
+            [
+              0,
+              26,
+              8
+            ],
+            [
+              3,
+              1,
+              30
+            ]
+          ]
+        },
+        "S1": {
+          "agreement": {
+            "ci_lower": 0.85,
+            "ci_upper": 0.96,
+            "denominator": 100,
+            "numerator": 91,
+            "point": 0.91
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.29,
+            "ci_upper": 0.48,
+            "denominator": 100,
+            "numerator": 38,
+            "point": 0.38
+          },
+          "reference_not_applicable_rate": 0.34,
+          "transition_table": [
+            [
+              33,
+              0,
+              1
+            ],
+            [
+              5,
+              24,
+              3
+            ],
+            [
+              0,
+              0,
+              34
+            ]
+          ]
+        },
+        "S2": {
+          "agreement": {
+            "ci_lower": 0.88,
+            "ci_upper": 0.98,
+            "denominator": 100,
+            "numerator": 93,
+            "point": 0.93
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.27,
+            "ci_upper": 0.46,
+            "denominator": 100,
+            "numerator": 36,
+            "point": 0.36
+          },
+          "reference_not_applicable_rate": 0.34,
+          "transition_table": [
+            [
+              32,
+              0,
+              1
+            ],
+            [
+              3,
+              28,
+              2
+            ],
+            [
+              1,
+              0,
+              33
+            ]
+          ]
+        },
+        "S3": {
+          "agreement": {
+            "ci_lower": 0.89,
+            "ci_upper": 0.98,
+            "denominator": 100,
+            "numerator": 94,
+            "point": 0.94
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.26,
+            "ci_upper": 0.45,
+            "denominator": 100,
+            "numerator": 35,
+            "point": 0.35
+          },
+          "reference_not_applicable_rate": 0.34,
+          "transition_table": [
+            [
+              33,
+              0,
+              0
+            ],
+            [
+              3,
+              28,
+              2
+            ],
+            [
+              1,
+              0,
+              33
+            ]
+          ]
+        },
+        "T1": {
+          "agreement": {
+            "ci_lower": 0.78,
+            "ci_upper": 0.92,
+            "denominator": 100,
+            "numerator": 85,
+            "point": 0.85
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.11,
+            "ci_upper": 0.26,
+            "denominator": 100,
+            "numerator": 18,
+            "point": 0.18
+          },
+          "reference_not_applicable_rate": 0.31,
+          "transition_table": [
+            [
+              33,
+              1,
+              0
+            ],
+            [
+              1,
+              34,
+              0
+            ],
+            [
+              5,
+              8,
+              18
+            ]
+          ]
+        },
+        "T2": {
+          "agreement": {
+            "ci_lower": 0.85,
+            "ci_upper": 0.96,
+            "denominator": 100,
+            "numerator": 91,
+            "point": 0.91
+          },
+          "not_applicable_rate": {
+            "ci_lower": 0.2,
+            "ci_upper": 0.38,
+            "denominator": 100,
+            "numerator": 29,
+            "point": 0.29
+          },
+          "reference_not_applicable_rate": 0.34,
+          "transition_table": [
+            [
+              33,
+              0,
+              0
+            ],
+            [
+              2,
+              30,
+              1
+            ],
+            [
+              4,
+              2,
+              28
+            ]
+          ]
+        }
+      },
+      "strict_parsed_calls": 100,
+      "total_calls": 100,
+      "total_cells": 1000
+    }
+  },
+  "d3_s2_s3": {
+    "diag100_balanced_view": {
+      "by_source": {
+        "pku_saferlhf": {
+          "chi2": 118.0,
+          "column_policy": "S3",
+          "cramers_v": 1.0,
+          "degrees_of_freedom": 4,
+          "n": 59,
+          "p_value": 1.4281598452166385e-24,
+          "row_policy": "S2",
+          "state_order": [
+            "satisfied",
+            "violated",
+            "not_applicable"
+          ],
+          "table": [
+            [
+              20,
+              0,
+              0
+            ],
+            [
+              0,
+              5,
+              0
+            ],
+            [
+              0,
+              0,
+              34
+            ]
+          ]
+        },
+        "soft_style": {
+          "column_policy": "S3",
+          "n": 12,
+          "row_policy": "S2",
+          "state_order": [
+            "satisfied",
+            "violated",
+            "not_applicable"
+          ],
+          "table": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              12,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        "ultrafeedback": {
+          "chi2": 21.47718657544379,
+          "column_policy": "S3",
+          "cramers_v": 0.8605769230769231,
+          "degrees_of_freedom": 1,
+          "n": 29,
+          "p_value": 3.5806324363284646e-06,
+          "row_policy": "S2",
+          "state_order": [
+            "satisfied",
+            "violated",
+            "not_applicable"
+          ],
+          "table": [
+            [
+              12,
+              1,
+              0
+            ],
+            [
+              1,
+              15,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ]
+        }
+      },
+      "generator_audit": {
+        "chosen_response_pole_counts": {
+          "A": 10,
+          "B": 2
+        },
+        "explicit_s2_and_s3_dual_axis_fraction": 0.0,
+        "explicit_s2_and_s3_dual_axis_items": 0,
+        "explicitly_manipulated_axes_per_item": 1,
+        "potential_confound_definition": "registered axis=structure: structured/unstructured response templates also change layout and some length cues",
+        "potential_s2_s3_template_confound_fraction": 0.08333333333333333,
+        "potential_s2_s3_template_confound_items": 1,
+        "registered_axis_counts": {
+          "formality": 11,
+          "structure": 1
+        },
+        "soft_style_items": 12
+      },
+      "overall": {
+        "chi2": 188.2460973370064,
+        "column_policy": "S3",
+        "cramers_v": 0.9701703390049771,
+        "degrees_of_freedom": 4,
+        "n": 100,
+        "p_value": 1.2623073303476573e-39,
+        "row_policy": "S2",
+        "state_order": [
+          "satisfied",
+          "violated",
+          "not_applicable"
+        ],
+        "table": [
+          [
+            32,
+            1,
+            0
+          ],
+          [
+            1,
+            32,
+            0
+          ],
+          [
+            0,
+            0,
+            34
+          ]
+        ]
+      },
+      "soft_style_by_registered_axis": {
+        "formality": {
+          "column_policy": "S3",
+          "n": 11,
+          "row_policy": "S2",
+          "state_order": [
+            "satisfied",
+            "violated",
+            "not_applicable"
+          ],
+          "table": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              11,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        "structure": {
+          "column_policy": "S3",
+          "n": 1,
+          "row_policy": "S2",
+          "state_order": [
+            "satisfied",
+            "violated",
+            "not_applicable"
+          ],
+          "table": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ]
+        }
+      }
+    },
+    "full_frozen_universe": {
+      "by_source": {
+        "pku_saferlhf": {
+          "chi2": 8669.429249002273,
+          "column_policy": "S3",
+          "cramers_v": 0.8274544554053715,
+          "degrees_of_freedom": 4,
+          "n": 6331,
+          "p_value": 0.0,
+          "row_policy": "S2",
+          "state_order": [
+            "satisfied",
+            "violated",
+            "not_applicable"
+          ],
+          "table": [
+            [
+              2242,
+              3,
+              16
+            ],
+            [
+              3,
+              8,
+              4
+            ],
+            [
+              7,
+              0,
+              4048
+            ]
+          ]
+        },
+        "soft_style": {
+          "chi2": 23.82636594387456,
+          "column_policy": "S3",
+          "cramers_v": 0.09624837851611204,
+          "degrees_of_freedom": 4,
+          "n": 1286,
+          "p_value": 8.65373671978069e-05,
+          "row_policy": "S2",
+          "state_order": [
+            "satisfied",
+            "violated",
+            "not_applicable"
+          ],
+          "table": [
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              8,
+              959,
+              35
+            ],
+            [
+              0,
+              252,
+              29
+            ]
+          ]
+        },
+        "ultrafeedback": {
+          "chi2": 4179.032411605358,
+          "column_policy": "S3",
+          "cramers_v": 0.8102229722628791,
+          "degrees_of_freedom": 4,
+          "n": 3183,
+          "p_value": 0.0,
+          "row_policy": "S2",
+          "state_order": [
+            "satisfied",
+            "violated",
+            "not_applicable"
+          ],
+          "table": [
+            [
+              2219,
+              76,
+              6
+            ],
+            [
+              51,
+              153,
+              15
+            ],
+            [
+              14,
+              17,
+              632
+            ]
+          ]
+        }
+      },
+      "generator_audit": {
+        "chosen_response_pole_counts": {
+          "A": 645,
+          "B": 641
+        },
+        "explicit_s2_and_s3_dual_axis_fraction": 0.0,
+        "explicit_s2_and_s3_dual_axis_items": 0,
+        "explicitly_manipulated_axes_per_item": 1,
+        "potential_confound_definition": "registered axis=structure: structured/unstructured response templates also change layout and some length cues",
+        "potential_s2_s3_template_confound_fraction": 0.33670295489891133,
+        "potential_s2_s3_template_confound_items": 433,
+        "registered_axis_counts": {
+          "formality": 443,
+          "structure": 433,
+          "verbosity": 410
+        },
+        "soft_style_items": 1286
+      },
+      "overall": {
+        "chi2": 17154.56394256125,
+        "column_policy": "S3",
+        "cramers_v": 0.8911749408048771,
+        "degrees_of_freedom": 4,
+        "n": 10800,
+        "p_value": 0.0,
+        "row_policy": "S2",
+        "state_order": [
+          "satisfied",
+          "violated",
+          "not_applicable"
+        ],
+        "table": [
+          [
+            4461,
+            82,
+            22
+          ],
+          [
+            62,
+            1120,
+            54
+          ],
+          [
+            21,
+            269,
+            4709
+          ]
+        ]
+      },
+      "soft_style_by_registered_axis": {
+        "formality": {
+          "chi2": 68.67336325163255,
+          "column_policy": "S3",
+          "cramers_v": 0.3937243689078144,
+          "degrees_of_freedom": 1,
+          "n": 443,
+          "p_value": 1.1619988351913677e-16,
+          "row_policy": "S2",
+          "state_order": [
+            "satisfied",
+            "violated",
+            "not_applicable"
+          ],
+          "table": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              348,
+              3
+            ],
+            [
+              0,
+              71,
+              21
+            ]
+          ]
+        },
+        "structure": {
+          "chi2": 10.522452536570185,
+          "column_policy": "S3",
+          "cramers_v": 0.1558886656110121,
+          "degrees_of_freedom": 1,
+          "n": 433,
+          "p_value": 0.001179328681209523,
+          "row_policy": "S2",
+          "state_order": [
+            "satisfied",
+            "violated",
+            "not_applicable"
+          ],
+          "table": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              244,
+              0
+            ],
+            [
+              0,
+              181,
+              8
+            ]
+          ]
+        },
+        "verbosity": {
+          "chi2": 0.3267149213095159,
+          "column_policy": "S3",
+          "cramers_v": 0.028228809073896948,
+          "degrees_of_freedom": 2,
+          "n": 410,
+          "p_value": 0.8492875472652183,
+          "row_policy": "S2",
+          "state_order": [
+            "satisfied",
+            "violated",
+            "not_applicable"
+          ],
+          "table": [
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              8,
+              367,
+              32
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ]
+        }
+      }
+    }
+  },
+  "diagnostic_only": true,
+  "gate_verdict": null,
+  "latin_square_position_agreement": {
+    "1": {
+      "ci_lower": 0.5795454545454546,
+      "ci_upper": 0.7701149425287356,
+      "denominator": 90,
+      "numerator": 61,
+      "point": 0.6777777777777778
+    },
+    "10": {
+      "ci_lower": 0.61,
+      "ci_upper": 0.79,
+      "denominator": 100,
+      "numerator": 70,
+      "point": 0.7
+    },
+    "2": {
+      "ci_lower": 0.61,
+      "ci_upper": 0.79,
+      "denominator": 100,
+      "numerator": 70,
+      "point": 0.7
+    },
+    "3": {
+      "ci_lower": 0.71,
+      "ci_upper": 0.87,
+      "denominator": 100,
+      "numerator": 79,
+      "point": 0.79
+    },
+    "4": {
+      "ci_lower": 0.7,
+      "ci_upper": 0.86,
+      "denominator": 100,
+      "numerator": 78,
+      "point": 0.78
+    },
+    "5": {
+      "ci_lower": 0.81,
+      "ci_upper": 0.94,
+      "denominator": 100,
+      "numerator": 88,
+      "point": 0.88
+    },
+    "6": {
+      "ci_lower": 0.74,
+      "ci_upper": 0.89,
+      "denominator": 100,
+      "numerator": 82,
+      "point": 0.82
+    },
+    "7": {
+      "ci_lower": 0.7,
+      "ci_upper": 0.86,
+      "denominator": 100,
+      "numerator": 78,
+      "point": 0.78
+    },
+    "8": {
+      "ci_lower": 0.63,
+      "ci_upper": 0.81,
+      "denominator": 100,
+      "numerator": 72,
+      "point": 0.72
+    },
+    "9": {
+      "ci_lower": 0.69,
+      "ci_upper": 0.86,
+      "denominator": 100,
+      "numerator": 78,
+      "point": 0.78
+    }
+  },
+  "schema_version": "pccd.day3.diag_metrics.v1"
+}

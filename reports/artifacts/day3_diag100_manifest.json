@@ -1,0 +1,716 @@
+{
+  "artifacts": {
+    "pool": {
+      "path": "/root/autodl-tmp/pccd/outputs/pool/diag100.jsonl",
+      "sha256": "4b6460c5700eb550068142fe33c75df3db7c5d34372e4c95d2cbbf008e4520fb"
+    },
+    "reference_labels": {
+      "path": "/root/autodl-tmp/pccd/outputs/labels/diag100_reference.jsonl",
+      "sha256": "d98a92d88be4b6c380893678c1280378863efdad705bc0f457bb128422280e52"
+    }
+  },
+  "counts": {
+    "cross_policy_items": 36,
+    "frozen_split_overlap": {
+      "audit": 4,
+      "calib": 9,
+      "conflict": 4,
+      "test": 9,
+      "train": 74
+    },
+    "items": 100,
+    "minimum_observed_policy_state_count": 26,
+    "per_policy": {
+      "H1": {
+        "not_applicable": 37,
+        "satisfied": 34,
+        "violated": 29
+      },
+      "H2": {
+        "not_applicable": 26,
+        "satisfied": 40,
+        "violated": 34
+      },
+      "H3": {
+        "not_applicable": 34,
+        "satisfied": 33,
+        "violated": 33
+      },
+      "H4": {
+        "not_applicable": 31,
+        "satisfied": 35,
+        "violated": 34
+      },
+      "H5": {
+        "not_applicable": 34,
+        "satisfied": 32,
+        "violated": 34
+      },
+      "S1": {
+        "not_applicable": 34,
+        "satisfied": 34,
+        "violated": 32
+      },
+      "S2": {
+        "not_applicable": 34,
+        "satisfied": 33,
+        "violated": 33
+      },
+      "S3": {
+        "not_applicable": 34,
+        "satisfied": 33,
+        "violated": 33
+      },
+      "T1": {
+        "not_applicable": 31,
+        "satisfied": 34,
+        "violated": 35
+      },
+      "T2": {
+        "not_applicable": 34,
+        "satisfied": 33,
+        "violated": 33
+      }
+    },
+    "sources": {
+      "pku_saferlhf": 59,
+      "soft_style": 12,
+      "ultrafeedback": 29
+    }
+  },
+  "git_revision": "776261269d5f279bc0372ee8f1b4e262c4802131",
+  "purpose": "Diagnostic-only balanced view; never replaces a frozen split and is never used for training or gate scoring.",
+  "schema_version": "pccd.day3.diag100_manifest.v1",
+  "selected_items": [
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "pku__0132cab24bdbdabb",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": true,
+      "frozen_split": "train",
+      "id": "pku__0449ad0904fb6ee8",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "pku__0db6b0cd29e5c79e",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "pku__1e5c3ba70f7ee221",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "conflict",
+      "id": "pku__23aed30f76280263",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": true,
+      "frozen_split": "train",
+      "id": "pku__25212790ecd05d90",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": true,
+      "frozen_split": "audit",
+      "id": "pku__2854b73a102538a7",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": true,
+      "frozen_split": "calib",
+      "id": "pku__2920db2da9abb901",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "calib",
+      "id": "pku__293aaf136c48d6ad",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "pku__2b18da65893c8843",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": true,
+      "frozen_split": "train",
+      "id": "pku__2eaed5e0c3e11ce3",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "pku__313b05b0e5d3ff39",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "pku__3794d2eb6b4743fb",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": true,
+      "frozen_split": "train",
+      "id": "pku__394585087f75a523",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": true,
+      "frozen_split": "calib",
+      "id": "pku__3c84814f15a6ed6c",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "test",
+      "id": "pku__3d90b1415ba67d63",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "pku__4702ba6b37fcc949",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "pku__4781b60943bfaf1c",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "pku__4a5d8e6e2fa16997",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "pku__50413c3c53f7eb02",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "pku__556698c05f4f9b6a",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "pku__55f55f8cd78f302f",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "pku__592a523a6f61f7ad",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "pku__5b7bc3959ddb553f",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "pku__5c6fcb96d9ef848c",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "pku__6212d28008fd8b63",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": true,
+      "frozen_split": "train",
+      "id": "pku__632c394a28558e21",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": true,
+      "frozen_split": "train",
+      "id": "pku__6dad523927cfd70b",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": true,
+      "frozen_split": "train",
+      "id": "pku__6ea3ccd71421dc4d",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": true,
+      "frozen_split": "train",
+      "id": "pku__6eab9b40a179c399",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "calib",
+      "id": "pku__6ef8f2a548dd171a",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "pku__6fcc3d258539e756",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": true,
+      "frozen_split": "train",
+      "id": "pku__7cb38d53fbf83b68",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "pku__7d2096995c570ad6",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": true,
+      "frozen_split": "train",
+      "id": "pku__8c471ad4d7ae3f49",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": true,
+      "frozen_split": "train",
+      "id": "pku__8d963f352856d7b0",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": true,
+      "frozen_split": "train",
+      "id": "pku__920e00bc88c47671",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "conflict",
+      "id": "pku__9cb8660d20d40b93",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "pku__9e3f83c952fc56e6",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": true,
+      "frozen_split": "test",
+      "id": "pku__a398048f63b2384d",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": true,
+      "frozen_split": "train",
+      "id": "pku__a4d2b0c78914778f",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "pku__a689c2593681af92",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "test",
+      "id": "pku__b486f3c31156cc95",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "pku__bc5d59cd89be54bb",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "pku__ca2136ba55ce0c45",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "pku__ce9ecff089bdbf2c",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "calib",
+      "id": "pku__d081343e6a85c5bc",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "pku__d21e7e05750a8eed",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": true,
+      "frozen_split": "train",
+      "id": "pku__d358e4c8b8114377",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": true,
+      "frozen_split": "conflict",
+      "id": "pku__d6b51c2d48b96331",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "test",
+      "id": "pku__d8ae16e9b7142d93",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "pku__daece528a910caf7",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "calib",
+      "id": "pku__dcaba654ea68f5e9",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": true,
+      "frozen_split": "train",
+      "id": "pku__defa0a8e2184e304",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "calib",
+      "id": "pku__e3a10316f96244b7",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": true,
+      "frozen_split": "calib",
+      "id": "pku__e5997ff135dac350",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "pku__ee07c2f0fc73497a",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "pku__ef3c9334c4119eb5",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "test",
+      "id": "pku__f7aaf4ec1f0acf15",
+      "source": "pku_saferlhf"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "soft_0036f08f9a0486e7",
+      "source": "soft_style"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "soft_432055f50bf8d027",
+      "source": "soft_style"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "soft_4ab5578f5b117f87",
+      "source": "soft_style"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "soft_5f3eac7949b5dd94",
+      "source": "soft_style"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "soft_776ce52185d9d2fa",
+      "source": "soft_style"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "soft_7e8e0584fffbb575",
+      "source": "soft_style"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "soft_958d6740a732996d",
+      "source": "soft_style"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "soft_95f748f1537a7c40",
+      "source": "soft_style"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "soft_bab77b1afc19d915",
+      "source": "soft_style"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "soft_f347ca74abbe489b",
+      "source": "soft_style"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "soft_f53c1c696f04fe39",
+      "source": "soft_style"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "soft_fd6519d1b3378c1c",
+      "source": "soft_style"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "ultr_02da71907ff580ac",
+      "source": "ultrafeedback"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "ultr_1b5a3d7d00b4ea17",
+      "source": "ultrafeedback"
+    },
+    {
+      "cross_policy_conflict": true,
+      "frozen_split": "train",
+      "id": "ultr_1ccd785e7bbbe36b",
+      "source": "ultrafeedback"
+    },
+    {
+      "cross_policy_conflict": true,
+      "frozen_split": "audit",
+      "id": "ultr_2c21c4785fcb2cd7",
+      "source": "ultrafeedback"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "ultr_3b448e166a2697b4",
+      "source": "ultrafeedback"
+    },
+    {
+      "cross_policy_conflict": true,
+      "frozen_split": "test",
+      "id": "ultr_49f3fd8343024ad4",
+      "source": "ultrafeedback"
+    },
+    {
+      "cross_policy_conflict": true,
+      "frozen_split": "train",
+      "id": "ultr_506a26c5133ce6fd",
+      "source": "ultrafeedback"
+    },
+    {
+      "cross_policy_conflict": true,
+      "frozen_split": "train",
+      "id": "ultr_5438968c34a22cd8",
+      "source": "ultrafeedback"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "ultr_585b57b5f91ccc65",
+      "source": "ultrafeedback"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "ultr_5a16782abee0a755",
+      "source": "ultrafeedback"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "ultr_5a3db24387340f69",
+      "source": "ultrafeedback"
+    },
+    {
+      "cross_policy_conflict": true,
+      "frozen_split": "audit",
+      "id": "ultr_6a126d7a3a00466f",
+      "source": "ultrafeedback"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "ultr_6e1db117b2e924cf",
+      "source": "ultrafeedback"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "ultr_754a9e301e686343",
+      "source": "ultrafeedback"
+    },
+    {
+      "cross_policy_conflict": true,
+      "frozen_split": "train",
+      "id": "ultr_783c5b96e2256347",
+      "source": "ultrafeedback"
+    },
+    {
+      "cross_policy_conflict": true,
+      "frozen_split": "train",
+      "id": "ultr_85ed132a52734c1d",
+      "source": "ultrafeedback"
+    },
+    {
+      "cross_policy_conflict": true,
+      "frozen_split": "train",
+      "id": "ultr_a826965ac9d5ab01",
+      "source": "ultrafeedback"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "ultr_b3dcb95ac93c14a4",
+      "source": "ultrafeedback"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "ultr_b8c242b87013870d",
+      "source": "ultrafeedback"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "conflict",
+      "id": "ultr_c0453b36dd9d26ac",
+      "source": "ultrafeedback"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "calib",
+      "id": "ultr_d0919ecc656b9f57",
+      "source": "ultrafeedback"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "train",
+      "id": "ultr_d9ff57149ac07d1f",
+      "source": "ultrafeedback"
+    },
+    {
+      "cross_policy_conflict": true,
+      "frozen_split": "train",
+      "id": "ultr_e1ef87da2ce68ffa",
+      "source": "ultrafeedback"
+    },
+    {
+      "cross_policy_conflict": true,
+      "frozen_split": "train",
+      "id": "ultr_e350259713086ff2",
+      "source": "ultrafeedback"
+    },
+    {
+      "cross_policy_conflict": true,
+      "frozen_split": "train",
+      "id": "ultr_eade3b3f48dad7e4",
+      "source": "ultrafeedback"
+    },
+    {
+      "cross_policy_conflict": true,
+      "frozen_split": "test",
+      "id": "ultr_ebf2defae1de1730",
+      "source": "ultrafeedback"
+    },
+    {
+      "cross_policy_conflict": true,
+      "frozen_split": "test",
+      "id": "ultr_f69c77825ba5cc9a",
+      "source": "ultrafeedback"
+    },
+    {
+      "cross_policy_conflict": true,
+      "frozen_split": "audit",
+      "id": "ultr_fad1df5727cc60c3",
+      "source": "ultrafeedback"
+    },
+    {
+      "cross_policy_conflict": false,
+      "frozen_split": "test",
+      "id": "ultr_fe0383fc1c1fc0fb",
+      "source": "ultrafeedback"
+    }
+  ],
+  "selection_spec": {
+    "cross_policy_definition": "at least one satisfied and at least one violated policy on the same item",
+    "minimum_cross_policy_items": 20,
+    "minimum_per_policy_state": 20,
+    "n": 100,
+    "objective": "minimize total absolute deviation from 1/3 per state for each policy; stable SHA-256 ID tie breaker",
+    "seed": 20260715,
+    "solver": {
+      "frozen_split_quotas": {
+        "audit": 4,
+        "calib": 9,
+        "conflict": 4,
+        "test": 9,
+        "train": 74
+      },
+      "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+      "mip_gap": 5.065149155971285e-09,
+      "objective": 43.33333794092534,
+      "scipy_version": "1.18.0",
+      "source_quotas": {
+        "pku_saferlhf": 59,
+        "soft_style": 12,
+        "ultrafeedback": 29
+      },
+      "state_target_per_policy": 33.333333333333336,
+      "status": 0
+    },
+    "source_and_split_quota_rule": "largest-remainder proportional allocation",
+    "universe": "five frozen deduplicated splits with frozen teacher labels"
+  }
+}

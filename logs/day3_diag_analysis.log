@@ -1,0 +1,7 @@
+=== D-2 STRUCTURE ABLATION (diagnostic only; no gate verdict) ===
+single_policy         58.40% [54.00, 62.70] cells=1000
+five_policy_block     71.20% [67.30, 74.90] cells=1000
+ten_policy_joint      89.90% [87.10, 92.40] cells=1000
+latin_square_order    76.36% [72.51, 80.14] cells=990
+D-3 S2xS3: n=100 Cramer's V=0.9702
+wrote: /root/autodl-tmp/pccd/outputs/results/day3_diag_metrics.json

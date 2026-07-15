@@ -13,6 +13,17 @@ if [ -x /root/miniconda3/bin/python ]; then
   export PATH="/root/miniconda3/bin:$PATH"
 fi
 
+# Detached AutoDL jobs also miss the CUDA 13 and PyTorch wheel library paths.
+# vLLM imports TorchCodec even for text-only models, which needs libnvrtc.so.13.
+for _pccd_lib in \
+  /root/miniconda3/lib/python3.12/site-packages/nvidia/cu13/lib \
+  /root/miniconda3/lib/python3.12/site-packages/torch/lib; do
+  if [ -d "$_pccd_lib" ]; then
+    export LD_LIBRARY_PATH="$_pccd_lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+  fi
+done
+unset _pccd_lib
+
 # Pick the data disk: prefer autodl-tmp, fall back to autodl-fs, else /root.
 if [ -d /root/autodl-tmp ]; then
   export PCCD_DISK=/root/autodl-tmp

@@ -213,6 +213,31 @@ Frozen critic: `$PCCD_OUT/critic/d0`
 
 Complete raw/log manifest: `$PCCD_OUT/adapt_diag/SHA256SUMS`
 
+## PaperGuru verdict (2026-07-16, human-approved)
+
+Diagnostic ACCEPTED; it did NOT falsify P5 but exposed a design confound that must be fixed
+before P5 can be tested fairly. Three conclusions:
+
+1. FN reversal (Delta_FN-Delta_FP = -0.30) is a SUPPORT-SHIFT CONFOUND, not evidence. Base
+   policy barely violates (violated support 3-10/policy), so base FN is sparse-support noise
+   that is inflated; D3 violates a lot (74-312), so FN "drops" simply because it is now
+   measurable. The two FNs are not comparable. Not counted against P5.
+2. The real, un-confounded signal is Delta_FP POSITIVE across ALL 10 policies (fig confirmed)
+   — adaptation DOES perturb the frozen critic; the safety-relevant FN direction was just
+   untestable at this point.
+3. ROOT CONFOUND: D3 = safe-SFT pushed the policy to MORE-OBVIOUS violations (easier to
+   catch), the OPPOSITE of P5's scenario (adaptation makes violations HIDDEN, critic misses
+   them). Testing P5 requires HIDDEN-VIOLATION adaptation.
+
+DECISION (human-approved): correct the adaptation direction and pre-register the full G2 with
+hidden-violation adaptation (reward-hacking-style / off-distribution, motivated by
+\cite{zhang2024policy}), adequate per-policy violated support (>=30),
+and a stable heterogeneity statistic (RMS(Delta_ECE), not signed-CV). D3 safe-SFT is RETAINED
+as a benign CONTROL: P5 predicts FN-asymmetry under hidden-violation adaptation but NOT under
+benign safe-SFT — the direction flip is itself evidence. Locked in reports/PREREG_G2.md,
+including an honesty clause: if FN-asymmetry still does not appear under corrected support and
+direction, G2 FAILS and the paper reports the true narrowed result (no third redirection).
+
 Key SHA-256 values:
 
 | Artifact | SHA-256 |

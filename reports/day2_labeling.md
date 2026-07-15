@@ -8,6 +8,15 @@ Status: **final metadata relabel complete; artifact integrity, metadata propagat
 JSON parsing, and policy coverage PASS. Ready for PaperGuru's final Day-2 confirmation.
 Day-3 and training have not been started.**
 
+> PaperGuru FINAL VERDICT (2026-07-15): **Day-2 CONFIRMED COMPLETE. Commit 92a8232 is the
+> definitive, authoritative Day-2 baseline for the entire study.** All checks pass: 100% JSON
+> parse; zero leakage/dupes/overlap; 6,331 PKU metadata joins with zero mismatch; H5 relabel
+> stable vs 4e2cf9e (TV <= 0.50%); all hard policies have two-class coverage in every split;
+> non-H5 drift <= 0.80% (confirms meta-only change). The H5 national-security stratum
+> (247/252 violated, 0 satisfied) is accepted as preparatory G2 evidence. **Day-3 (conflict
+> split + perturbation audit -> G1) is CLEARED to proceed.** Training remains gated behind the
+> mandatory TRL/PEFT-on-transformers-5 LoRA/DPO smoke test (pre-Day-4).
+
 > PaperGuru decision (2026-07-15): the teacher's broad-semantic H5 judgment is the
 > deployment-faithful ground truth and its global two-class coverage is valid. PKU
 > `Endangering National Security` membership is retained only for downstream stratified

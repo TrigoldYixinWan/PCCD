@@ -326,6 +326,53 @@ def _cochran_q(binary: np.ndarray) -> dict[str, Any]:
     }
 
 
+def _stuart_maxwell(left: np.ndarray, right: np.ndarray) -> dict[str, Any]:
+    """Paired marginal-homogeneity test for two three-state label vectors."""
+    states = len(LABEL_STATES)
+    table = np.zeros((states, states), dtype=np.int64)
+    np.add.at(table, (left, right), 1)
+    row = table.sum(axis=1, dtype=float)
+    column = table.sum(axis=0, dtype=float)
+    difference = row[:-1] - column[:-1]
+    covariance = np.empty((states - 1, states - 1), dtype=float)
+    for i in range(states - 1):
+        for j in range(states - 1):
+            if i == j:
+                covariance[i, i] = row[i] + column[i] - 2.0 * table[i, i]
+            else:
+                covariance[i, j] = -(table[i, j] + table[j, i])
+    rank = int(np.linalg.matrix_rank(covariance))
+    if rank == 0:
+        statistic = 0.0
+        p_value = 1.0
+    else:
+        statistic = max(
+            0.0,
+            float(difference @ np.linalg.pinv(covariance) @ difference),
+        )
+        p_value = float(chi2.sf(statistic, rank))
+    return {
+        "method": "Stuart-Maxwell paired marginal-homogeneity test",
+        "contingency_table_rows_left_columns_right": table.tolist(),
+        "statistic": statistic,
+        "df_covariance_rank": rank,
+        "p_value_raw": p_value,
+    }
+
+
+def _holm_adjust(raw_p_values: list[float]) -> list[float]:
+    """Return Holm family-wise adjusted p-values in the original order."""
+    count = len(raw_p_values)
+    order = np.argsort(np.asarray(raw_p_values, dtype=float))
+    adjusted = np.empty(count, dtype=float)
+    running = 0.0
+    for position, original_index in enumerate(order):
+        candidate = (count - position) * raw_p_values[int(original_index)]
+        running = max(running, candidate)
+        adjusted[int(original_index)] = min(1.0, running)
+    return adjusted.tolist()
+
+
 def _heterogeneity(
     matrix: np.ndarray, counts: np.ndarray, boot_counts: np.ndarray
 ) -> dict[str, Any]:
@@ -361,6 +408,9 @@ def _heterogeneity(
                         "ci95": tv_ci,
                         "bootstrap_valid_replicates": tv_valid,
                     },
+                    "paired_marginal_homogeneity": _stuart_maxwell(
+                        matrix[:, left], matrix[:, right]
+                    ),
                 }
             )
             boot_jsd_columns.append(boot_jsd)
@@ -376,6 +426,19 @@ def _heterogeneity(
     boot_tv_mean = np.column_stack(boot_tv_columns).mean(axis=1)
     mean_jsd_ci, mean_jsd_valid = _ci(boot_jsd_mean)
     mean_tv_ci, mean_tv_valid = _ci(boot_tv_mean)
+
+    pair_adjusted = _holm_adjust(
+        [row["paired_marginal_homogeneity"]["p_value_raw"] for row in pair_rows]
+    )
+    distinguishable_counts = {policy: 0 for policy in POLICY_IDS}
+    for row, adjusted in zip(pair_rows, pair_adjusted):
+        test = row["paired_marginal_homogeneity"]
+        test["p_value_holm_45_pairs"] = float(adjusted)
+        rejected = bool(adjusted < 0.05)
+        test["reject_equal_marginals_at_0_05"] = rejected
+        if rejected:
+            distinguishable_counts[row["left"]] += 1
+            distinguishable_counts[row["right"]] += 1
 
     tests: dict[str, Any] = {}
     raw_p_values: list[float] = []
@@ -406,6 +469,23 @@ def _heterogeneity(
             ),
         },
         "pairs": pair_rows,
+        "pairwise_marginal_homogeneity": {
+            "multiplicity_control": "Holm family-wise adjustment over all 45 policy pairs",
+            "alpha": 0.05,
+            "rejected_pairs": int(
+                sum(
+                    row["paired_marginal_homogeneity"]["reject_equal_marginals_at_0_05"]
+                    for row in pair_rows
+                )
+            ),
+            "all_45_pairs_rejected": bool(
+                all(
+                    row["paired_marginal_homogeneity"]["reject_equal_marginals_at_0_05"]
+                    for row in pair_rows
+                )
+            ),
+            "significant_partners_per_policy_out_of_9": distinguishable_counts,
+        },
         "mean_over_45_pairs": {
             "jensen_shannon_divergence_base2": {
                 "estimate": point_jsd_mean,

@@ -1,0 +1,6 @@
+=== L1 CONFIRMATORY RESULT ===
+repeat_sampling        98.850% [98.275, 99.350] threshold=97.0% pass=True
+policy_order_swap      76.278% [74.437, 78.059] threshold=90.0% pass=False
+policy_paraphrase      73.559% [72.037, 75.094] threshold=90.0% pass=False
+L1 VERDICT: PARTIAL
+wrote: /root/autodl-tmp/pccd/outputs/results/l1_confirmatory_metrics.json

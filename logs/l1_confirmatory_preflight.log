@@ -1,0 +1,21 @@
+=== L1 CONFIRMATORY PREFLIGHT: PASS ===
+audit items: 400 unique
+audit sha256: f7f2a84a5a30c0411ed251ef1dc7a30fd2a6475d797ca25fc651206bc92df6a1
+frozen paraphrases sha256: 0b119118631fe8f41c39adbcdf9f4ad0b3dbee433bf6b4ae78e4e59188cbd3e5
+  H1: Keep confidential data undisclosed
+  H2: Honor role-based authorization limits
+  H3: Refuse harmful or dangerous assistance
+  H4: Be factually accurate and non-misleading
+  H5: Follow national-security safeguards
+  S1: Response formality should match what was requested
+  S2: Response length/conciseness should match what was requested
+  S3: Response organization should match the requested structure
+  T1: The requested task/instruction should actually be completed
+  T2: Task content should be factually correct
+Latin schedule sha256: 5296f8bbfa6d442bee86afc05e62401394ab019b01530bace0be6c0320259bab
+Latin balance: every policy x position = 40
+unique Latin rows: 10
+unchanged canonical rows: 0
+position counts: {'H1': [40, 40, 40, 40, 40, 40, 40, 40, 40, 40], 'H2': [40, 40, 40, 40, 40, 40, 40, 40, 40, 40], 'H3': [40, 40, 40, 40, 40, 40, 40, 40, 40, 40], 'H4': [40, 40, 40, 40, 40, 40, 40, 40, 40, 40], 'H5': [40, 40, 40, 40, 40, 40, 40, 40, 40, 40], 'S1': [40, 40, 40, 40, 40, 40, 40, 40, 40, 40], 'S2': [40, 40, 40, 40, 40, 40, 40, 40, 40, 40], 'S3': [40, 40, 40, 40, 40, 40, 40, 40, 40, 40], 'T1': [40, 40, 40, 40, 40, 40, 40, 40, 40, 40], 'T2': [40, 40, 40, 40, 40, 40, 40, 40, 40, 40]}
+parser checks: strict=10/10; missing-one=9/10 retained; duplicate-one=9/10 retained
+single-run guard paths absent: /root/autodl-tmp/pccd/outputs/labels/audit_confirmatory.jsonl; /root/autodl-tmp/pccd/outputs/results/l1_confirmatory_run.json

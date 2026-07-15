@@ -236,6 +236,31 @@ def missing_diagnostics(
     }
 
 
+def schema_issue_diagnostics(
+    raw_records: list[dict[str, Any]],
+    variant: str,
+    orders: list[list[str]],
+) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for field in ("missing_keys", "invalid_value_keys", "duplicate_keys"):
+        issue_matrix = np.zeros((len(raw_records), len(POLICY_IDS)), dtype=bool)
+        for row, record in enumerate(raw_records):
+            for pid in record["variants"][variant][field]:
+                if pid in POLICY_IDS:
+                    issue_matrix[row, POLICY_IDS.index(pid)] = True
+        # Reuse the position-aware counter: -1 denotes this specific issue,
+        # while 0 denotes no issue (not a teacher label in this context).
+        result[field] = missing_diagnostics(
+            np.where(issue_matrix, -1, 0).astype(np.int8), orders
+        )
+    extra_keys: dict[str, int] = {}
+    for record in raw_records:
+        for key in record["variants"][variant]["extra_keys"]:
+            extra_keys[key] = extra_keys.get(key, 0) + 1
+    result["extra_keys"] = dict(sorted(extra_keys.items()))
+    return result
+
+
 def transition_tables(canonical: np.ndarray, other: np.ndarray) -> dict[str, Any]:
     tables: dict[str, Any] = {}
     for column, pid in enumerate(POLICY_IDS):
@@ -329,7 +354,12 @@ def analyze(args: argparse.Namespace) -> dict[str, Any]:
                 "denominator": len(raw_records) * len(POLICY_IDS),
                 "rate": float((matrices[variant] >= 0).mean()),
             },
-            "missing_keys": missing_diagnostics(matrices[variant], orders[variant]),
+            "unparsed_policy_cells": missing_diagnostics(
+                matrices[variant], orders[variant]
+            ),
+            "schema_issues": schema_issue_diagnostics(
+                raw_records, variant, orders[variant]
+            ),
         }
 
     return {
@@ -382,10 +412,15 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--bootstrap", type=int, default=10_000)
     parser.add_argument("--seed", type=int, default=20260715)
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="replace only the deterministic CPU metrics; never reruns teacher calls",
+    )
     args = parser.parse_args()
     if args.bootstrap != 10_000 or args.seed != 20260715:
         parser.error("locked analysis requires bootstrap=10000 and seed=20260715")
-    if args.out.exists():
+    if args.out.exists() and not args.force:
         parser.error(f"refusing to overwrite existing confirmatory analysis: {args.out}")
     return args
 
@@ -397,7 +432,8 @@ def main() -> None:
     except (OSError, ValidationError, ValueError) as exc:
         raise SystemExit(f"ERROR: {exc}") from exc
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    with args.out.open("x", encoding="utf-8") as handle:
+    mode = "w" if args.force else "x"
+    with args.out.open(mode, encoding="utf-8") as handle:
         json.dump(result, handle, ensure_ascii=False, indent=2, sort_keys=True)
         handle.write("\n")
     print("=== L1 CONFIRMATORY RESULT ===")

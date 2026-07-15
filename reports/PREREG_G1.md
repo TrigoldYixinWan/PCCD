@@ -37,6 +37,36 @@ L1 verdict rule: PASS if all three meet threshold; PARTIAL if repeat passes but 
 perturbation fails; FAIL if repeat itself < 97%. A PARTIAL/FAIL is a publishable
 reliability finding, NOT a reason to relax the threshold.
 
+### L1 confirmatory-run execution rules (LOCKED 2026-07-15 after the diagnostic)
+The Day-3 diagnostic (reports/day3_diag.md) established that the first run's perturbation
+failure was driven by TWO fixable MEASUREMENT bugs, not teacher instability: (a) six
+paraphrase strings were non-equivalent (added scope-narrowing qualifiers) — repaired in
+src/policy_defs.py `_PARAPHRASE`; (b) `policy_order_swap` used random orders, and the
+teacher has a position-dependent output-schema failure (e.g. S3 in position 1 dropped its
+key 10/10 times). The confirmatory 400-item audit fixes ONLY these measurement bugs and the
+position assignment; it does NOT change any threshold and is run exactly ONCE.
+
+Locked execution details:
+1. Paraphrase: use the D-1 repaired equivalent strings; FREEZE the exact paraphrase text and
+   its SHA-256 before the run and record both in the report.
+2. Order-swap becomes a DETERMINISTIC Latin square over the 400 items: each policy appears in
+   each of the 10 positions exactly 40 times (400/10). This removes random position imbalance
+   and lets L1 measure semantic stability rather than a random-position artifact.
+3. Parse rule (locked BEFORE the run): cell-micro agreement INCLUDES every validly parsed
+   single-policy cell (a dropped key for one policy does not void the other nine cells);
+   SEPARATELY report the strict 10-key JSON success rate AND the per-position / per-policy
+   missing-key rate. The missing-key/position/N/A-transition tables are DIAGNOSTIC only and
+   do NOT enter the L1 gate.
+4. canonical and repeat remain INDEPENDENT calls at temperature 0, same model/env; NO retries,
+   NO patching of teacher output, NO second confirmatory run.
+5. Thresholds (repeat >=97%, order_swap >=90%, paraphrase >=90% cell-micro), the 400-item
+   data, and the 10,000-replicate seeded bootstrap are UNCHANGED.
+
+Core principle: fix only confirmed measurement bugs and the position assignment; never move a
+threshold; never run a second confirmatory pass. If L1 still fails under the repaired,
+Latin-square, correctly-parsed protocol, that is the genuine reliability finding and the
+publication fallback applies.
+
 --------------------------------------------------------------------------------
 ## Layer L2 — Teacher target-label HETEROGENEITY (are the 10 policies distinct?)
 Question: do the ten policies induce distinguishable target-label distributions on the same

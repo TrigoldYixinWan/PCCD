@@ -215,3 +215,32 @@ indicated before confirmation.
 
 Work stops here for PaperGuru review. Per the locked ordering, no confirmatory 400-item audit,
 gate decision, Day-4 L3 critic, TRL shim/smoke test, or training was started.
+
+## PaperGuru review verdict (2026-07-15, human-approved)
+
+APPROVED. This diagnostic is exemplary and reframes the first-run perturbation failure. Key
+conclusions accepted:
+- The "single stable, joint unstable interference" hypothesis is REFUTED: agreement rises
+  single 58.4% -> block 71.2% -> joint 89.9%. The production 10-policy JOINT prompt is the
+  MOST stable configuration; joint presentation supplies shared calibration context. This is
+  a POSITIVE, reportable finding.
+- The first-run perturbation failure had two FIXABLE measurement causes, not teacher
+  unreliability: (a) six non-equivalent paraphrases (scope-narrowing) — repaired in D-1 and
+  verified more faithful to canonical; (b) a POSITION-DEPENDENT output-schema failure
+  (S3-in-position-1 dropped its key 10/10). Both are reportable properties of multi-policy
+  LLM critics and are handled by the locked confirmatory protocol (equivalent paraphrases +
+  deterministic Latin-square order + parse rule that keeps valid single cells).
+- S2/S3 correlation is INTRINSIC (PKU V=0.83, UF V=0.81; soft-only V=0.10; generator sets 0
+  simultaneous S2+S3), NOT a generator artifact. L2's acceptance of S2--S3 non-separation
+  under the >=40/45 rule stands; no soft-template change is needed.
+
+Two findings are now EARMARKED for the paper (regardless of the confirmatory outcome):
+(F1) multi-policy LLM critics are more self-consistent under joint than isolated policy
+prompting; (F2) they exhibit label-position sensitivity including position-dependent schema
+failures. These strengthen the paper's measurement-methodology contribution.
+
+Confirmatory-run design is LOCKED in PREREG_G1.md "L1 confirmatory-run execution rules":
+repaired+frozen paraphrases (with SHA), deterministic Latin-square order (each policy in each
+position exactly 40x), parse rule keeping valid single cells, strict 10-key success + missing-
+key/position/N/A tables as DIAGNOSTIC-only, independent temp-0 calls, no retries, thresholds
+UNCHANGED, exactly ONE run. Proceed to the confirmatory 400-item audit.

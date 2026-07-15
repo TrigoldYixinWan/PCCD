@@ -4,7 +4,7 @@
 # Transformers-v4 support, so transformers was moved from 4.51.0 -> 5.13.1.
 torch>=2.4
 transformers==5.13.1
-trl==0.19.1          # installed version (NOT the earlier 1.8.0 pin); DPO/SFT APIs differ
+trl==1.8.0           # verified with transformers 5.13.1 by the Day-4 LoRA/DPO smoke test
 peft==0.19.1
 vllm==0.25.0
 accelerate

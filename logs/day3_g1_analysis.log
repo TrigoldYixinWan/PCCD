@@ -1,0 +1,4 @@
+Wrote G1 teacher-only analysis: /root/autodl-tmp/pccd/outputs/results/day3_g1_metrics.json
+  conflict complete: 400/400
+  mean pairwise JSD/TV: 0.139699/0.329333
+  scope: teacher targets/stability only; no D0 F1 or overall G1 verdict

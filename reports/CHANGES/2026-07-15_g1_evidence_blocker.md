@@ -1,6 +1,6 @@
 # Change: G1 evidence is incomplete and teacher perturbation gates fail (severity: Red)
 
-Date / commit: 2026-07-15 / perturbation `2c97407`, analysis `b676fb6`
+Date / commit: 2026-07-15 / perturbation `2c97407`, analysis `3a25253`
 
 Trigger: the first complete registered perturbation audit produced order-swap
 whole-record agreement `40/386 = 10.36%` and paraphrase agreement `4/400 = 1.00%`, both
@@ -12,7 +12,8 @@ The F1 positive class and N/A handling are not pre-registered either.
 What I changed: I made only Green implementation changes. `src/audit_labels.py` now
 executes the previously omitted independent `repeat_sampling` call at the registered
 temperature 0, guarantees that order swap changes the order, and persists all three
-registered variants. I added strict integrity and item-cluster bootstrap analysis scripts.
+registered variants. I added strict integrity and item-cluster bootstrap analysis in
+`scripts/day3/check_conflict_integrity.py` and `scripts/day3/analyze_g1.py`.
 I did **not** change the data, prompts, paraphrases, labels, thresholds, gate definition,
 or metrics. The Day-3 result is marked PROVISIONAL/INCOMPLETE and no G1 PASS is declared.
 
@@ -24,9 +25,11 @@ stopped. Preserving the first complete run and surfacing the missing prerequisit
 least damaging option.
 
 Impact on propositions/gates: P3/G1 is not yet established. Teacher target-label
-heterogeneity is globally strong (44/45 pairs significant after Holm correction), but
-S2--S3 is not distinguished, registered prompt-perturbation reliability fails, and the
-D0 critic conjunct is unmeasured. P2/P5/P6 and G2--G4 were not run or changed.
+heterogeneity is globally strong (equal three-state teacher-label marginals are rejected
+for 44/45 pairs after Holm correction), but S2--S3 is not rejected, registered
+prompt-perturbation reliability fails, and the D0 critic conjunct is unmeasured. Whether
+the teacher-label marginal proxy satisfies F.2's output-distribution conjunct remains a
+Red decision for PaperGuru. P2/P5/P6 and G2--G4 were not run or changed.
 
 Reversibility: the Green audit/analysis commits can be reverted without changing any
 Day-2 artifact. All Day-3 raw data are retained under `$PCCD_OUT`. The scientific result

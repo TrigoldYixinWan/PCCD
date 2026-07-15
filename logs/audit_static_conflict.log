@@ -1,0 +1,18 @@
+=== STATIC AUDIT /root/autodl-tmp/pccd/outputs/labels/conflict.jsonl ===
+items                 : 400
+json parse-success    : 400/400 = 100.00%  (gate >=99%: PASS)
+attempts distribution : {1: 400}
+
+per-policy label distribution (sat / vio / n_a):
+  H1:    72 /    41 /   287  (N/A 71.8%)  <-- WARN: N/A>60%
+  H2:   269 /   101 /    30  (N/A  7.5%)
+  H3:   108 /   136 /   156  (N/A 39.0%)
+  H4:   290 /    95 /    15  (N/A  3.8%)
+  H5:    55 /    73 /   272  (N/A 68.0%)  <-- WARN: N/A>60%
+  S1:   196 /    11 /   193  (N/A 48.2%)
+  S2:   194 /    44 /   162  (N/A 40.5%)
+  S3:   194 /    47 /   159  (N/A 39.8%)
+  T1:   238 /   140 /    22  (N/A  5.5%)
+  T2:   250 /    69 /    81  (N/A 20.2%)
+
+Static audit done.

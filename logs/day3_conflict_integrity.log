@@ -1,0 +1,39 @@
+== Pool splits ==
+train    valid_rows= 8000 unique_ids= 8000 expected= 8000
+calib    valid_rows= 1000 unique_ids= 1000 expected= 1000
+test     valid_rows= 1000 unique_ids= 1000 expected= 1000
+audit    valid_rows=  400 unique_ids=  400 expected=  400
+conflict valid_rows=  400 unique_ids=  400 expected=  400
+
+== Cross-split ID isolation ==
+train    vs calib    overlap=0
+train    vs test     overlap=0
+train    vs audit    overlap=0
+train    vs conflict overlap=0
+calib    vs test     overlap=0
+calib    vs audit    overlap=0
+calib    vs conflict overlap=0
+test     vs audit    overlap=0
+test     vs conflict overlap=0
+audit    vs conflict overlap=0
+
+== Conflict composition ==
+sources={"pku_saferlhf": 242, "soft_style": 39, "ultrafeedback": 119}
+pku_safe_unsafe={"invalid_or_missing": 0, "safe": 120, "unsafe": 122}
+
+== Conflict labels ==
+merged   valid_rows= 400 unique_ids= 400 parse_ok= 400
+shardA   valid_rows= 200 unique_ids= 200 parse_ok= 200
+shardB   valid_rows= 200 unique_ids= 200 parse_ok= 200
+
+== SHA-256 ==
+956f3e9fda07fb5f13dc29055fffd5a223885f54cbcf91c8faa2275665c0dcbb  /root/autodl-tmp/pccd/outputs/pool/train.jsonl
+81767e95765cb273bbdd25f570137f0c5db4948bd98e1b8ad3187df9c18436ac  /root/autodl-tmp/pccd/outputs/pool/calib.jsonl
+187e6a10af528ecb00a24d5efa6f82644d0ad138881ad7b531e8fe02807442ef  /root/autodl-tmp/pccd/outputs/pool/test.jsonl
+f7f2a84a5a30c0411ed251ef1dc7a30fd2a6475d797ca25fc651206bc92df6a1  /root/autodl-tmp/pccd/outputs/pool/audit.jsonl
+05a92c5631bc79d24c8171e165ff3aa46ed85349d32986e01015b9c67087f55f  /root/autodl-tmp/pccd/outputs/pool/conflict.jsonl
+889b4ac4c313e2e9ff21d80d3545f064e2731ef5a571bf0756872dce8d49815b  /root/autodl-tmp/pccd/outputs/labels/conflict.jsonl
+57974bb0a7825d2c2f783402aded4638745baf6f1cb16605ea1284a56672f35b  /root/autodl-tmp/pccd/outputs/labels/conflict.shardA.jsonl
+bce99a596728a2884a6fc5f7db547bd1ce207d2e70e2aabc4e8bc8ef97a39fcb  /root/autodl-tmp/pccd/outputs/labels/conflict.shardB.jsonl
+
+PASS: conflict pool/labels are complete, isolated, schema-valid, and traceable

@@ -6,10 +6,11 @@ Execution revisions:
 
 - conflict labeling: `0c57ad0d9dde9c0d9aa95e5d509432d316181b3e`;
 - perturbation audit: `2c97407ca787ca60dd7801e6c6d92ec7602cc5fc`;
-- final bootstrap and pairwise analysis: `b676fb688ec337fc8bae0f5dfa79c8485e8b6715`.
+- final bootstrap and pairwise analysis: `3a252536aec7681ba9276d5ebc31e1913d877168`.
 
 Status: **conflict-label artifact integrity PASS; teacher target-label heterogeneity is
-strongly supported at the global level and for 44/45 policy pairs; the registered
+strongly supported globally, and Holm-adjusted Stuart-Maxwell tests reject equal
+three-state teacher-label marginals for 44/45 policy pairs; the registered
 order-swap and paraphrase reliability gates FAIL. D0 critic behavior and the
 pre-registered per-policy F1 CV cannot be evaluated from the available artifacts.
 Overall G1 is therefore PROVISIONAL/INCOMPLETE; no G1 PASS is declared. Training and the
@@ -158,11 +159,13 @@ by an adapted policy model.
 | Paired Cochran Q, N/A indicator (df=9) | 1050.777 | Bonferroni p=5.790e-220 |
 
 The joint equal-marginal null is rejected. Pairwise Stuart-Maxwell tests with Holm control
-over all 45 pairs reject equal marginals for **44/45 pairs**. The sole non-rejection is
+over all 45 pairs reject equal three-state teacher-label marginals for **44/45 pairs**.
+The sole non-rejection is
 S2--S3: Holm p=0.525788, JSD=0.000114 [0.000005, 0.001228], and TV=0.007500
-[0.002500, 0.025000]. Thus every policy differs significantly from at least eight of the
-other nine, but the stronger claim that every pair is statistically distinguishable is
-not established.
+[0.002500, 0.025000]. Thus equal marginals are rejected between each policy and at least
+eight of the other nine, but the stronger claim that every pair is statistically
+distinguishable is not established. JSD/TV bootstrap intervals quantify effect-size
+uncertainty; they are not null-calibrated significance tests.
 
 ## 6. Perturbation stability
 
@@ -206,10 +209,10 @@ Even the independent greedy repeat is not bitwise deterministic at whole-record 
 
 | Required evidence | Local result |
 |---|---|
-| Ten policies statistically distinguishable in output distribution | **Partial support only.** Global paired heterogeneity is decisive and 44/45 target-label pairs differ, but S2--S3 does not. These are teacher target labels, not D0 model-output behavior. |
+| Ten policies statistically distinguishable in output distribution | **Teacher target-label marginal proxy: strong partial evidence, but F.2 status NOT DECIDED.** Global paired heterogeneity is decisive and equal marginals are rejected for 44/45 pairs, but S2--S3 is not rejected. These are teacher target labels, not D0 model-output behavior; PaperGuru must decide whether this proxy satisfies the first conjunct. |
 | D0 critic behavior differs across policies | **NOT EVALUATED.** The repository has no critic training/inference implementation, D0 checkpoint, or D0 predictions. |
 | Plan threshold: per-policy F1 CV >0.15 | **N/A.** F1 requires D0 predictions against teacher truth; violated-positive vs three-class F1 and N/A handling are also not pre-registered. |
-| Teacher perturbation reliability prerequisite | **FAIL.** Both registered 90% whole-record gates fail by large margins. |
+| Registered teacher-label perturbation audit | **FAIL.** Both 90% whole-record gates fail by large margins. This is a separate Day-3 label-reliability Go/No-Go, not a literal conjunct in BRIEF F.2. |
 
 **Overall local status: PROVISIONAL/INCOMPLETE; no G1 PASS is declared.** Treating teacher
 perturbation labels as critic predictions, replacing F1 CV with prevalence/distance, or
@@ -245,7 +248,7 @@ Small committed logs are `logs/audit_static_conflict.log`, `logs/audit_perturb.l
 889b4ac4c313e2e9ff21d80d3545f064e2731ef5a571bf0756872dce8d49815b  labels/conflict.jsonl
 f7f2a84a5a30c0411ed251ef1dc7a30fd2a6475d797ca25fc651206bc92df6a1  pool/audit.jsonl
 dfefd97cfca1c676be8ef2883d394d17e64fae84cd33555e771722c9eb371218  labels/audit_perturb.jsonl
-d7d77532225399e8de3347a2072307f1dd82c395318f7e4771aacd624ae49050  results/day3_g1_metrics.json
+d8d2140ec15eb37d184555ebaba4f66404a58ca7accc9cecf38553f2c0c900aa  results/day3_g1_metrics.json
 d5ca179456a2ab5aae918756b8d6221c3968e57620dab232fb22e5929d2c88b9  logs/audit_static_conflict.log
 2c934aa43c9b55d9afcf73bbd0dfcabfef56eec97c112035a7cbcfeaf4e58968  logs/audit_perturb.log
 1288fa11b4e50fa9ad5341f8864332bc04228535ff5b4a4fde2cdb048757ace1  logs/day3_conflict_integrity.log
@@ -254,6 +257,7 @@ d5ca179456a2ab5aae918756b8d6221c3968e57620dab232fb22e5929d2c88b9  logs/audit_sta
 ```
 
 Open questions for PaperGuru are: whether the S2--S3 non-separation is acceptable under
-G1's wording; how to handle the failed registered perturbation gates without post hoc
-metric/prompt changes; and what D0 critic implementation plus F1/N/A definition should be
-pre-registered before any critic training.
+G1's wording; whether teacher target-label marginals count as F.2 output-distribution
+evidence; how to handle the failed registered perturbation gates without post hoc
+metric/prompt changes; and what D0 critic implementation plus F1/N/A definition should
+be pre-registered before any critic training.

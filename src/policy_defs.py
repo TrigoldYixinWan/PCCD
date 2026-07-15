@@ -158,3 +158,71 @@ def parse_judgment(text: str) -> dict | None:
             return None
         out[pid] = lab
     return out
+
+
+def parse_judgment_cells(text: str) -> dict:
+    """Parse independently valid policy cells and retain schema diagnostics.
+
+    Unlike :func:`parse_judgment`, a missing or duplicated policy key does not
+    invalidate other uniquely present cells.  This is the locked parser for the
+    G1 confirmatory audit's policy-cell metric.  ``strict_parse_ok`` requires a
+    JSON object with exactly one occurrence of every registered policy key and
+    no extra keys.  Leading/trailing prose is tolerated as in the legacy parser.
+    """
+    result = {
+        "json_object_found": False,
+        "strict_parse_ok": False,
+        "cells": {},
+        "missing_keys": list(POLICY_IDS),
+        "extra_keys": [],
+        "duplicate_keys": [],
+        "invalid_value_keys": [],
+    }
+    if not isinstance(text, str):
+        return result
+    start, end = text.find("{"), text.rfind("}")
+    if start < 0 or end <= start:
+        return result
+    try:
+        pairs = json.loads(text[start:end + 1], object_pairs_hook=list)
+    except Exception:
+        return result
+    if not isinstance(pairs, list) or any(
+        not isinstance(pair, tuple) or len(pair) != 2 for pair in pairs
+    ):
+        return result
+
+    result["json_object_found"] = True
+    occurrences = {}
+    for key, value in pairs:
+        occurrences.setdefault(key, []).append(value)
+    expected = set(POLICY_IDS)
+    present = set(occurrences)
+    result["missing_keys"] = [pid for pid in POLICY_IDS if pid not in present]
+    result["extra_keys"] = sorted(str(key) for key in present - expected)
+    result["duplicate_keys"] = sorted(
+        str(key) for key, values in occurrences.items() if len(values) != 1
+    )
+
+    cells = {}
+    invalid = []
+    for pid in POLICY_IDS:
+        values = occurrences.get(pid, [])
+        if len(values) != 1:
+            continue
+        label = normalize_label(values[0])
+        if label is None:
+            invalid.append(pid)
+        else:
+            cells[pid] = label
+    result["cells"] = cells
+    result["invalid_value_keys"] = invalid
+    result["strict_parse_ok"] = (
+        len(pairs) == len(POLICY_IDS)
+        and not result["missing_keys"]
+        and not result["extra_keys"]
+        and not result["duplicate_keys"]
+        and not invalid
+        and len(cells) == len(POLICY_IDS)
+    )
+    return result

@@ -221,6 +221,20 @@ gate and was not done. This Red-level blocker is recorded in
 `reports/CHANGES/2026-07-15_g1_evidence_blocker.md`; work stops here for PaperGuru's
 decision.
 
+> PaperGuru decision (2026-07-15, human-approved): THIS RUN IS FROZEN as a genuine
+> measurement finding — the numbers stand as-is. Codex correctly refused every shortcut;
+> the three exposed issues were defects in PaperGuru's original single G1 criterion, not
+> execution errors. G1 is REDESIGNED into three pre-registered layers (reports/PREREG_G1.md):
+> L1 teacher-label reliability (primary metric now policy-cell micro, not whole-record),
+> L2 target-label heterogeneity (ALREADY MET, 44/45; S2--S3 non-separation accepted under a
+> >=40/45 rule), L3 D0-critic F1-CV (deferred to Day-4, definitions locked). Next action is
+> the ~100-item DIAGNOSTIC in reports/day3_diag_plan.md (paraphrase equivalence check +
+> single/5-block/10-joint/Latin-square structure ablation + S2/S3 correlation) to locate the
+> order/paraphrase instability BEFORE one confirmatory 400-item rerun. Publication fallback
+> is explicit: if reliability does not recover, "multi-policy LLM critics are sensitive to
+> policy wording/order" becomes a first-class reported result and the causal claims narrow.
+> The whole-record perturbation FAIL is thus reframed, NOT relaxed. Training stays stopped.
+
 ## 8. Pre-Day-4 smoke-test status
 
 No one-step LoRA or DPO training was launched. A read-only import check found that the

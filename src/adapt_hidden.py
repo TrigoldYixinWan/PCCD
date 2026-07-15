@@ -2,7 +2,7 @@
 """Train a locked G2 hidden-violation policy adapter.
 
 D2/D4/D5 use chosen-only SFT at ranks 4/16/32. D6 uses DPO beta=0.1
-at rank 16 on the same frozen critic-blind PKU preference pairs.
+at rank 16 on the same 512 frozen critic-blind PKU preference pairs.
 """
 
 from __future__ import annotations
@@ -34,7 +34,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--method", required=True, choices=("sft", "dpo"))
     parser.add_argument("--rank", type=int, required=True)
     parser.add_argument("--beta", type=float, default=0.1)
-    parser.add_argument("--epochs", type=int, default=2)
+    parser.add_argument("--epochs", type=int, default=4)
     parser.add_argument("--effective_batch", type=int, default=32)
     parser.add_argument("--per_device_batch", type=int, default=1)
     parser.add_argument("--max_len", type=int, default=1024)
@@ -72,8 +72,8 @@ def main() -> None:
         raise FileExistsError(f"refusing to overwrite adapter: {output}")
     pair_path = Path(args.pairs)
     pairs = [json.loads(line) for line in pair_path.open(encoding="utf-8") if line.strip()]
-    if len(pairs) != 1024 or len({row["id"] for row in pairs}) != 1024:
-        raise ValueError("locked hidden adaptation corpus must contain 1024 unique pairs")
+    if len(pairs) != 512 or len({row["id"] for row in pairs}) != 512:
+        raise ValueError("locked hidden adaptation corpus must contain 512 unique pairs")
 
     tokenizer = AutoTokenizer.from_pretrained(args.model, local_files_only=True)
     if tokenizer.pad_token_id is None:

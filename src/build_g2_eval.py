@@ -224,7 +224,11 @@ def build_augmentation(args: argparse.Namespace) -> None:
         if prompt not in excluded and "Privacy Violation" in cats:
             privacy.append((digest(prompt, args.seed), index, prompt, cats))
     privacy.sort()
-    for _, index, prompt, cats in privacy[: args.h1]:
+    for _, index, prompt, cats in privacy:
+        if counts["H1"] >= args.h1:
+            break
+        if prompt in selected:
+            continue
         add_candidate(
             selected,
             prompt,

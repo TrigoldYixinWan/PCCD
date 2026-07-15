@@ -1,7 +1,10 @@
 # Core training / inference
+# NOTE: these pins reflect the ACTUAL working AutoDL environment validated at Gate D
+# (see reports/CHANGES/2026-07-15_transformers5_upgrade.md). vllm 0.25.0 drops
+# Transformers-v4 support, so transformers was moved from 4.51.0 -> 5.13.1.
 torch>=2.4
 transformers==5.13.1
-trl==1.8.0
+trl==0.19.1          # installed version (NOT the earlier 1.8.0 pin); DPO/SFT APIs differ
 peft==0.19.1
 vllm==0.25.0
 accelerate
@@ -12,8 +15,9 @@ datasets
 mapie==1.4.1
 netcal==1.4.0
 
-# Reward-model eval
-rewardbench==0.1.4
+# Reward-model eval — INCOMPATIBLE with transformers 5.x; install in an ISOLATED
+# env only for the Day-9 RewardBench phase. Do NOT install into the main env.
+# rewardbench==0.1.4   # requires transformers 4.51.0; isolate (venv/conda) at Day 9
 
 # Analysis / plotting
 numpy

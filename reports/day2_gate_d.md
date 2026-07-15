@@ -6,6 +6,14 @@ Code revision used for the successful run: `06672e2`
 
 Status: **candidate PASS from the probe script; awaiting PaperGuru confirmation**
 
+> PaperGuru verdict (2026-07-15): **Gate D FORMALLY PASSED.** Throughput 37,964/hr/GPU is
+> 76x the 500/hr target; JSON parse 100%; 32B fits one card with 21 GiB KV headroom. The
+> 86.4 GiB high-water is from a prior failed attempt (conservative reporting, accepted).
+> Day-2 labeling is CLEARED. The transformers 4.51->5.13.1 upgrade is recorded in
+> reports/CHANGES/2026-07-15_transformers5_upgrade.md; the trl/peft-under-transformers-5
+> DPO/LoRA smoke test is a REQUIRED pre-Day-4 check (do not train the D2-D6 grid until it
+> passes).
+
 ## 1. Commands
 
 The model downloader first verified exact snapshots of 17/17 Qwen2.5-32B shards and

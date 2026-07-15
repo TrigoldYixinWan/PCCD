@@ -1,7 +1,7 @@
-# PCCD — G4 Per-Policy Temperature Recalibration Pre-Registration (DRAFT for human lock)
+# PCCD — G4 Per-Policy Temperature Recalibration Pre-Registration (LOCKED 2026-07-16)
 
 Drafted 2026-07-16 after the human-approved thesis reframe in
-`reports/THESIS_REFRAME.md`. **This document is not locked until PaperGuru approves it.
+`reports/THESIS_REFRAME.md`. **LOCKED 2026-07-16 by PaperGuru (human-approved) after one clarification (§4 recovery baseline semantics).
 No temperature fitting or recalibrated test metric may be computed before approval.**
 After approval, changing the fit split, objective, temperature parameterization, primary
 point, endpoint, margin, or verdict rule is Red.
@@ -90,6 +90,17 @@ absolute_gain_dp = ECE_raw_dp - ECE_scaled_dp
 Positive `recovery` means the adapted distribution moved toward its correspondingly
 scaled D0 calibration level. Positive `absolute_gain` prevents a misleading claim where
 the gap shrinks only because both base and adapted ECE become worse.
+
+BASELINE SEMANTICS (locked clarification): `recovery` deliberately compares the SCALED
+adapted ECE against the SCALED D0 ECE (not raw D0), because the ten temperatures are applied
+uniformly to D0 and every adapted point. This makes the target a moving, self-consistent
+reference: "does temperature scaling bring the adapted distribution back to the SAME calibration
+level the scaled critic achieves on base?" Since D0 is already well-calibrated (mean ECE 2.9%),
+temperatures near 1 should barely change scaled-D0 ECE; we therefore ALSO report, descriptively,
+ECE_scaled_D0,p vs ECE_raw_D0,p per policy so any degradation of the base reference by scaling is
+visible and cannot silently inflate `recovery`. `absolute_gain` (raw-vs-scaled on the SAME
+adapted point, independent of any D0 baseline) is the leakage-proof companion metric and is why
+BOTH must be positive with CI lower bound > 0 for the D5 calibration component to pass.
 
 ## 5. Uncertainty and multiplicity
 

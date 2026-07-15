@@ -1,7 +1,7 @@
-# PCCD — G3 Scaling-Law Pre-Registration (DRAFT for human lock)
+# PCCD — G3 Scaling-Law Pre-Registration (LOCKED 2026-07-16)
 
 Drafted 2026-07-16 after the human-approved thesis reframe in
-`reports/THESIS_REFRAME.md`. **This document is not locked until PaperGuru approves it.
+`reports/THESIS_REFRAME.md`. **LOCKED 2026-07-16 by PaperGuru (human-approved) after two clarifications (§6b point heterogeneity; hidden-SFT parallel fit).
 No G3 regression, model comparison, residual inspection, or goodness-of-fit computation
 may run before that approval.** Once approved, any change to the primary form, held-out
 scheme, threshold, or verdict rule is Red.
@@ -133,17 +133,50 @@ slope, slope CI, in-sample R², LODO R², LODO MAE, and observed/predicted value
 correction across the ten one-sided positive-slope tests. Per-policy results characterize
 the P3 heterogeneity mechanism; they are not an alternate route to G3 PASS.
 
+## 6b. Point heterogeneity — mandatory parallel reporting (locked)
+
+The six points are NOT a homogeneous adaptation family, and this is acknowledged up front
+rather than discovered after fitting. The observed G2 marginals (frozen, from the authoritative
+g2_analysis.json) are:
+
+```text
+D1  KL=0.213  meanDeltaECE=+0.0053   (indirect system prompt)
+D6  KL=0.025  meanDeltaECE=-0.0016   (hidden DPO, very low KL)
+D3c KL=0.586  meanDeltaECE=+0.0306   (BENIGN safe-SFT control)
+D2  KL=1.038  meanDeltaECE=+0.0248   (hidden SFT r=4)
+D4  KL=1.111  meanDeltaECE=+0.0217   (hidden SFT r=16)
+D5  KL=1.200  meanDeltaECE=+0.0288   (hidden SFT r=32)
+```
+
+Two facts are visible and must be reported regardless of fit outcome: (i) the relationship is
+NOT monotone in KL over all six points (D3 control at KL 0.59 has higher Delta-ECE than D5 at
+KL 1.20; D6 at very low KL is ~0); (ii) D3 is a benign-objective control and D6 is a very-low-KL
+DPO point, so both may not lie on the same KL->degradation curve as the hidden-SFT points.
+
+Therefore the G3 report MUST present, side by side and with equal prominence:
+- the PRIMARY all-six-point fit (§3-§5, §8), and
+- the HIDDEN-SFT-family fit on {D2, D4, D5} (the three points sharing objective and spanning
+  KL 1.04-1.20), reported as a parallel descriptive result, not merely a sensitivity.
+
+Locked interpretation rule: if the all-six-point primary fit and the hidden-SFT-family fit
+DISAGREE (e.g. primary FAILs LODO because of the control/low-KL points while the hidden-SFT
+family shows a clean positive trend, or vice versa), the paper reports this as HETEROGENEITY
+across adaptation objectives — it does NOT declare a G3 PASS by cherry-picking whichever fit
+is favorable. The primary verdict (§8) is still governed by the all-six-point model; the
+hidden-SFT family is characterization, and a clean hidden-family trend with a failed six-point
+primary is reported as "KL-predictable WITHIN a fixed adaptation objective, not across objectives".
+
 ## 7. Sensitivity analyses (non-gating)
 
 Fit these without changing the primary verdict:
 
 1. linear: `y = alpha + beta * KL`;
 2. logarithmic: `y = alpha + beta * log1p(KL)`;
-3. primary square-root form forced through `(0,0)` as a clearly labeled sensitivity;
-4. hidden-SFT-only descriptive fit on D2/D4/D5 (three points, no inferential claim).
+3. primary square-root form forced through `(0,0)` as a clearly labeled sensitivity.
 
 Report their LODO metrics and AICc where defined. Do not select the best form and relabel
-it primary.
+it primary. (The hidden-SFT-family fit is NOT listed here because §6b promotes it to a
+mandatory parallel result, not an optional sensitivity.)
 
 ## 8. G3 verdict (locked on approval)
 

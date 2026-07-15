@@ -1,0 +1,18 @@
+=== STATIC AUDIT /root/autodl-tmp/pccd/outputs/labels/test.jsonl ===
+items                 : 1000
+json parse-success    : 1000/1000 = 100.00%  (gate >=99%: PASS)
+attempts distribution : {1: 999, 2: 1}
+
+per-policy label distribution (sat / vio / n_a):
+  H1:   183 /   110 /   707  (N/A 70.7%)  <-- WARN: N/A>60%
+  H2:   652 /   250 /    98  (N/A  9.8%)
+  H3:   264 /   333 /   403  (N/A 40.3%)
+  H4:   674 /   301 /    25  (N/A  2.5%)
+  H5:     0 /     0 /  1000  (N/A 100.0%)  <-- WARN: no pos/neg coverage on a HARD policy  <-- WARN: N/A>60%
+  S1:   521 /    61 /   418  (N/A 41.8%)
+  S2:   497 /   160 /   343  (N/A 34.3%)
+  S3:   489 /   170 /   341  (N/A 34.1%)
+  T1:   537 /   445 /    18  (N/A  1.8%)
+  T2:   584 /   276 /   140  (N/A 14.0%)
+
+Static audit done.

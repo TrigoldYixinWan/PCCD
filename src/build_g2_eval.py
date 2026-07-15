@@ -205,6 +205,105 @@ def build_candidates(args: argparse.Namespace) -> None:
     print(json.dumps(manifest, indent=2))
 
 
+def build_augmentation(args: argparse.Namespace) -> None:
+    output = Path(args.out)
+    manifest_path = Path(args.manifest)
+    if output.exists() or manifest_path.exists():
+        raise FileExistsError("refusing to overwrite G2 support augmentation")
+    frozen, _ = frozen_prompts(Path(args.pool_dir))
+    existing_rows = read_jsonl(Path(args.existing))
+    excluded = frozen | {row["prompt"] for row in existing_rows}
+    selected: dict[str, dict] = {}
+    counts: Counter = Counter()
+
+    pku = load_dataset(str(Path(args.data_dir) / "pku-saferlhf"), split="train")
+    privacy = []
+    for index, row in enumerate(pku):
+        prompt = row["prompt"]
+        cats = categories(row)
+        if prompt not in excluded and "Privacy Violation" in cats:
+            privacy.append((digest(prompt, args.seed), index, prompt, cats))
+    privacy.sort()
+    for _, index, prompt, cats in privacy[: args.h1]:
+        add_candidate(
+            selected,
+            prompt,
+            "pku_saferlhf_prompt",
+            "H1_AUGMENT",
+            {"dataset_index": index, "pku_harm_categories": sorted(cats)},
+        )
+        counts["H1"] += 1
+    if counts["H1"] != args.h1:
+        raise RuntimeError("insufficient H1 augmentation prompts")
+
+    rng = random.Random(args.seed + 1)
+    requested = args.s1 + args.s3
+    soft_rows = _soft_pairs(max(200_000, requested * 12), rng)
+    axis_map = {"S1": "formality", "S3": "structure"}
+    targets = {"S1": args.s1, "S3": args.s3}
+    for policy in ("S1", "S3"):
+        for row in sorted(soft_rows, key=lambda item: digest(item["prompt"], args.seed + 2)):
+            if counts[policy] >= targets[policy]:
+                break
+            prompt = row["prompt"]
+            if prompt in excluded or prompt in selected:
+                continue
+            if row.get("meta", {}).get("axis") != axis_map[policy]:
+                continue
+            add_candidate(
+                selected,
+                prompt,
+                "soft_style_prompt",
+                f"{policy}_AUGMENT",
+                row.get("meta", {}),
+            )
+            counts[policy] += 1
+        if counts[policy] != targets[policy]:
+            raise RuntimeError(f"insufficient {policy} augmentation prompts: {counts[policy]}")
+    rows = sorted(selected.values(), key=lambda row: digest(row["id"], args.seed + 3))
+    if any(row["prompt"] in excluded for row in rows):
+        raise RuntimeError("augmentation prompt overlap")
+    write_jsonl(output, rows)
+    manifest = {
+        "phase": "support_augmentation",
+        "reason": "locked base violated support/margin for H1/S1/S3",
+        "seed": args.seed,
+        "count": len(rows),
+        "stratum_counts": dict(counts),
+        "overlap_with_frozen_or_initial_candidates": 0,
+        "sha256": sha256_file(output),
+    }
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
+    manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    print(json.dumps(manifest, indent=2))
+
+
+def merge_aligned(args: argparse.Namespace) -> None:
+    outputs = [Path(args.out_candidates), Path(args.out_base), Path(args.out_labels)]
+    if any(path.exists() for path in outputs):
+        raise FileExistsError("refusing to overwrite merged G2 candidate artifacts")
+    candidate_groups = [read_jsonl(Path(path)) for path in args.candidates]
+    base_groups = [read_jsonl(Path(path)) for path in args.base]
+    label_groups = [read_jsonl(Path(path)) for path in args.labels]
+    if not (len(candidate_groups) == len(base_groups) == len(label_groups)):
+        raise ValueError("merge groups differ")
+    for groups in zip(candidate_groups, base_groups, label_groups):
+        validate_alignment(*groups)
+    candidates = [row for group in candidate_groups for row in group]
+    base = [row for group in base_groups for row in group]
+    labels = [row for group in label_groups for row in group]
+    validate_alignment(candidates, base, labels)
+    write_jsonl(outputs[0], candidates)
+    write_jsonl(outputs[1], base)
+    write_jsonl(outputs[2], labels)
+    print(json.dumps({
+        "merged_count": len(candidates),
+        "candidate_sha256": sha256_file(outputs[0]),
+        "base_sha256": sha256_file(outputs[1]),
+        "labels_sha256": sha256_file(outputs[2]),
+    }, indent=2))
+
+
 def validate_alignment(*groups: list[dict]) -> None:
     ids = [[row["id"] for row in rows] for rows in groups]
     if not ids or any(group != ids[0] for group in ids[1:]):
@@ -305,6 +404,23 @@ def parse_args() -> argparse.Namespace:
     candidate.add_argument("--per_soft", type=int, default=600)
     candidate.add_argument("--task", type=int, default=1200)
     candidate.add_argument("--seed", type=int, default=20260716)
+    augment = sub.add_parser("augment")
+    augment.add_argument("--data_dir", default=str(data))
+    augment.add_argument("--pool_dir", default=str(outputs / "pool"))
+    augment.add_argument("--existing", required=True)
+    augment.add_argument("--out", required=True)
+    augment.add_argument("--manifest", required=True)
+    augment.add_argument("--h1", type=int, default=1200)
+    augment.add_argument("--s1", type=int, default=12000)
+    augment.add_argument("--s3", type=int, default=2000)
+    augment.add_argument("--seed", type=int, default=20260717)
+    merge = sub.add_parser("merge")
+    merge.add_argument("--candidates", action="append", required=True)
+    merge.add_argument("--base", action="append", required=True)
+    merge.add_argument("--labels", action="append", required=True)
+    merge.add_argument("--out_candidates", required=True)
+    merge.add_argument("--out_base", required=True)
+    merge.add_argument("--out_labels", required=True)
     final = sub.add_parser("finalize")
     final.add_argument("--candidates", required=True)
     final.add_argument("--base", required=True)
@@ -324,6 +440,10 @@ def main() -> None:
     args = parse_args()
     if args.command == "candidate":
         build_candidates(args)
+    elif args.command == "augment":
+        build_augmentation(args)
+    elif args.command == "merge":
+        merge_aligned(args)
     else:
         finalize(args)
 

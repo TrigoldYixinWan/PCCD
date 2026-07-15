@@ -672,6 +672,18 @@ def analyze(args: argparse.Namespace) -> dict[str, Any]:
             "perturbation rows do not exactly match audit-pool ids; "
             f"missing={len(missing_perturb)}, extra={len(extra_perturb)}"
         )
+    audit_pool_order = [record["id"] for record in audit_pool_records]
+    perturb_order = [record["id"] for record in perturb_records]
+    if audit_pool_order != perturb_order:
+        mismatch = next(
+            i for i, (left, right) in enumerate(zip(audit_pool_order, perturb_order))
+            if left != right
+        )
+        raise ValidationError(
+            "perturbation row order does not match audit-pool order; "
+            f"first mismatch at index {mismatch}: "
+            f"audit={audit_pool_order[mismatch]!r}, perturb={perturb_order[mismatch]!r}"
+        )
     overlap = conflict_ids & perturb_ids
     if overlap:
         preview = sorted(overlap)[:5]
@@ -726,6 +738,7 @@ def analyze(args: argparse.Namespace) -> dict[str, Any]:
             "audit_pool": _path_metadata(audit_pool_path),
             "perturb": _path_metadata(perturb_path),
             "audit_pool_to_perturb_id_match": True,
+            "audit_pool_to_perturb_id_order_match": True,
             "cross_input_id_overlap": 0,
         },
         "conflict": {

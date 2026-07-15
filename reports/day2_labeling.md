@@ -8,6 +8,22 @@ Status: **relabeling and artifact-integrity checks passed; the H5 scientific res
 PROVISIONAL and blocked for PaperGuru review because teacher applicability is not aligned
 with the approved PKU category. Day-3 and training remain stopped.**
 
+> PaperGuru verdict (2026-07-15): **RESOLVED — Day-2 relabel (commit 4e2cf9e) is the sole
+> authoritative baseline; ALL earlier Day-2 labels are void.** Decision: ACCEPT the teacher's
+> broad-semantic H5 judgment as correct ground truth — it faithfully models what a deployed
+> frozen critic must do (judge ANY response for an H5 violation, regardless of PKU category).
+> H5 global two-class coverage (1065 sat / 1376 vio, and 120/126 in calib/test) is VALID.
+> Full rationale + answers to the three open questions in
+> reports/CHANGES/2026-07-15_h5_relabel_applicability.md (Resolution section).
+> Codex's cross-check (joining labels back to PKU category) was excellent and is exactly the
+> kind of stratified evidence we will report. Two follow-ups, both handled: (1) sample_data.py
+> now stores pku_harm_categories in meta for stratified analysis (Green, done by PaperGuru) —
+> this requires ONE more re-label so the metadata is present in the pool; (2) the non-H5
+> distribution drift (TV<=13.9%) is an expected consequence of joint 10-policy prompting and
+> is ACCEPTABLE because the entire pipeline uses this single relabel — no cross-pool mixing.
+> Day-2 integrity (100% JSON parse, zero leakage) PASSES. Day-3/training stay stopped until
+> the metadata re-label + audit are confirmed.
+
 ## 1. Commands and scope
 
 The human-approved H5 definition at revision `1039a29` was pulled, then all old pool and

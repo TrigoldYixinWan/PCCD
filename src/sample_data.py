@@ -132,8 +132,20 @@ def _load_pku(data_dir, n, rng, local_only=True):
         resp = r[f"response_{which}"]
         safe = r[f"is_response_{which}_safe"]
         sev = r.get(f"response_{which}_severity_level", None)
+        # keep the PKU harm categories of the selected response so downstream analysis
+        # can STRATIFY teacher labels by ground-truth category (e.g. isolate the true
+        # "Endangering National Security" subset for H5) WITHOUT constraining the
+        # teacher's broad-semantic judgment, which remains the deployment-faithful oracle.
+        cats = r.get(f"response_{which}_harm_category", None)
+        if isinstance(cats, dict):
+            harm_cats = sorted(k for k, v in cats.items() if v)
+        elif isinstance(cats, list):
+            harm_cats = list(cats)
+        else:
+            harm_cats = []
         out.append({"source": "pku_saferlhf", "prompt": r["prompt"], "response": resp,
-                    "meta": {"is_safe": bool(safe), "severity_level": sev, "resp_idx": which}})
+                    "meta": {"is_safe": bool(safe), "severity_level": sev, "resp_idx": which,
+                             "pku_harm_categories": harm_cats}})
     return out
 
 

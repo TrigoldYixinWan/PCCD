@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+from collections.abc import Mapping
 from pathlib import Path
 
 
@@ -90,7 +91,7 @@ def main() -> None:
         )
         # Transformers 5 returns a BatchEncoding by default.  Iterating it
         # yields field names rather than token IDs, so unwrap input_ids first.
-        if isinstance(encoded, dict):
+        if isinstance(encoded, Mapping):
             encoded = encoded["input_ids"]
         if hasattr(encoded, "tolist"):
             encoded = encoded.tolist()

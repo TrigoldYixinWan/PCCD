@@ -12,6 +12,7 @@ import argparse
 import json
 import math
 import os
+from collections.abc import Mapping
 from pathlib import Path
 
 import numpy as np
@@ -77,7 +78,7 @@ def main() -> None:
                 tokenize=True,
                 add_generation_prompt=True,
             )
-            if isinstance(encoded, dict):
+            if isinstance(encoded, Mapping):
                 encoded = encoded["input_ids"]
             if hasattr(encoded, "tolist"):
                 encoded = encoded.tolist()

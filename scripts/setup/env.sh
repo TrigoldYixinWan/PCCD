@@ -24,6 +24,11 @@ for _pccd_lib in \
 done
 unset _pccd_lib
 
+# flashinfer 0.6.x mis-parses SM120 during JIT sampling-kernel warmup and
+# reports the Blackwell GPU as older than SM75. Use vLLM's supported PyTorch
+# sampling fallback; attention remains on FlashAttention.
+export VLLM_USE_FLASHINFER_SAMPLER="${VLLM_USE_FLASHINFER_SAMPLER:-0}"
+
 # Pick the data disk: prefer autodl-tmp, fall back to autodl-fs, else /root.
 if [ -d /root/autodl-tmp ]; then
   export PCCD_DISK=/root/autodl-tmp

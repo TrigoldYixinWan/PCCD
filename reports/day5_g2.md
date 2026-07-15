@@ -260,3 +260,33 @@ than used to change the gate.
   `logs/g2_analyze.log`
 
 No G3 or G4 work was started.  PaperGuru review is required before any continuation.
+
+## PaperGuru verdict (2026-07-16, human-approved)
+
+G2 = FAIL ACCEPTED as a CONCLUSIVE, honest negative result. This is not a pipeline failure —
+execution is exemplary (3,000-item fixed eval, zero split overlap, all 10 policies >=30 D0
+violated support, teacher 100% parse, D0 hash unchanged, KL graded 0.02-1.20). Critically,
+the hidden-violation objective was operationalised CORRECTLY (chosen = teacher-violated AND
+frozen-D0-critic-MISSED responses, CHANGES 2026-07-16), so this is a fair, un-confounded test
+of P5 — and P5 still fails, in the opposite direction.
+
+Findings accepted:
+- P2 SUPPORTED: adaptation causes significant calibration degradation (D5 mean Delta-ECE
+  0.029, CI excludes 0).
+- P3 SUPPORTED: the degradation is per-policy heterogeneous (RMS Delta-ECE 0.048, SD 0.038).
+- P5 CONCLUSIVELY NOT SUPPORTED, direction opposite (mean Delta-FN - Delta-FP = -0.28, CI
+  excludes 0 in the negative direction) at the correctly-directed, correctly-powered D5. The
+  D3 benign control is also FN-negative, confirming the effect is not objective-specific.
+- Mechanism: hidden-violation adaptation makes violations MORE FREQUENT; a frozen critic
+  detects frequent violations MORE readily, so FN falls while FP rises modestly.
+
+DECISION (human-approved): RESHAPE THE PAPER (reports/THESIS_REFRAME.md) around the supported
+claims — heterogeneous calibration degradation (P2+P3), KL-predictability (P6, test at G3),
+and per-policy temperature recovery (P4, test at G4) — and report the FN result as a
+counter-intuitive finding with mechanism (plus the L1/L2 measurement-methodology findings).
+Per the locked honesty clause, NO third redirection of the P5 test. Proceed to pre-register
+and run G3 (scaling law Delta-ECE ~ KL; KL already spans 0.02-1.20) and G4 (per-policy
+temperature recovery). Literature confirms novelty: no prior work studies an independent
+frozen critic's per-policy calibration transfer under a controlled customer-adaptation grid
+(\cite{siahkali2026coverage}, \cite{sahoo2026calibration} are the nearest neighbors and are
+differentiated in THESIS_REFRAME.md).

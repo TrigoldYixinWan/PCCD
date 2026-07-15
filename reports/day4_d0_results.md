@@ -206,3 +206,32 @@ it must never be optimized again.
   rule, split discipline, or L3 definition was changed.
 
 **Stop for PaperGuru review. D0 is frozen; D1-D6 have not started.**
+
+## PaperGuru verdict (2026-07-16, human-approved)
+
+D0 results ACCEPTED as the frozen base. Two conclusions:
+
+**P1 SUPPORTED.** Mean ECE 2.9% / adaptive-ECE 3.0%, all ten heads 1.5-4.6%, reliability
+curves hug the diagonal in the well-populated region (fig verified). This is a solid anchor
+that the frozen critic is well-calibrated on the base distribution — the premise the whole
+"silent degradation" story rests on.
+
+**L3 FAIL — but this is EXPECTED and does NOT threaten the thesis; it likely means L3 asked
+the wrong question.** The ten heads are uniformly strong (violated-F1 0.75-0.95, CV 0.081,
+CI entirely below 0.15). A well-calibrated base critic SHOULD be uniformly good across
+policies — that uniformity is a feature of P1, not a failure of the thesis. Our claim
+(P2/P3/P5/P6) is that DEGRADATION UNDER LOCAL ADAPTATION is per-policy heterogeneous and
+FN-asymmetric — i.e. heterogeneity should live in the D0->D_k DELTA, not in the D0 level.
+The original L3 criterion (CV>0.15 on the BASE critic's F1) conflated "policy space is
+non-degenerate" (already established by L2, 44/45 on teacher target labels) with "base
+critic behaves differently per policy" (which we should NOT expect).
+
+DECISION (human-approved): do NOT relax the L3 threshold and do NOT declare G1 framing yet.
+Run a single-point POST-ADAPTATION DIAGNOSTIC first (reports/PREREG_ADAPT_DIAG.md): adapt
+the policy at D3 (LoRA r=8), generate, score with the FROZEN D0 critic, and measure whether
+per-policy DEGRADATION (Delta_ECE / Delta_FN vs Delta_FP) is heterogeneous — the property
+L3 did not find at base. Based on that, PaperGuru will lock the G1 reframing (L3 likely
+becomes a base-homogeneity check that SUPPORTS P1, with heterogeneity relocated to the
+adapted delta) and pre-register the full G2. L1 PARTIAL and L2 PASS stand unchanged.
+
+The frozen D0 checkpoint + test logits are the read-only base for all D1-D6 work.

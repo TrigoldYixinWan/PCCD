@@ -506,8 +506,11 @@ def run_fit(args: argparse.Namespace) -> None:
     for method in METHODS:
         means = [results[str(b)]["methods"][method]["aggregate"]["mean_ece"] for b in BUDGETS]
         intervals = [results[str(b)]["methods"][method]["aggregate"]["mean_ece_95ci"] for b in BUDGETS]
-        low = [mean - interval[0] for mean, interval in zip(means, intervals)]
-        high = [interval[1] - mean for mean, interval in zip(means, intervals)]
+        # Percentile intervals need not contain the original point estimate;
+        # clip only the plotted error-bar lengths while retaining the exact
+        # bootstrap endpoints in the JSON result.
+        low = [max(0.0, mean - interval[0]) for mean, interval in zip(means, intervals)]
+        high = [max(0.0, interval[1] - mean) for mean, interval in zip(means, intervals)]
         axis.errorbar(BUDGETS, means, yerr=np.asarray([low, high]), marker="o", capsize=3, label=method)
     axis.axhline(0.05, color="black", linestyle="--", linewidth=1, label="P1 anchor ceiling")
     axis.set_xscale("log")

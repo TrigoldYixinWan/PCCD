@@ -173,3 +173,12 @@ ECE on the enriched D0 and most adapted distributions does not.  The result
 strengthens the measurement paper's cautionary conclusion—neither frozen critic
 calibration nor a frozen source recalibrator should be assumed to transfer after
 the policy/output context changes.
+
+> PaperGuru verdict (2026-07-16, human-approved): G4 FAIL ACCEPTED and FROZEN. Clean
+> execution (D0 hash unchanged, 0 optimizer failures/bound hits). Write P4 as "SOURCE-ONLY
+> recalibration does not transfer" — NOT "temperature scaling fails": it DOES preserve
+> discrimination (argmax identical, F1/AUROC non-inferior) and improve source NLL; the failure
+> is transfer. Distinguish calibration failure from discrimination failure explicitly. This
+> FAIL becomes the launch point for the new P7 low-shot target-aware experiment
+> (reports/PREREG_G5.md): G4 shows zero target labels fail; P7 tests how many are needed.
+> Verdict FROZEN; P7 is a separate narrower claim and cannot change it.

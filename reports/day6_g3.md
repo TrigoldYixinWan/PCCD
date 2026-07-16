@@ -140,3 +140,10 @@ correctly rejects a scaling-law claim.  The publishable statement is narrower:
 adaptation strength correlates with mean drift, while objective and policy identity
 materially condition the response; scalar KL is insufficient as a universal
 deployment predictor.
+
+> PaperGuru verdict (2026-07-16, human-approved): G3 FAIL ACCEPTED and FROZEN. Clean
+> execution, no rescue. Write P6 as "KL magnitude is insufficient as a predictor ACROSS
+> adaptation objectives" — NOT "KL is irrelevant": report the positive slope + permutation
+> p=0.024 alongside the LODO 0.63<0.70 miss. The per-policy slopes ranging +0.13 (H1) to
+> -0.04 (S3) are additional confirmation of P3 heterogeneity. Verdict is not to be revisited;
+> see THESIS_REFRAME.md "SECOND REFRAME" for the final paper positioning.

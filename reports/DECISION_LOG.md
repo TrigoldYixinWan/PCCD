@@ -212,3 +212,26 @@ previously frozen result.
 - Boundary: the frozen critic, all inputs, split manifests, inference settings,
   metrics, thresholds, and seeds remain unchanged. This is a Green software
   correction, not another scientific attempt.
+
+## DL-011 — retire mean-degradation thesis after the single confirmation unseal
+
+- Date: 2026-07-16
+- Trigger: the locked independent result is `CORE_NOT_ESTABLISHED`; mean
+  new-D5 minus D0 ECE is `-0.006183`, 95% CI
+  `[-0.011054, 0.000092]`. The D0 anchor passes. P8-C is `NOT_REACHED`.
+- Decision: retire the paper's claim that hidden-violation adaptation causes
+  positive mean calibration degradation. Preserve the discovery result as
+  development evidence and report the independent non-confirmation as primary.
+- Secondary evidence: the preregistered criterion interaction is large
+  (p=`0.00009999`; SD `0.024828`, CI `[0.020943, 0.028966]`) and the old/new
+  D5 delta ordering is seed-stable (`rho=0.9515`, CI `[0.8061, 0.9879]`).
+  Because P2-C did not pass, this may be described only as a registered
+  secondary finding, not `P2_P3_CONFIRMED`.
+- New manuscript center: average calibration can mask oppositely signed,
+  criterion-level shifts; aggregate ECE is not by itself a criterion-wise
+  deployment certificate. Qualify this by the failed prevalence-robustness tag,
+  fixed-reference protocol, single model family, and pending human audit.
+- Boundary: honor Section 12 of `PREREG_CONFIRMATION.md`. No replacement
+  adapter, direction, metric, lockbox, calibrator, length correction, or
+  threshold is authorized in this project phase. The frozen human audit is the
+  only remaining empirical dependency.

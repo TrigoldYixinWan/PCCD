@@ -93,6 +93,12 @@ def load_token_contributions(
     max_mean_error = 0.0
     for index, (row, reference) in enumerate(zip(token_rows, reference_rows)):
         ell = np.asarray(row["log_ratios"], dtype=np.float64)
+        # compute_kl retains the model's singleton batch dimension in the
+        # frozen token artifact.  Accept only that exact [1, tokens] shape
+        # (or a future lossless [tokens] representation), then validate the
+        # continuation length against both frozen records.
+        if ell.ndim == 2 and ell.shape[0] == 1:
+            ell = ell[0]
         if ell.ndim != 1 or len(ell) != int(row["tokens"]) or len(ell) != int(reference["tokens"]):
             raise ValueError(f"token count mismatch for {row['id']}")
         sum_error = abs(float(ell.sum()) - float(reference["log_ratio_sum"]))

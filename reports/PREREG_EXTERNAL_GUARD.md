@@ -1,8 +1,13 @@
 # External guard criterion-calibration study — preregistration draft
 
 Date drafted: 2026-07-16
-Status: **DRAFT FOR PAPERGURU REVIEW — NOT LOCKED — NO EXTERNAL GUARD SCORING
-AUTHORIZED**
+Status: **DRAFT — REVISE-then-LOCK. NOT LOCKED. NO EXTERNAL GUARD SCORING AUTHORIZED.**
+PaperGuru adjudication of §12 is in `reports/PAPERGURU_EXTERNAL_PREREG_ADJUDICATION.md`
+(GAP_SURVIVES accepted; eight items ruled). This document becomes LOCKED only in a signed
+PaperGuru commit AFTER the metadata-only pre-lock gates (AEGIS provenance + support, native->
+common taxonomy map with two-reviewer sign-off, guard repo/revision/verbalizer registry +
+source-only comparability diagnostic, BT-COHORT relabel, substantive-domain declaration) are
+completed and frozen. Until then, Codex may fill registries but may NOT score any guard.
 
 This draft follows the surviving gap documented in
 `reports/ICLR2025_COLLISION_AUDIT.md`. It has been written before inspecting
@@ -86,7 +91,10 @@ The recommended comparisons are:
 - `BT-CONTROL`: deduplicated `30k_test`; held-out control, not advertised as a
   substantive distribution shift.
 - `BT-COHORT`: items in `330k_test` absent by exact and registered near-duplicate
-  hash from all 30k splits; collection-cohort shift.
+  hash from all 30k splits. RULED (adjudication Item 1): 30k and 330k are SCALE VARIANTS of
+  one collection, NOT independent cohorts. This is named a **within-collection
+  sampling/annotation-round shift** and treated as a WEAK shift; substantive-shift weight rests
+  on the cross-benchmark (BT<->AEGIS) and AG-RESPONSE task-shift comparisons, not on this cell.
 - `BT-TO-AEGIS`: AEGIS human prompt-test items under the common taxonomy map in
   Section 5; benchmark shift.
 
@@ -162,6 +170,14 @@ taxonomy; it is not separately tuned on each observed outcome. If any guard
 lacks a defensible probability extraction or cannot support the registered
 prompt/response task, the study is `NOT_LOCKABLE` rather than substituting a
 model after outcome access.
+
+RULED (adjudication Item 6): before target analysis, run a SOURCE-ONLY comparability
+diagnostic — each guard's source reliability diagram + support — so that ShieldGemma's
+omnibus-policy score is confirmed to be a defensible "overall unsafe probability" estimand
+comparable to Llama Guard / WildGuard. If ShieldGemma's source probability is degenerate
+(e.g. near-constant), it becomes a sensitivity guard and a pre-named 4th family replaces it as
+primary. This protects H-Rank from an incomparable score. The diagnostic reads SOURCE only and
+no target/outcome result.
 
 A fourth guard may be declared before lock as a sensitivity model, but the
 three primary guards and their order cannot change after scoring.
@@ -297,9 +313,13 @@ A robust rank reversal requires:
 - choosing `g_worst` instead of `g_mean` improves worst-criterion ECE by more
   than `r0` with a paired 95% interval excluding zero.
 
-H-Rank is supported if robust reversal occurs in at least one third of eligible
-substantive target domains, with a minimum of two domains spanning both
-benchmarks.
+H-Rank is supported if robust reversal occurs in **at least two substantive target domains that
+span both benchmarks AND include both a within-benchmark and a cross-benchmark shift type**
+(adjudication Item 8; the uninformative "one third" is dropped because the pre-declared
+substantive-domain count is small). The EXACT substantive-domain list and count are frozen in
+the lock (controls excluded; BT-COHORT flagged weak). Outcome-blind power note (registered): with
+three primary guards this reversal test is low-powered; a null H-Rank is reported as
+INCONCLUSIVE-FOR-RANK, not as evidence that no reversal exists.
 
 ### H-Generalization
 

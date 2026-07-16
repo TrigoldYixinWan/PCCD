@@ -1,7 +1,7 @@
-# PCCD — G5 / P7 Low-Shot Target-Aware Recalibration Pre-Registration (DRAFT for human lock)
+# PCCD — G5 / P7 Low-Shot Target-Aware Recalibration Pre-Registration (LOCKED 2026-07-16)
 
 Drafted 2026-07-16 after G4 FAIL and the human-approved second reframe (THESIS_REFRAME.md).
-**Not locked until PaperGuru approves.** No temperature/curve fitting or target-split scoring
+**LOCKED 2026-07-16 by PaperGuru (human-approved) after Day-8 review clarifications (§2 partition algorithm; §3 fallback removed; §4 shrinkage formula; §6 structure-benefit contrast).** No temperature/curve fitting or target-split scoring
 may run before approval. After approval, changing the splits, budgets, methods compared,
 primary point/metric, or verdict rule is Red. This tests a NEW, narrower proposition and CANNOT
 change the frozen G4 verdict.
@@ -20,6 +20,15 @@ The failure mode we must avoid is fitting a recalibrator on the same labels we e
   deterministic prompt-ID partition of the existing 3,000 G2 prompts into
   TARGET-CALIB (for fitting temperatures) and TARGET-TEST (for evaluating recovery),
   DISJOINT, seed 20260722. Record exact IDs and hashes.
+- EXACT partition algorithm (LOCKED, per Day-8 review): (1) sort the 3,000 prompt IDs
+  lexicographically; (2) permute row indices with numpy.random.default_rng(20260722).permutation;
+  (3) first 1,000 permuted IDs = TARGET-CALIB, remaining 2,000 = TARGET-TEST; (4) nested budgets
+  are the first 50/100/200/500 IDs in that frozen TARGET-CALIB order; (5) write and hash BOTH ID
+  manifests before fitting any temperature.
+- Honest naming (LOCKED): these are NEWLY FROZEN DISJOINT PARTITIONS of the previously evaluated
+  G2 3,000 rows, NOT previously unseen observations. G2/G4 reported only aggregates over the
+  3,000 rows and never fit a temperature on any of them, so no per-item recalibration leakage
+  exists; the paper will state this precisely rather than claim a fresh sample.
 - Teacher labels on these adapted outputs already exist (label-only, fixed prompt); NO new
   teacher call. Frozen D0 critic logits already exist; NO critic update.
 - The base calib split (Day-2 calib) remains the source-T reference only.
@@ -27,20 +36,34 @@ The failure mode we must avoid is fitting a recalibrator on the same labels we e
 
 ## 3. Budgets and learning curve (LOCKED)
 Label budgets b in {50, 100, 200, 500}, drawn deterministically from TARGET-CALIB (nested:
-the 50-set is a subset of the 100-set, etc.; seed 20260722). At each budget, per policy the
-available violated/satisfied/N/A support may be small — report per-policy support at each
-budget; a policy-budget cell with < 10 fitting examples for a method is UNDERPOWERED and its
-per-policy temperature falls back to the global target-T (documented, not dropped).
+the 50-set is a subset of the 100-set, etc.; seed 20260722). Each budget b gives every policy
+exactly b three-way (satisfied/violated/N_A) fitting cells, so temperature fitting is always
+defined; the earlier "<10 examples fallback" is REMOVED as redundant (per Day-8 review — it
+never triggers since N/A is a real fitting class and b>=50). Report per-policy
+satisfied/violated/N_A support at each budget for transparency.
 
 ## 4. Methods compared (LOCKED)
 All applied to the FROZEN D0 critic logits (read-only); none updates the critic:
 1. **source-T** (G4 baseline): the 10 base-calib temperatures, zero target labels.
 2. **target-global-T**: ONE temperature fit on the b target-calib labels (all policies pooled).
 3. **target-per-policy-T**: 10 temperatures fit on the b target-calib labels, per policy.
-4. **hierarchical-shrinkage**: per-policy target-T shrunk toward the global target-T with a
-   shrinkage weight tied to per-policy support (empirical-Bayes-style; exact shrinkage formula
-   fixed in code before running and logged). Motivated by ENCORE-style per-rule structure and
-   standard shrinkage; addresses sparse per-policy support at low budgets.
+4. **hierarchical-shrinkage**: per-policy target log-temperature shrunk toward the global
+   target log-temperature by a parameter-free empirical-Bayes weight (LOCKED formula, per
+   Day-8 review — a support-count weight n/(n+k) is uninformative here because every policy has
+   exactly b three-way cells at a budget, so we use NLL-curvature information instead):
+   ```text
+   tau_g        = fitted global target log-temperature
+   tau_p        = fitted per-policy target log-temperature
+   v_p          = inverse observed SUMMED-NLL curvature at tau_p (floor 1e-8; summed, not mean,
+                  so v_p scales with information/budget)
+   s2           = max( sample_variance_p(tau_p) - mean_p(v_p), 0 )
+   w_p          = s2 / (s2 + v_p)
+   tau_shrink_p = w_p * tau_p + (1 - w_p) * tau_g
+   T_shrink_p   = exp( clip(tau_shrink_p, log(0.05), log(20)) )
+   ```
+   The entire formula is recomputed WITHIN each calibration bootstrap replicate. Motivated by
+   standard empirical-Bayes shrinkage and by imbalanced/low-shot practice
+   (\cite{gao2026comprehensive}) for sparse per-policy support.
 All temperatures use the SAME parameterization/optimizer/bounds as G4 (T=exp(tau),
 tau in [log0.05, log20], bounded scalar NLL minimization, xatol 1e-8).
 
@@ -61,9 +84,10 @@ Primary point D5. Define the SMALLEST budget b* at which **target-per-policy-T**
 2. mean ECE at that budget with 95% CI upper bound <= the P1 base anchor region (<= 0.05,
    the well-calibrated regime), AND
 3. discrimination non-inferiority (mean dF1 CI lower >= -0.005; mean dAUROC CI lower >= -0.01).
-- **P7 SUPPORTED (actionable remedy):** such a b* exists at b <= 200, AND at b* target-per-
-  policy-T (or hierarchical-shrinkage) beats target-global-T on mean ECE with CI excluding 0
-  (per-policy structure helps).
+- **P7 SUPPORTED (actionable remedy):** such a b* exists at b <= 200, AND at b* the
+  per-policy structure benefit is positive, defined (LOCKED, per Day-8 review) as
+  `mean_p ECE(target-global-T) - mean_p ECE(target-per-policy-or-hierarchical-T)` with a paired
+  95% bootstrap CI whose lower bound exceeds 0 (per-policy/hierarchical structure helps).
 - **P7 PARTIAL:** recovery achieved only at b = 500, or per-policy does not beat global.
 - **P7 NEGATIVE:** no budget up to 500 recovers calibration — strengthens the cautionary
   conclusion (even modest target labels are insufficient); reported honestly, no rescue.

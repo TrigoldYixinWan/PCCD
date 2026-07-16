@@ -198,3 +198,17 @@ previously frozen result.
   changes only process orchestration and the now-explicit seed-to-resample map;
   registered budgets, replicate count, seed, estimands, methods, and thresholds
   are unchanged.
+
+## DL-010 — restart frozen-critic scoring after a pre-inference software failure
+
+- Date: 2026-07-16
+- Timing: after response generation and reference-integrity checks, but before
+  any confirmation logit or aggregate existed.
+- Finding: the first scoring launch failed on both ranks before the first
+  inference batch because the logits-only loader referenced the existing
+  `LABEL_TO_ID` constant without importing it. No logits file was written.
+- Decision: add the missing import and a complete-label regression test, then
+  restart scoring from row one. Preserve the failed launch log.
+- Boundary: the frozen critic, all inputs, split manifests, inference settings,
+  metrics, thresholds, and seeds remain unchanged. This is a Green software
+  correction, not another scientific attempt.

@@ -119,6 +119,30 @@ class ConfirmationHelperTest(unittest.TestCase):
                 "H1", "H2", "H3", "H4", "H5", "S1", "S2", "S3", "T1", "T2"
             })
 
+    def test_logits_only_loader_accepts_complete_reference_labels(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "teacher.jsonl"
+            labels = {
+                policy: "satisfied"
+                for policy in ("H1", "H2", "H3", "H4", "H5", "S1", "S2", "S3", "T1", "T2")
+            }
+            path.write_text(
+                json.dumps(
+                    {
+                        "id": "item",
+                        "prompt": "Prompt",
+                        "response": "Response",
+                        "labels": labels,
+                        "parse_ok": True,
+                    }
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            row = load_scoring_jsonl(path)[0]
+            self.assertEqual(row["_original_labels"], labels)
+            self.assertEqual(row["labels"], labels)
+
     def test_preunseal_freeze_records_clean_commit_and_hashes(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

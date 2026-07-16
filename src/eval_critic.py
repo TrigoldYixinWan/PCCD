@@ -22,6 +22,7 @@ from transformers import AutoModel, AutoTokenizer
 
 from src.critic_model import (
     ID_TO_LABEL,
+    LABEL_TO_ID,
     LABEL_STATES,
     POLICY_IDS,
     CriticBatchCollator,

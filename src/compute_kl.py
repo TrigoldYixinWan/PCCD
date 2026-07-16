@@ -31,6 +31,15 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--generations", required=True)
     parser.add_argument("--out", required=True)
     parser.add_argument("--items_out")
+    parser.add_argument(
+        "--tokens_out",
+        help="new JSONL containing the lossless per-token log-ratio vector for each item",
+    )
+    parser.add_argument(
+        "--reference_items",
+        help="frozen legacy *_kl_items.jsonl to reproduce before tokens_out is finalized",
+    )
+    parser.add_argument("--reproduction_tolerance", type=float, default=1e-6)
     parser.add_argument("--max_length", type=int, default=4096)
     parser.add_argument("--bootstrap", type=int, default=10_000)
     parser.add_argument("--seed", type=int, default=20260716)
@@ -95,6 +104,7 @@ def main() -> None:
     else:
         model = base.cuda().eval()
     item_results = []
+    token_results = []
     with torch.inference_mode():
         for row in tqdm(rows, desc="KL teacher-forcing"):
             adapted_prompt_ids = list(row["prompt_token_ids"])
@@ -130,6 +140,72 @@ def main() -> None:
                     "base_logp_sum": float(base_logp.double().sum().cpu()),
                 }
             )
+            if args.tokens_out:
+                token_results.append(
+                    {
+                        "id": row["id"],
+                        "tokens": len(generated_ids),
+                        "log_ratios": differences.tolist(),
+                    }
+                )
+
+    reproduction = None
+    if args.tokens_out:
+        if not args.reference_items:
+            raise ValueError("--tokens_out requires --reference_items for the frozen check")
+        reference_rows = [
+            json.loads(line)
+            for line in Path(args.reference_items).open(encoding="utf-8")
+            if line.strip()
+        ]
+        if [row["id"] for row in reference_rows] != [row["id"] for row in item_results]:
+            raise RuntimeError("new token rows are not ID-aligned with frozen reference items")
+        sum_errors = np.asarray(
+            [
+                abs(new["log_ratio_sum"] - old["log_ratio_sum"])
+                for new, old in zip(item_results, reference_rows)
+            ],
+            dtype=np.float64,
+        )
+        mean_errors = np.asarray(
+            [
+                abs(new["log_ratio_mean"] - old["log_ratio_mean"])
+                for new, old in zip(item_results, reference_rows)
+            ],
+            dtype=np.float64,
+        )
+        reproduction = {
+            "reference_items": str(Path(args.reference_items).resolve()),
+            "tolerance": args.reproduction_tolerance,
+            "max_abs_sum_error": float(sum_errors.max(initial=0.0)),
+            "max_abs_mean_error": float(mean_errors.max(initial=0.0)),
+            "items_over_tolerance": int(
+                np.sum(
+                    (sum_errors > args.reproduction_tolerance)
+                    | (mean_errors > args.reproduction_tolerance)
+                )
+            ),
+        }
+        if reproduction["items_over_tolerance"]:
+            raise RuntimeError(
+                "per-token recomputation failed frozen reproduction check: "
+                + json.dumps(reproduction, sort_keys=True)
+            )
+        tokens_output = Path(args.tokens_out)
+        if tokens_output.exists():
+            raise FileExistsError(f"refusing to overwrite frozen token artifact: {tokens_output}")
+        tokens_output.parent.mkdir(parents=True, exist_ok=True)
+        temporary = tokens_output.with_suffix(tokens_output.suffix + ".tmp")
+        if temporary.exists():
+            temporary.unlink()
+        try:
+            with temporary.open("w", encoding="utf-8") as handle:
+                for row in token_results:
+                    handle.write(json.dumps(row, separators=(",", ":")) + "\n")
+            temporary.replace(tokens_output)
+        finally:
+            if temporary.exists():
+                temporary.unlink()
 
     sums = np.asarray([row["log_ratio_sum"] for row in item_results], dtype=np.float64)
     counts = np.asarray([row["tokens"] for row in item_results], dtype=np.int64)
@@ -157,18 +233,28 @@ def main() -> None:
         "model": str(Path(args.model).resolve()),
         "adapter": str(Path(args.adapter).resolve()) if args.adapter else None,
         "generations": str(Path(args.generations).resolve()),
+        "per_token_artifact": str(Path(args.tokens_out).resolve()) if args.tokens_out else None,
+        "frozen_reproduction": reproduction,
     }
     output = Path(args.out)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
-    items_output = Path(args.items_out) if args.items_out else output.with_suffix(".items.jsonl")
-    with items_output.open("w", encoding="utf-8") as handle:
-        for row in item_results:
-            handle.write(json.dumps(row) + "\n")
+    items_output = (
+        Path(args.items_out)
+        if args.items_out
+        else (None if args.tokens_out else output.with_suffix(".items.jsonl"))
+    )
+    if items_output is not None:
+        with items_output.open("w", encoding="utf-8") as handle:
+            for row in item_results:
+                handle.write(json.dumps(row) + "\n")
     if not math.isfinite(primary):
         raise RuntimeError("non-finite KL estimate")
     print(json.dumps(summary, indent=2))
-    print(f"items={items_output}")
+    if items_output is not None:
+        print(f"items={items_output}")
+    if args.tokens_out:
+        print(f"tokens={args.tokens_out} reproduction={json.dumps(reproduction, sort_keys=True)}")
 
 
 if __name__ == "__main__":

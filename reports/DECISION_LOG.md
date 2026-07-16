@@ -255,3 +255,40 @@ previously frozen result.
   model as ground truth.
 - Security/blinding: exported spreadsheet display cells are formula-escaped;
   analysis rejoins only annotation IDs to the frozen JSONL/private key.
+
+## DL-013 — PaperGuru return and conditional aggregate-certificate pivot
+
+- Date: 2026-07-16
+- Authority: PaperGuru, explicit `REVISE` verdict in
+  `reports/PAPERGURU_PIVOT_VERDICT.md`.
+- Decision: the mainline is conditionally redirected from the retired
+  adaptation/mean-degradation thesis to an external criterion-calibration audit
+  of safety guards. The claim boundary is benchmark, collection,
+  distribution, task, or response-source shift; it is explicitly not policy
+  adaptation.
+- Frozen boundary: P2-P8, G1-G6, `CORE_NOT_ESTABLISHED`, the fixed-reference
+  limitations, and the prohibition on reviving P5 or mean degradation remain
+  unchanged.
+- Gate before new outcomes: a full collision audit of ICLR 2025 and adjacent
+  guard/multicalibration work must precede any external guard scoring.
+
+## DL-014 — ICLR 2025 collision gap survives narrowly
+
+- Date: 2026-07-16
+- Evidence available: full text, tables, appendix, and code of Liu et al.
+  (ICLR 2025, arXiv:2410.10414), plus adjacent guard benchmarks, Llama Guard,
+  GuardEval, toxicity subgroup calibration, and multicalibration work. No
+  external guard outcome was scored or inspected.
+- Decision: the PaperGuru NO-GO trigger does not fire. ICLR 2025 evaluates
+  binary calibration by benchmark and response-model source, but not
+  per-safety-criterion calibration, signed criterion cancellation,
+  mean-versus-worst-criterion guard rank reversal, simultaneous criterion
+  certificates, or criterion-vector stability.
+- Novelty restriction: the project may not claim that aggregate calibration
+  can hide subgroup error, worst-group calibration, per-category guard
+  performance, or calibration shift are new. The only surviving increment is a
+  safety-specific, human-labelled, cross-family/cross-taxonomy deployment
+  stress-test with simultaneous uncertainty and guard-selection consequences.
+- Next authorization: draft-only work in
+  `reports/PREREG_EXTERNAL_GUARD.md`. No external experiment is authorized
+  until PaperGuru resolves the listed feasibility items and locks the protocol.

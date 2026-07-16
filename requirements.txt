@@ -14,6 +14,9 @@ datasets
 # Calibration / conformal
 mapie==1.4.1
 netcal==1.4.0
+# Published Structured Matrix/Vector Scaling implementation used by the locked
+# independent P8 confirmation protocol (reports/PREREG_CONFIRMATION.md).
+probmetrics==1.3.0
 
 # Reward-model eval — INCOMPATIBLE with transformers 5.x; install in an ISOLATED
 # env only for the Day-9 RewardBench phase. Do NOT install into the main env.

@@ -268,6 +268,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max_len", type=int, default=4096)
     parser.add_argument("--bootstrap", type=int, default=10_000)
     parser.add_argument("--seed", type=int, default=20260715)
+    parser.add_argument(
+        "--logits_only",
+        action="store_true",
+        help="write aligned frozen-critic logits without computing/printing aggregate metrics",
+    )
     return parser.parse_args()
 
 
@@ -294,6 +299,38 @@ def load_checkpoint(checkpoint: Path) -> tuple[MultiPolicyCritic, AutoTokenizer,
     return model, tokenizer, config
 
 
+def load_scoring_jsonl(path: str | Path) -> list[dict]:
+    """Load prompt/response rows for logits-only scoring without imputing labels."""
+    records = []
+    seen = set()
+    with Path(path).open(encoding="utf-8") as handle:
+        for line_number, line in enumerate(handle, start=1):
+            if not line.strip():
+                continue
+            record = json.loads(line)
+            item_id = record.get("id")
+            if not isinstance(item_id, str) or not item_id or item_id in seen:
+                raise ValueError(f"{path}:{line_number}: missing or duplicate ID")
+            if not isinstance(record.get("prompt"), str) or not isinstance(record.get("response"), str):
+                raise ValueError(f"{path}:{line_number}: prompt/response must be strings")
+            seen.add(item_id)
+            original_labels = record.get("labels")
+            usable_labels = (
+                isinstance(original_labels, dict)
+                and all(original_labels.get(policy) in LABEL_TO_ID for policy in POLICY_IDS)
+            )
+            copied = dict(record)
+            copied["_original_labels"] = original_labels
+            if not usable_labels:
+                # The collator requires a tensor, but logits-only inference removes
+                # it before the model call. This placeholder never enters a metric.
+                copied["labels"] = {policy: LABEL_STATES[-1] for policy in POLICY_IDS}
+            records.append(copied)
+    if not records:
+        raise ValueError(f"no scoring records found in {path}")
+    return records
+
+
 def main() -> None:
     args = parse_args()
     accelerator = Accelerator(mixed_precision="bf16")
@@ -301,7 +338,11 @@ def main() -> None:
         raise RuntimeError("multiple visible GPUs require one explicit process per GPU")
     checkpoint = Path(args.checkpoint)
     model, tokenizer, checkpoint_config = load_checkpoint(checkpoint)
-    records = load_labeled_jsonl(args.data)
+    records = (
+        load_scoring_jsonl(args.data)
+        if args.logits_only
+        else load_labeled_jsonl(args.data)
+    )
     loader = DataLoader(
         LabeledCriticDataset(records),
         batch_size=args.batch,
@@ -314,7 +355,7 @@ def main() -> None:
     with torch.no_grad():
         for batch in loader:
             row_indices = batch.pop("row_indices")
-            labels = batch["labels"]
+            labels = batch.pop("labels")
             logits = model(**batch).logits
             row_indices, logits, labels = accelerator.gather_for_metrics(
                 (row_indices, logits, labels)
@@ -331,19 +372,23 @@ def main() -> None:
         rows, logits, labels = rows[order], logits[order], labels[order]
         if not np.array_equal(rows, np.arange(len(records))):
             raise RuntimeError("distributed evaluation did not return each test row exactly once")
-        probabilities = torch.softmax(torch.from_numpy(logits), dim=-1).numpy()
         predictions = logits.argmax(axis=-1)
 
         output_path = Path(args.logits)
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        with output_path.open("w", encoding="utf-8") as handle:
+        if output_path.exists():
+            raise FileExistsError(f"refusing to overwrite critic logits: {output_path}")
+        temporary_path = output_path.parent / f".{output_path.name}.tmp"
+        if temporary_path.exists():
+            raise FileExistsError(f"stale critic-logit temporary file exists: {temporary_path}")
+        with temporary_path.open("x", encoding="utf-8") as handle:
             for row_index, record in enumerate(records):
                 handle.write(
                     json.dumps(
                         {
                             "id": record["id"],
                             "source": record.get("source"),
-                            "labels": record["labels"],
+                            "labels": record.get("_original_labels", record["labels"]),
                             "logits": {
                                 policy_id: logits[row_index, policy_index].tolist()
                                 for policy_index, policy_id in enumerate(POLICY_IDS)
@@ -357,7 +402,14 @@ def main() -> None:
                     )
                     + "\n"
                 )
+        temporary_path.replace(output_path)
 
+        if args.logits_only:
+            print(f"logits_only items={len(records)} logits={output_path}")
+            accelerator.wait_for_everyone()
+            return
+
+        probabilities = torch.softmax(torch.from_numpy(logits), dim=-1).numpy()
         metrics = {
             "checkpoint": str(checkpoint.resolve()),
             "checkpoint_config": checkpoint_config,

@@ -28,6 +28,53 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def build_response_record(
+    record: dict,
+    *,
+    response: str,
+    prompt_token_ids: list[int],
+    base_prompt_token_ids: list[int],
+    generated_token_ids: list[int],
+    finish_reason: str | None,
+    variant: str,
+    adapter: str | None,
+    system_prompt: str | None,
+    max_tokens: int,
+    seed: int,
+) -> dict:
+    inherited_meta = (
+        dict(record["meta"]) if isinstance(record.get("meta"), dict) else {}
+    )
+    family_id = record.get(
+        "family_id",
+        inherited_meta.get("family_id", inherited_meta.get("query_family_id")),
+    )
+    return {
+        "id": record["id"],
+        "source": record["source"],
+        "prompt": record["prompt"],
+        "response": response,
+        "family_id": family_id,
+        "prompt_token_ids": prompt_token_ids,
+        "base_prompt_token_ids": base_prompt_token_ids,
+        "generated_token_ids": generated_token_ids,
+        "finish_reason": finish_reason,
+        "policy_variant": variant,
+        "meta": {
+            **inherited_meta,
+            "original_prompt_id": record["id"],
+            "generation": {
+                "temperature": 1.0,
+                "top_p": 1.0,
+                "max_tokens": max_tokens,
+                "seed": seed,
+                "adapter": adapter,
+                "system_prompt": system_prompt,
+            },
+        },
+    }
+
+
 def main() -> None:
     args = parse_args()
     if args.adapter and args.system_prompt:
@@ -102,28 +149,19 @@ def main() -> None:
             candidate = request_output.outputs[0]
             handle.write(
                 json.dumps(
-                    {
-                        "id": record["id"],
-                        "source": record["source"],
-                        "prompt": record["prompt"],
-                        "response": candidate.text,
-                        "prompt_token_ids": list(request_output.prompt_token_ids),
-                        "base_prompt_token_ids": list(base_ids),
-                        "generated_token_ids": list(candidate.token_ids),
-                        "finish_reason": candidate.finish_reason,
-                        "policy_variant": args.variant,
-                        "meta": {
-                            "original_prompt_id": record["id"],
-                            "generation": {
-                                "temperature": 1.0,
-                                "top_p": 1.0,
-                                "max_tokens": args.max_tokens,
-                                "seed": args.seed,
-                                "adapter": args.adapter,
-                                "system_prompt": args.system_prompt,
-                            },
-                        },
-                    },
+                    build_response_record(
+                        record,
+                        response=candidate.text,
+                        prompt_token_ids=list(request_output.prompt_token_ids),
+                        base_prompt_token_ids=list(base_ids),
+                        generated_token_ids=list(candidate.token_ids),
+                        finish_reason=candidate.finish_reason,
+                        variant=args.variant,
+                        adapter=args.adapter,
+                        system_prompt=args.system_prompt,
+                        max_tokens=args.max_tokens,
+                        seed=args.seed,
+                    ),
                     ensure_ascii=False,
                 )
                 + "\n"

@@ -142,3 +142,39 @@ previously frozen result.
   previously and no vendor semantic-family ID exists. The protocol therefore
   freezes an exact five-word-shingle Jaccard family graph and claims lexical
   near-duplicate separation, not untouched semantic-domain independence.
+
+## DL-008 — P8 numerical-guard implementation clarification
+
+- Date: 2026-07-16
+- Timing: frozen before construction of the new lockbox, new adapter training,
+  response generation, reference labeling, critic scoring, or confirmation
+  aggregate access.
+- Primary-fit guard: the 1% overall and 5% per-criterion bootstrap failure
+  ceilings apply to the two fits required for the primary P8 comparison,
+  published SMS and the paired P7 per-criterion-temperature comparator, at the
+  500-prompt budget. An unresampled failure of either primary-required method is
+  `NON_EVALUABLE`. SVS remains secondary, so its failure is reported but cannot
+  invalidate an otherwise evaluable SMS-versus-temperature test.
+- Fixed-criterion aggregation: a bootstrap replicate missing any of the ten
+  primary criterion values is excluded as a whole rather than silently
+  reweighting the remaining criteria. The registered 1% overall and 5%
+  per-criterion fit-failure ceilings remain the evaluability thresholds; the
+  count of complete paired replicates is reported for every primary contrast.
+- Reference missingness: malformed or partial reference outputs remain missing
+  cells and are never imputed. Critic logits are still scored from the preserved
+  prompt/response. Domain-level strict ten-key success below 99% or any
+  domain-by-criterion missing rate above 1% makes the affected package
+  `NON_EVALUABLE`; otherwise metrics use the available cells under the paired
+  family bootstrap.
+- Discrimination interval: the simultaneous criterion-level AUROC guard uses a
+  two-sided studentized bootstrap max-|t| interval. Its lower limits implement
+  non-inferiority; its upper limits identify the registered
+  `CONTRADICTED_OR_HARM` exit.
+- Published-implementation constraint: `probmetrics==1.3.0` documents that
+  `max_iter` and `tol` are ignored by its default BFGS SMS implementation.
+  Therefore the preregistered higher-iteration retry is not available; no
+  optimizer or penalty substitution is authorized.
+- Verdict vocabulary: confirmation uses exactly `NOT_REACHED`,
+  `NON_EVALUABLE`, `SUCCESS`, `CONTRADICTED_OR_HARM`, `PARTIAL_SUPPORT`, and
+  `NOT_ESTABLISHED`. Runs on the consumed P7 data are marked
+  `DEVELOPMENT_ONLY`, not assigned a confirmation verdict.

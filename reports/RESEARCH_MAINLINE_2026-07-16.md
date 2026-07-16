@@ -45,7 +45,7 @@ effect reversed. The defensible and potentially publishable contribution is:
 
 ### Tier 1 — mandatory confirmation
 
-One new lexical-family-disjoint, outcome-blind 3,000-prompt lockbox and one new
+One new lexical-family-disjoint, outcome-blind 4,000-prompt lockbox and one new
 D5 training seed test P2-C and P3-C. This is the minimum evidence needed to use
 "adaptation-induced, criterion-specific calibration drift" in the title or
 abstract without an explicit exploratory qualifier.
@@ -53,7 +53,7 @@ abstract without an explicit exploratory qualifier.
 ### Tier 2 — remedy
 
 Published Structured Matrix Scaling is fit using only 500 new target-calibration
-prompts and evaluated on the untouched 2,000-prompt confirmation test. Its
+prompts and evaluated on the untouched 3,500-prompt confirmation test. Its
 paired comparison against per-criterion temperature scaling is P8-C. A success
 creates a diagnosis-to-remedy loop; a failure narrows the actionability claim
 without invalidating Tier 1.

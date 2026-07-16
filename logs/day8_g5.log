@@ -1,0 +1,38 @@
+{
+  "budget_conditions": {
+    "50": {
+      "mean_reduction_vs_raw_ci_lower_gt_0": false,
+      "mean_ece_ci_upper_le_0_05": false,
+      "f1_noninferior": true,
+      "auroc_noninferior": true,
+      "recovery_achieved": false
+    },
+    "100": {
+      "mean_reduction_vs_raw_ci_lower_gt_0": true,
+      "mean_ece_ci_upper_le_0_05": false,
+      "f1_noninferior": true,
+      "auroc_noninferior": true,
+      "recovery_achieved": false
+    },
+    "200": {
+      "mean_reduction_vs_raw_ci_lower_gt_0": true,
+      "mean_ece_ci_upper_le_0_05": false,
+      "f1_noninferior": true,
+      "auroc_noninferior": true,
+      "recovery_achieved": false
+    },
+    "500": {
+      "mean_reduction_vs_raw_ci_lower_gt_0": true,
+      "mean_ece_ci_upper_le_0_05": false,
+      "f1_noninferior": true,
+      "auroc_noninferior": true,
+      "recovery_achieved": false
+    }
+  },
+  "b_star": null,
+  "structure_benefit_pass": false,
+  "structure_method": null,
+  "P7": "NEGATIVE",
+  "frozen_G4_unchanged": true
+}
+result=/root/autodl-tmp/pccd/outputs/results/g5_lowshot.json plot=/root/autodl-tmp/pccd/outputs/results/g5_learning_curve.png

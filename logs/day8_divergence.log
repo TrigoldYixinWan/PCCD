@@ -1,0 +1,55 @@
+{
+  "kl_adapted_base": {
+    "lodo_r2": 0.6317861515985691,
+    "lodo_r2_95ci": [
+      0.37053846296341036,
+      0.8130964376787814
+    ],
+    "delta_vs_kl": 0.0,
+    "delta_vs_kl_95ci": [
+      0.0,
+      0.0
+    ],
+    "permutation_p": 0.02361111111111111
+  },
+  "chi2_adapted_base": {
+    "lodo_r2": -17.09764818120384,
+    "lodo_r2_95ci": [
+      -343.47914643796577,
+      0.6172904101094724
+    ],
+    "delta_vs_kl": -17.72943433280241,
+    "delta_vs_kl_95ci": [
+      -344.26829728397144,
+      0.08660355073092474
+    ],
+    "permutation_p": 0.55
+  },
+  "reverse_kl": {
+    "lodo_r2": 0.3264094156121604,
+    "lodo_r2_95ci": [
+      -0.07443163268054626,
+      0.6466478052149395
+    ],
+    "delta_vs_kl": -0.3053767359864087,
+    "delta_vs_kl_95ci": [
+      -0.5532412843294479,
+      -0.086620763011453
+    ],
+    "permutation_p": 0.05138888888888889
+  },
+  "total_variation": {
+    "lodo_r2": 0.6459918020613775,
+    "lodo_r2_95ci": [
+      0.3925116735597494,
+      0.8189840589279566
+    ],
+    "delta_vs_kl": 0.014205650462808417,
+    "delta_vs_kl_95ci": [
+      -0.04897974360651764,
+      0.07893279135030619
+    ],
+    "permutation_p": 0.03333333333333333
+  }
+}
+result=/root/autodl-tmp/pccd/outputs/results/day8_divergence.json plot=/root/autodl-tmp/pccd/outputs/results/day8_divergence.png

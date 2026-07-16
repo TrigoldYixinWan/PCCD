@@ -1,0 +1,6 @@
+{
+  "calib_manifest": "/root/autodl-tmp/pccd/outputs/results/g5_target_calib_ids.json",
+  "calib_sha256": "e83d23388d0f14baa22335d35b3d151571e4bee5e08091711c66fdfe0d0ce01d",
+  "test_manifest": "/root/autodl-tmp/pccd/outputs/results/g5_target_test_ids.json",
+  "test_sha256": "dd820979f9c9e30d5c6e7685608a29734743dc3dc1fa3f46655501ef38ba81e9"
+}

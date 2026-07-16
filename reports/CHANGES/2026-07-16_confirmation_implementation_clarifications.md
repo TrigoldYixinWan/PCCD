@@ -18,10 +18,14 @@ Authority: temporary delegated PaperGuru decision authority, recorded in
 - Preserved query-family metadata through response generation and added
   deterministic shard reordering, adapter-equivalence validation, and
   pre-unseal artifact/environment hashing.
+- Replaced unsafe post-autograd `fork` parallelism with deterministic
+  `forkserver` workers after a development-only benchmark exposed PyTorch's
+  documented autograd/fork incompatibility. The registered seed, resamples per
+  method, replicate count, and statistics are unchanged.
 
 ## Scientific effect
 
 No frozen result, threshold, hypothesis direction, model family, adaptation
 objective, critic checkpoint, or confirmatory sample was changed. These are
 pre-outcome implementation clarifications and integrity guards. The associated
-operational choices are recorded in `DECISION_LOG` entry DL-008.
+operational choices are recorded in `DECISION_LOG` entries DL-008 and DL-009.

@@ -178,3 +178,23 @@ previously frozen result.
   `NON_EVALUABLE`, `SUCCESS`, `CONTRADICTED_OR_HARM`, `PARTIAL_SUPPORT`, and
   `NOT_ESTABLISHED`. Runs on the consumed P7 data are marked
   `DEVELOPMENT_ONLY`, not assigned a confirmation verdict.
+
+## DL-009 — process-safe deterministic P8 bootstrap execution
+
+- Date: 2026-07-16
+- Timing: resolved on the already-consumed P7 development split before any new
+  lockbox response, label, logit, calibrator fit, or aggregate result.
+- Finding: the published SMS/SVS implementation succeeds serially, but PyTorch
+  autograd rejects calibration fits in workers created by plain `fork` after a
+  parent-process fit. The initial parallel implementation therefore produced
+  software failures, not scientific measurements.
+- Decision: production P8 uses the `forkserver` multiprocessing start method
+  (with `spawn` only as a non-Linux fallback). Each replicate constructs one
+  deterministic PCG64 generator from `SeedSequence([20260724, replicate])`,
+  draws its test-family resample, then its calibration resamples in ascending
+  registered-budget order. Methods within a replicate share those exact rows.
+- Validation: on consumed development data, 160 replicates across all four
+  budgets with 16 workers completed with zero SMS/SVS/P7 fit failures. This
+  changes only process orchestration and the now-explicit seed-to-resample map;
+  registered budgets, replicate count, seed, estimands, methods, and thresholds
+  are unchanged.

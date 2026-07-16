@@ -378,8 +378,7 @@ def _bootstrap_worker(
     logits_calib = _BOOT_DATA["calib_logits"]
     labels_test = _BOOT_DATA["test_labels"]
     logits_test = _BOOT_DATA["test_logits"]
-    calib_indices = _BOOT_DATA["calib_indices"]
-    test_indices = _BOOT_DATA["test_indices"]
+    seed = _BOOT_DATA["seed"]
     factory = _BOOT_DATA.get("factory")
     n_local = stop - start
     raw = np.empty((n_local, len(POLICY_IDS), len(METRICS)), dtype=np.float64)
@@ -394,7 +393,10 @@ def _bootstrap_worker(
     failure_counts: Counter = Counter()
     failure_examples: list[str] = []
     for local_index, replicate in enumerate(range(start, stop)):
-        test_rows = test_indices[replicate]
+        rng = np.random.default_rng(np.random.SeedSequence([seed, replicate]))
+        test_rows = rng.integers(
+            0, len(labels_test), size=len(labels_test), dtype=np.int32
+        )
         test_raw, _ = _evaluate_models(
             labels_test[test_rows],
             logits_test[test_rows],
@@ -402,7 +404,7 @@ def _bootstrap_worker(
         )
         raw[local_index] = test_raw
         for budget_index, budget in enumerate(budgets):
-            calib_rows = calib_indices[budget][replicate]
+            calib_rows = rng.integers(0, budget, size=budget, dtype=np.int32)
             fitted, failures = _fit_models(
                 labels_calib[:budget][calib_rows],
                 logits_calib[:budget][calib_rows],
@@ -436,6 +438,11 @@ def _bootstrap_worker(
         dict(failure_counts),
         failure_examples[:20],
     )
+
+
+def _initialize_bootstrap_worker(data: dict) -> None:
+    global _BOOT_DATA
+    _BOOT_DATA = data
 
 
 def simultaneous_auroc_interval(
@@ -660,45 +667,40 @@ def analyze_arrays(
             for m, method in enumerate(METHODS)
         }
 
-    rng = np.random.default_rng(seed)
-    calib_indices = {
-        budget: rng.integers(
-            0, budget, size=(bootstrap_replicates, budget), dtype=np.int32
-        )
-        for budget in budgets
-    }
-    test_indices = rng.integers(
-        0,
-        len(test_labels),
-        size=(bootstrap_replicates, len(test_labels)),
-        dtype=np.int32,
-    )
     global _BOOT_DATA
-    _BOOT_DATA = {
+    bootstrap_data = {
         "budgets": budgets,
         "calib_labels": calib_labels,
         "calib_logits": calib_logits,
         "test_labels": test_labels,
         "test_logits": test_logits,
-        "calib_indices": calib_indices,
-        "test_indices": test_indices,
+        "seed": seed,
         "factory": factory,
     }
-    n_tasks = min(max(1, jobs), bootstrap_replicates)
+    _BOOT_DATA = bootstrap_data
+    n_tasks = min(max(1, jobs * 4), bootstrap_replicates)
     boundaries = np.linspace(0, bootstrap_replicates, n_tasks + 1, dtype=int)
     tasks = [
         (int(boundaries[index]), int(boundaries[index + 1]))
         for index in range(n_tasks)
         if boundaries[index] < boundaries[index + 1]
     ]
+    bootstrap_start_method = "single_process"
     if jobs == 1:
         pieces = [_bootstrap_worker(task) for task in tasks]
     else:
         if factory is not None:
             raise ValueError("custom calibrator factories are supported only with jobs=1")
-        if "fork" not in mp.get_all_start_methods():
-            raise RuntimeError("parallel P8 bootstrap requires a fork-capable platform")
-        with mp.get_context("fork").Pool(processes=len(tasks)) as pool:
+        available = mp.get_all_start_methods()
+        method = "forkserver" if "forkserver" in available else "spawn"
+        bootstrap_start_method = method
+        if method == "forkserver":
+            mp.set_forkserver_preload(["src.fit_g6"])
+        with mp.get_context(method).Pool(
+            processes=min(max(1, jobs), len(tasks)),
+            initializer=_initialize_bootstrap_worker,
+            initargs=(bootstrap_data,),
+        ) as pool:
             pieces = pool.map(_bootstrap_worker, tasks)
     boot_raw = np.empty(
         (bootstrap_replicates, len(POLICY_IDS), len(METRICS)), dtype=np.float64
@@ -916,6 +918,8 @@ def analyze_arrays(
             "primary_budget": PRIMARY_BUDGET,
             "bootstrap_replicates": bootstrap_replicates,
             "bootstrap_seed": seed,
+            "bootstrap_rng": "PCG64 SeedSequence([seed, replicate]); test then ascending-budget calibration draws",
+            "multiprocessing_start_method": bootstrap_start_method,
             "paired_two_stage": True,
             "shared_resamples_across_methods": True,
             "refit_all_methods_each_calibration_resample": True,

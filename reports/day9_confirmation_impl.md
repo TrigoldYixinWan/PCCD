@@ -2,9 +2,11 @@
 
 Date: 2026-07-16
 
-Status: **CPU implementation PASS; remote dependency/capacity preflight pending.**
-No new adapter, lockbox response, reference label, critic logit, calibrator fit,
-or aggregate confirmation result was produced during this implementation phase.
+Status: **implementation and AutoDL dependency/runtime preflight PASS; real
+lockbox construction pending.**
+No new adapter, lockbox response, reference label, critic logit, confirmatory
+calibrator fit, or aggregate confirmation result was produced during this
+implementation phase.
 
 ## Locked package implemented
 
@@ -45,17 +47,23 @@ affected package `NON_EVALUABLE`.
 - `python -m compileall -q src`: PASS.
 - `git diff --check`: PASS.
 
-The local Windows environment does not contain `probmetrics`; the test
-intentionally reports that integration as skipped. The pinned package is
-already installed on AutoDL and must pass the official API smoke test there
-before any confirmation outcome is generated.
+The local Windows environment does not contain `probmetrics`; the local test
+therefore reports integration as skipped. On AutoDL, `probmetrics==1.3.0`
+passed constructor-default verification and real SMS/SVS fit/predict tests;
+`pip check` reported no broken dependencies.
+
+The first development-only timing probe also exposed that plain `fork` workers
+cannot run PyTorch autograd after a parent calibration fit. The implementation
+was changed before new outcomes to deterministic `forkserver` workers with a
+per-replicate `SeedSequence([20260724, replicate])`. A 160-replicate,
+four-budget, 16-worker benchmark on the consumed P7 split completed in 23.2
+seconds with zero fit failures, making the locked 10,000-replicate run
+operationally feasible.
 
 ## Remaining pre-outcome checks
 
-1. Run the official `probmetrics==1.3.0` integration test and a small
-   development-only timing benchmark on AutoDL.
-2. Construct the real lockbox and confirm exact quotas, zero historical-family
+1. Construct the real lockbox and confirm exact quotas, zero historical-family
    overlap, and frozen hashes.
-3. Train and validate the one allowed new D5 seed, then execute the generation,
+2. Train and validate the one allowed new D5 seed, then execute the generation,
    reference, critic, audit-freeze, and one-unseal phases in
    `scripts/day9/run_confirmation.sh`.

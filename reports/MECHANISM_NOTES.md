@@ -55,10 +55,42 @@ shift signal that source-only scaling lacks. hierarchical shrinkage across per-p
 temperatures is motivated by imbalanced/low-shot practice (\cite{gao2026comprehensive} for
 imbalance; standard empirical-Bayes shrinkage) to handle sparse per-policy support.
 
+## Resolution of the Day-8 artifact blocker (human-approved 2026-07-16)
+
+Codex correctly BLOCKED (CHANGES 2026-07-16_divergence_artifact_insufficiency.md): the frozen
+D*_kl_items.jsonl store only per-response token count, log-ratio SUM, and log-ratio MEAN. A
+token-level chi^2 plug-in needs the exponential/second moment of the per-token log-ratios, and
+mean_t exp(ell_t) != exp(mean_t ell_t) (Jensen). The requested statistic is NOT identifiable
+from the frozen schema, and the two proxies (geometric-mean ratio; sequence-level ratio from
+the sum) would change the estimand. Refusing them was correct.
+
+DECISION: AUTHORIZE option 3 (re-run deterministic teacher-forcing to persist per-token
+log-ratios), because the chi^2 analysis is the highest-value upgrade available (it can turn the
+P6 negative into a positive methodological contribution). Locked boundaries for this authorized
+recomputation:
+- Use the EXACT frozen D1-D6 response text and D0/adapted adapters already saved; do NOT
+  regenerate any response (no sampling), do NOT call the teacher, do NOT score the critic.
+- Extend src/compute_kl.py to persist, per item, the full per-token log-ratio vector (or a
+  lossless per-token stream) to a NEW file (e.g. $PCCD_OUT/g2/<point>_kl_tokens.jsonl); do NOT
+  overwrite the frozen *_kl_items.jsonl.
+- The re-run must REPRODUCE the existing per-item log_ratio_sum/mean to a tight tolerance
+  (<=1e-6) as a correctness check that teacher-forcing is deterministic and identical to the
+  frozen KL; report this reproduction check. If it does not reproduce, STOP (something is not
+  deterministic) and report.
+- Hash and freeze the new per-token artifacts before computing any divergence.
+- Then compute the token-level chi^2 plug-in (and reverse-KL, TV sensitivities) and re-run the
+  LOCKED G3 primary form under the SAME LODO/permutation/bootstrap protocol.
+
+This authorized recomputation changes NO estimand and NO frozen result: it only materializes an
+intermediate quantity (per-token log-ratios) that the original run computed in memory but did
+not persist. The KL-based G3 verdict stays FROZEN and primary; the divergence analysis stays
+non-gating and is interpreted per §A.
+
 ## Boundaries (Red)
 - The chi^2 re-analysis is pre-specified HERE, before computation; it is non-gating and does
   not alter the frozen KL-based G3 verdict.
 - No frozen gate (P2..P6, L1..L3) verdict changes. New analyses only add explanation or test
   new narrower propositions (P7).
-- Frozen D0 critic read-only; teacher label-only fixed-prompt; no new teacher/critic calls
-  for the chi^2 re-analysis (it reuses stored per-item log-ratio records).
+- The authorized teacher-forcing recomputation reuses frozen responses/adapters, persists a new
+  per-token file, must reproduce the frozen per-item KL to <=1e-6, and calls NO teacher and NO
+  critic. Frozen D0 critic and all *_kl_items.jsonl remain read-only/untouched.

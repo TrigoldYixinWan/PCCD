@@ -164,6 +164,19 @@ per-policy point estimates here, but tracks them closely at larger budgets.
   which does not exist.
 - **P7: NEGATIVE.** Frozen G4 remains unchanged.
 
+> PaperGuru verdict (2026-07-16, human-approved): P7 NEGATIVE ACCEPTED and FROZEN. Clean run.
+> IMPORTANT positive secondary finding retained for the paper: per-policy target scaling
+> significantly beats global target scaling at EVERY budget (b=500 advantage 0.034 [0.024,
+> 0.037]) and preserves discrimination — "policy structure matters, but scalar per-policy
+> temperature is insufficient to fully restore base calibration from 50-500 labels."
+> A literature review (MECHANISM_NOTES / new refs) shows temperature scaling has a KNOWN
+> ceiling (Dogah 2026, held out) and structured matrix scaling is the evidence-backed stronger
+> step (Berta 2025, held out). Therefore ONE final actionability attempt is authorized:
+> P8 structured (diagonal-plus-bias) matrix scaling, reports/PREREG_G6.md, reusing the exact
+> frozen P7 splits, with a locked overfitting guard (source-calib-only lambda selection). If P8
+> also fails, the paper reports a METHOD-CLASS-level negative (temperature AND matrix scaling
+> both insufficient from small target budgets) — stronger than P7 alone. P7 verdict FROZEN.
+
 ## Anomalies and implementation notes
 
 - A percentile two-stage bootstrap CI need not contain the unresampled point

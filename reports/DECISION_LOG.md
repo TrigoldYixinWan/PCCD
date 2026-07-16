@@ -235,3 +235,23 @@ previously frozen result.
   adapter, direction, metric, lockbox, calibrator, length correction, or
   threshold is authorized in this project phase. The frozen human audit is the
   only remaining empirical dependency.
+
+## DL-012 — lock human-audit workflow before annotation
+
+- Date: 2026-07-16
+- Timing: after the model-based confirmation verdict, before any human label
+  exists.
+- Decision: freeze two independently ordered annotator worksheets, exact
+  three-state labels, disagreement-only third-person adjudication, and an
+  inverse-probability-weighted family-cluster analysis in
+  `reports/PREREG_HUMAN_AUDIT.md`.
+- Primary diagnostic: weighted reference–human mismatch, equal-criterion domain
+  difference, and a Helmert domain×criterion interaction with 10,000
+  family-bootstrap replicates (seed `20260726`). Human labels do not alter any
+  P2/P3/P8 verdict.
+- Diagnostic vocabulary: `NON_EVALUABLE`,
+  `DIFFERENTIAL_REFERENCE_ERROR`, or
+  `NO_DIFFERENTIAL_ERROR_DETECTED`. The last does not certify the reference
+  model as ground truth.
+- Security/blinding: exported spreadsheet display cells are formula-escaped;
+  analysis rejoins only annotation IDs to the frozen JSONL/private key.

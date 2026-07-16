@@ -292,3 +292,21 @@ previously frozen result.
 - Next authorization: draft-only work in
   `reports/PREREG_EXTERNAL_GUARD.md`. No external experiment is authorized
   until PaperGuru resolves the listed feasibility items and locks the protocol.
+
+## DL-015 — AEGIS fails the pre-lock human criterion-support gate
+
+- Date: 2026-07-16
+- Evidence scope: official AEGIS 2.0 dataset card and NAACL 2025 paper plus a
+  hash-pinned, read-only audit of 28,216 original annotation units. No guard
+  output, ECE, or ranking was inspected.
+- Finding: AEGIS supplies a human full-dialogue annotation and uses an LLM jury
+  for unsafe response labels. All 5,236 base rows with
+  `response_label_source == human` are safe; human response-positive support is
+  zero for every native or aggregated criterion.
+- Decision: mark AEGIS `NOT_LOCKABLE` as a primary criterion benchmark. The
+  requirement of at least two human-labelled benchmarks with at least four
+  common criteria and 100 positive/100 negative support is not met.
+- Stop rule: keep `PREREG_EXTERNAL_GUARD.md` in `DRAFT` and do not perform the
+  taxonomy freeze, guard registry, substantive-domain freeze, source-only
+  diagnostic, or target scoring. Await PaperGuru's decision to recover native
+  WildGuardTest categories or add a third benchmark.

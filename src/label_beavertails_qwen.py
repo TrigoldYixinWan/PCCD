@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import platform
 from pathlib import Path
 from typing import Any
 
@@ -186,6 +187,50 @@ def main() -> None:
                 }
                 output.write(json.dumps(record, ensure_ascii=False) + "\n")
             output.flush()
+
+    completed_rows = load_completed(args.out)
+    expected_ids = {str(row["id"]) for row in rows}
+    if completed_rows != expected_ids:
+        raise RuntimeError(
+            f"Qwen output ID mismatch: observed {len(completed_rows)}, "
+            f"expected {len(expected_ids)}"
+        )
+    parse_failures = 0
+    with args.out.open("r", encoding="utf-8") as handle:
+        for line in handle:
+            parse_failures += int(json.loads(line).get("parse_ok") is not True)
+    meta_path = Path(str(args.out) + ".meta.json")
+    if meta_path.exists():
+        raise FileExistsError(f"refusing to overwrite Qwen formal metadata: {meta_path}")
+    import vllm
+
+    meta = {
+        "schema": "pccd.labelsource.qwen_proxy_manifest.v1",
+        "status": "FORMAL_COMPLETE",
+        "model": schema["annotator"]["model"],
+        "revision": schema["annotator"]["revision"],
+        "schema_sha256": args.schema_sha256.lower(),
+        "input_manifest_sha256": args.input_sha256.lower(),
+        "shard": args.shard,
+        "num_shards": args.num_shards,
+        "rows": len(completed_rows),
+        "parse_failures": parse_failures,
+        "one_call_no_retry_no_repair": True,
+        "output_sha256": sha256_file(args.out),
+        "execution_only": {
+            "batch_size": args.batch_size,
+            "gpu_memory_utilization": args.gpu_memory_utilization,
+            "max_model_len": args.max_model_len,
+        },
+        "environment": {
+            "python": platform.python_version(),
+            "vllm": vllm.__version__,
+        },
+    }
+    meta_path.write_bytes(
+        (json.dumps(meta, indent=2, sort_keys=True) + "\n").encode("utf-8")
+    )
+    print(json.dumps(meta, indent=2, sort_keys=True))
 
 
 if __name__ == "__main__":

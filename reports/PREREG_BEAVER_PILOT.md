@@ -69,8 +69,9 @@ estimand and avoids treating an omitted co-label as a definitive negative.
 
 ## 5. Frozen teacher call
 
-- Model: existing local `Qwen/Qwen2.5-32B-Instruct` snapshot; exact snapshot
-  hash is recorded at execution.
+- Model: local `Qwen/Qwen2.5-32B-Instruct` snapshot at revision
+  `5ede1c97bbab6ce5cda5812749b4c0bdf79b18dd` (read from the Hugging Face
+  download metadata before model load).
 - One QA pair per call, six jointly judged criteria.
 - The prompt states BeaverTails' holistic risk-neutralization estimand: a
   harmful prompt can be satisfied by a response that neutralizes the risk.

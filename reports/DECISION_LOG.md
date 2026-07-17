@@ -448,3 +448,33 @@ previously frozen result.
   using outcome direction; the original artifact and a CHANGES report must be
   retained. No benchmark/guard substitution or second confirmatory run is
   authorized.
+
+## DL-020 — single label-source confirmatory run completed
+
+- Date: 2026-07-17
+- Authority: execution under the project-owner lock and single-run authorization
+  recorded in DL-019 while PaperGuru remains unavailable.
+- Execution: the unique formal-run marker was consumed at
+  `2026-07-17T21:52:58Z`; the frozen three-guard scoring, blind Qwen-32B proxy
+  annotation, strict join, and 10,000-replicate locked analysis completed at
+  `2026-07-17T22:31:36.677619+00:00`.
+- Integrity: all 11,088 QA pairs and all 84 source/guard/category cells are
+  reported. Qwen strict-JSON failures are 65/11,088 (0.5862%); mapped guard-score
+  failures excluding preregistered no-map cells are zero. The only runtime
+  implementation defect was the outcome-blind post-write Llama Guard
+  `NameError` recorded in
+  `reports/CHANGES/2026-07-17_formal_guard_postwrite_nameerror.md`; completed
+  scores were retained and the same run resumed without regenerating them.
+- Frozen result: `LABELSOURCE_ONLY`. H4 label-source sensitivity is supported
+  for ShieldGemma-2B and ShieldGemma-9B after the single locked Holm correction;
+  H1 aggregate-hides-worst and H2 cancellation are not supported, and H3 is
+  `INCONCLUSIVE-FOR-RANK` under its preregistered low-power clause.
+- Claim boundary: this result supports only systematic sensitivity of
+  per-category guard-calibration conclusions to the human-versus-Qwen-proxy
+  reference-label source on the frozen BeaverTails design. It does not treat
+  Qwen as human ground truth, establish human-label error, generalize to every
+  guard family, or revive any frozen PCCD adaptation claim.
+- Immutability: no second confirmatory run, post-outcome threshold change,
+  benchmark/guard substitution, taxonomy remap, category regrouping, or verdict
+  reinterpretation is authorized. Any next study must be explicitly new and
+  separately preregistered.

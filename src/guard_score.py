@@ -275,6 +275,30 @@ def sanity_verdict(rows: list[dict[str, Any]]) -> dict[str, Any]:
         )
         for interface in interfaces
     }
+    pooled_range = max(probabilities) - min(probabilities)
+    passed = (
+        finite_in_range
+        and all(count >= 2 for count in unique_by_interface.values())
+        and pooled_range > 0.05
+    )
+    return {
+        "finite_in_range": finite_in_range,
+        "unique_probability_count_by_interface": unique_by_interface,
+        "pooled_probability_min": min(probabilities),
+        "pooled_probability_max": max(probabilities),
+        "pooled_probability_range": pooled_range,
+        "threshold": 0.05,
+        "pass": passed,
+        "explicitly_not_computed": [
+            "accuracy",
+            "ECE",
+            "AUROC",
+            "F1",
+            "reliability",
+            "threshold selection",
+            "guard ranking",
+        ],
+    }
 
 
 def load_completed(path: Path, guard_id: str) -> set[tuple[str, str]]:
@@ -482,30 +506,6 @@ def run_formal(args: argparse.Namespace) -> None:
     }
     meta_path.write_bytes((json.dumps(meta, indent=2, sort_keys=True) + "\n").encode("utf-8"))
     print(json.dumps(meta, indent=2, sort_keys=True))
-    pooled_range = max(probabilities) - min(probabilities)
-    passed = (
-        finite_in_range
-        and all(count >= 2 for count in unique_by_interface.values())
-        and pooled_range > 0.05
-    )
-    return {
-        "finite_in_range": finite_in_range,
-        "unique_probability_count_by_interface": unique_by_interface,
-        "pooled_probability_min": min(probabilities),
-        "pooled_probability_max": max(probabilities),
-        "pooled_probability_range": pooled_range,
-        "threshold": 0.05,
-        "pass": passed,
-        "explicitly_not_computed": [
-            "accuracy",
-            "ECE",
-            "AUROC",
-            "F1",
-            "reliability",
-            "threshold selection",
-            "guard ranking",
-        ],
-    }
 
 
 def main() -> None:

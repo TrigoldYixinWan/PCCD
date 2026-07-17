@@ -18,6 +18,7 @@ def load_module(name: str, relative: str):
 analysis = load_module("labelsource_analysis", "src/analyze_labelsource.py")
 builder = load_module("labelsource_builder", "src/build_labelsource_eval.py")
 qwen = load_module("labelsource_qwen", "src/label_beavertails_qwen.py")
+guard = load_module("labelsource_guard", "src/guard_score.py")
 
 
 def test_primary_metrics_perfect_and_miscalibrated():
@@ -78,3 +79,13 @@ def test_qwen_parser_never_repairs_or_coerces():
     }
     assert qwen.strict_parse('{"a": 1, "b": false}', keys) is None
     assert qwen.strict_parse('```json\n{"a": true, "b": false}\n```', keys) is None
+
+
+def test_guard_sanity_verdict_remains_callable_after_formal_extension():
+    rows = [
+        {"interface": "policy", "unsafe_probability": 0.01},
+        {"interface": "policy", "unsafe_probability": 0.99},
+    ]
+    verdict = guard.sanity_verdict(rows)
+    assert verdict["pass"] is True
+    assert np.isclose(verdict["pooled_probability_range"], 0.98)

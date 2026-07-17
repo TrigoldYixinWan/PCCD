@@ -362,3 +362,25 @@ previously frozen result.
   any single H still yields a reportable finding via the §8 ladder
   (AUDIT_ONLY / LABELSOURCE_ONLY). This is deliberate: the design cannot collapse
   the way the PCCD mean-degradation causal claim did.
+
+## DL-017 — project-owner authorization during PaperGuru outage
+
+- Date: 2026-07-18
+- Authority: direct human authorization from the project owner in the active
+  Codex session while PaperGuru is temporarily unavailable.
+- Evidence reviewed before authorization: pinned-weight SHA-256 verification
+  for all three primary guards; the retained failed Llama Guard sanity artifact;
+  the eight-case token-position diagnostic; the corrected Llama Guard sanity;
+  and the independent ShieldGemma-2B/9B sanity outputs documented in
+  `reports/day12_guard_sanity_intervention.md`.
+- Decision: accept the Green Llama Guard semantic-label-position correction in
+  commit `c231da1`, accept §11.2 distribution sanity as PASS for all three
+  primary guards, authorize PR #13 for merge, and authorize Codex to continue
+  the remaining **metadata-only** pre-lock work while PaperGuru is offline.
+- Scientific boundary: this authorization does not convert
+  `PREREG_LABELSOURCE_GUARD.md` from `DRAFT` to `LOCKED`, waive the two-reviewer
+  blind taxonomy-map requirement, authorize formal BeaverTails guard scoring or
+  Qwen proxy annotation, alter hypotheses/thresholds, or permit outcome access.
+- Next human gate: after the taxonomy map and Qwen annotation protocol are
+  frozen, the project owner or PaperGuru must explicitly approve the complete
+  lock package before the single confirmatory run begins.

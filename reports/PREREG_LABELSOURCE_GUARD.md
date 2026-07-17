@@ -1,8 +1,15 @@
 # PREREG — Aggregate Calibration Is Not a Safety Certificate (external guard study)
 
-Status: **DRAFT for PaperGuru+human lock — NOT LOCKED — NO GUARD SCORING / NO ANNOTATION /
-NO OUTCOME INSPECTION AUTHORIZED until the pre-lock metadata gates pass and PaperGuru signs a
-LOCKED commit.**
+Status: **LOCKED on 2026-07-17 by explicit project-owner authorization — ONE FORMAL RUN
+AUTHORIZED.**
+
+Lock basis: all §11 pre-lock metadata gates passed in the outcome-blind package merged by PR #14
+(`01f8bca`); the project owner then explicitly accepted that complete package and authorized this
+LOCKED commit plus the single formal guard-scoring, Qwen blind-annotation, and analysis run. The
+pre-lock manifest remains preserved with SHA-256
+`353d884d02d8daefce23b45d9a9e5997fd564c95af8a00ee17b8bbc4145d6d23`. From this point onward,
+hypotheses, thresholds, PRIMARY/RARE lists, objective/subjective groups, model revisions,
+taxonomy mappings, parsing rules, and verdict logic are immutable.
 
 Lineage: this is a NEW research direction. All PCCD verdicts (P1-P8, G1-G6,
 CORE_NOT_ESTABLISHED) remain FROZEN and are NOT reopened. The PCCD experiment is at most a

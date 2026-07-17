@@ -384,3 +384,42 @@ previously frozen result.
 - Next human gate: after the taxonomy map and Qwen annotation protocol are
   frozen, the project owner or PaperGuru must explicitly approve the complete
   lock package before the single confirmatory run begins.
+
+## DL-018 — outcome-blind completion of the label-source pre-lock package
+
+- Date: 2026-07-17
+- Authority: Codex acting under the project-owner's metadata-only delegation in
+  DL-017 while PaperGuru remains unavailable. This entry records pre-lock
+  implementation and adjudication; it is not the final human lock signature.
+- Evidence scope: official taxonomy definitions; inference-free BeaverTails
+  support counts; pinned model metadata and distribution-only sanity artifacts;
+  and a synthetic strict-JSON parser smoke test. No formal BeaverTails guard
+  score, Qwen proxy annotation, calibration statistic, hypothesis outcome, or
+  ranking was generated or inspected.
+- Unit correction accepted for the draft: 33,396 annotation rows aggregate to
+  11,088 independent exact prompt-response pairs, of which 6,152 are
+  majority-unsafe. The fixed `>=100` positive and `>=100` benign-negative threshold
+  yields 10 PRIMARY and 4 RARE native categories.
+- Taxonomy decision: two isolated, outcome-blind Codex reviewers mapped only a
+  SHA-frozen definition packet. They agreed on all ShieldGemma target sets and
+  13/14 Llama Guard target sets. The only target-set dispute was conservatively
+  adjudicated by excluding S8 from `non_violent_unethical_behavior`; all
+  disagreements and rationales remain in the signed reviewer artifacts and
+  `reports/taxonomy_map.json`. These are explicitly AI reviews, not human domain
+  annotations, and final project-owner/PaperGuru acceptance remains required.
+- Qwen decision: freeze Qwen2.5-32B-Instruct revision
+  `5ede1c97bbab6ce5cda5812749b4c0bdf79b18dd`, the blind 11,088-item input hash,
+  exact BeaverTails-14 Boolean schema, objective/subjective partition, and a
+  one-call temperature-0/no-retry/no-repair protocol. Qwen remains an LLM proxy
+  label source, never human ground truth and never an evaluated guard.
+- Scope clarification before outcomes: remove optional WildGuard and NemoGuard
+  hard-label comparators from the confirmatory run because they do not provide
+  the registered probability estimand and would add an unregistered analysis.
+  The three frozen primary guards and all hypotheses/thresholds are unchanged.
+- Gate result: §11.1–§11.4 are machine-validated as ready for human lock in
+  `reports/labelsource_prelock_manifest.json`; the manifest explicitly sets
+  `formal_outcomes_authorized=false`.
+- Stop rule: keep `PREREG_LABELSOURCE_GUARD.md` as `DRAFT`. Do not run formal
+  guard scoring, Qwen batch annotation, or reliability/ranking analysis until
+  the project owner or PaperGuru explicitly accepts this complete package and a
+  separate commit records `LOCKED`.

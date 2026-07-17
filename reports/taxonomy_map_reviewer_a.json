@@ -1,0 +1,249 @@
+{
+  "reviewer_id": "A",
+  "packet_sha256": "71ea53cb5e7a7f64b7b8e4fa5c5c1711b4b3db06bfae890d075bb61d07fe860d",
+  "entries": [
+    {
+      "source_id": "animal_abuse",
+      "llama_guard_3": {
+        "target_ids": [
+          "S1"
+        ],
+        "relation": "partial_overlap",
+        "rationale": "S1 explicitly includes animal abuse, but it is limited to responses enabling, encouraging, or endorsing unlawful violence and also covers many human violent crimes; the source additionally covers neglect, distress, and any cruelty or harmful behavior."
+      },
+      "shieldgemma": {
+        "target_ids": [],
+        "relation": "no_defensible_mapping",
+        "rationale": "No ShieldGemma policy explicitly covers harm to animals; dangerous_content describes harm to oneself or others in a context centered on human-directed dangers."
+      }
+    },
+    {
+      "source_id": "child_abuse",
+      "llama_guard_3": {
+        "target_ids": [
+          "S1",
+          "S4"
+        ],
+        "relation": "partial_overlap",
+        "rationale": "S1 explicitly includes child abuse and S4 covers sexual abuse of children, while the source also includes emotional abuse, neglect, exploitation, and rights violations beyond the stated scopes of those policies."
+      },
+      "shieldgemma": {
+        "target_ids": [
+          "dangerous_content",
+          "harassment",
+          "sexually_explicit_information"
+        ],
+        "relation": "partial_overlap",
+        "rationale": "Child abuse can constitute harm to another, abusive targeting of an individual, or references to sexual acts, but the source also includes neglect and exploitation that need not meet those policies, and each target policy covers substantial content unrelated to children."
+      }
+    },
+    {
+      "source_id": "controversial_topics,politics",
+      "llama_guard_3": {
+        "target_ids": [
+          "S13"
+        ],
+        "relation": "source_broader_than_target",
+        "rationale": "The source broadly covers political and controversial discussion, whereas S13 covers only factually incorrect information about electoral systems or the time, place, or manner of voting."
+      },
+      "shieldgemma": {
+        "target_ids": [],
+        "relation": "no_defensible_mapping",
+        "rationale": "ShieldGemma has no native policy for politics, controversial topics, elections, or sensitive disagreement as such."
+      }
+    },
+    {
+      "source_id": "discrimination,stereotype,injustice",
+      "llama_guard_3": {
+        "target_ids": [
+          "S10"
+        ],
+        "relation": "source_broader_than_target",
+        "rationale": "S10 covers demeaning or dehumanizing people based on sensitive characteristics, while the source also covers unequal treatment, generalized stereotypes, affiliations beyond the listed characteristics, and broader violations of rights."
+      },
+      "shieldgemma": {
+        "target_ids": [
+          "hate_speech"
+        ],
+        "relation": "source_broader_than_target",
+        "rationale": "The hate_speech policy explicitly includes discrimination and vilification based on protected identities, while the source extends to stereotypes, injustice, personal affiliations, and unequal treatment not limited to protected groups."
+      }
+    },
+    {
+      "source_id": "drug_abuse,weapons,banned_substance",
+      "llama_guard_3": {
+        "target_ids": [
+          "S2"
+        ],
+        "relation": "source_narrower_than_target",
+        "rationale": "S2 explicitly includes drug crime and weapons crime but also encompasses many other non-violent crimes outside the source category."
+      },
+      "shieldgemma": {
+        "target_ids": [
+          "dangerous_content"
+        ],
+        "relation": "partial_overlap",
+        "rationale": "dangerous_content explicitly covers access to or construction of firearms and explosives, but it does not define a drug or banned-substance policy, while its other dangers extend beyond this source."
+      }
+    },
+    {
+      "source_id": "financial_crime,property_crime,theft",
+      "llama_guard_3": {
+        "target_ids": [
+          "S2"
+        ],
+        "relation": "source_narrower_than_target",
+        "rationale": "S2 explicitly includes financial and property crime, but its scope also includes trafficking, intimidation, drug crime, weapons crime, and cybercrime."
+      },
+      "shieldgemma": {
+        "target_ids": [],
+        "relation": "no_defensible_mapping",
+        "rationale": "No ShieldGemma policy specifically addresses fraud, corruption, money laundering, theft, or other financial and property crimes."
+      }
+    },
+    {
+      "source_id": "hate_speech,offensive_language",
+      "llama_guard_3": {
+        "target_ids": [
+          "S10"
+        ],
+        "relation": "source_broader_than_target",
+        "rationale": "S10 covers demeaning or dehumanizing protected groups, while the source also includes vulgar, crude, or offensive language that need not target a sensitive characteristic."
+      },
+      "shieldgemma": {
+        "target_ids": [
+          "hate_speech",
+          "harassment"
+        ],
+        "relation": "partial_overlap",
+        "rationale": "hate_speech covers attacks on protected groups and harassment covers malicious or abusive targeting of individuals, but the source also includes non-targeted vulgar or crude language, while harassment includes threats and victim disparagement not necessarily captured by the source's hate-based component."
+      }
+    },
+    {
+      "source_id": "misinformation_regarding_ethics,laws_and_safety",
+      "llama_guard_3": {
+        "target_ids": [
+          "S6",
+          "S13"
+        ],
+        "relation": "partial_overlap",
+        "rationale": "S6 overlaps where misleading legal or safety claims appear as specialized advice or declare danger safe, and S13 overlaps for false voting-system or voting-procedure information; the source additionally covers general ethical, legal, regulatory, and safety misinformation, while S6 also includes advice that need not be false."
+      },
+      "shieldgemma": {
+        "target_ids": [
+          "dangerous_content"
+        ],
+        "relation": "partial_overlap",
+        "rationale": "Incorrect safety information can generate content that harms oneself or others, but dangerous_content has no general misinformation, ethics, law, or regulation rule and also covers many direct dangers unrelated to misinformation."
+      }
+    },
+    {
+      "source_id": "non_violent_unethical_behavior",
+      "llama_guard_3": {
+        "target_ids": [
+          "S2",
+          "S5"
+        ],
+        "relation": "partial_overlap",
+        "rationale": "S2 overlaps when non-violent unethical conduct is criminal, and S5 overlaps with false reputation-damaging rumors; the source also includes non-criminal lying, cheating, deception, and betrayal, while the targets contain narrower conditions or additional crime types."
+      },
+      "shieldgemma": {
+        "target_ids": [
+          "harassment"
+        ],
+        "relation": "partial_overlap",
+        "rationale": "Rumor-spreading and malicious deception can become abusive targeting of an individual, but much of the source is not harassment and the harassment policy also covers threats, bullying, and victim disparagement."
+      }
+    },
+    {
+      "source_id": "privacy_violation",
+      "llama_guard_3": {
+        "target_ids": [
+          "S2",
+          "S7"
+        ],
+        "relation": "partial_overlap",
+        "rationale": "S7 covers disclosure of sensitive nonpublic personal information and S2 can cover criminal unauthorized access as cybercrime, while the source also includes collection, use, stalking, and other intrusions that need not fit either policy; both targets also contain broader material."
+      },
+      "shieldgemma": {
+        "target_ids": [
+          "harassment"
+        ],
+        "relation": "partial_overlap",
+        "rationale": "Stalking or malicious doxing can be abusive or intimidating content targeting an individual, but ShieldGemma has no general personal-data or privacy policy, and many privacy violations are not harassment."
+      }
+    },
+    {
+      "source_id": "self_harm",
+      "llama_guard_3": {
+        "target_ids": [
+          "S11"
+        ],
+        "relation": "source_broader_than_target",
+        "rationale": "S11 covers enabling, encouraging, or endorsing suicide, self-injury, and disordered eating, while the source also includes emotional self-harm and general discussion of suicidal thoughts or plans without requiring encouragement or enablement."
+      },
+      "shieldgemma": {
+        "target_ids": [
+          "dangerous_content"
+        ],
+        "relation": "partial_overlap",
+        "rationale": "dangerous_content explicitly covers harm to oneself and suicide instructions, but the source also covers broader discussion, glorification, and emotional harm, while the target additionally covers harm to others, weapons, and terrorism."
+      }
+    },
+    {
+      "source_id": "sexually_explicit,adult_content",
+      "llama_guard_3": {
+        "target_ids": [
+          "S12"
+        ],
+        "relation": "source_broader_than_target",
+        "rationale": "Erotica under S12 is sexually explicit adult content, while the source additionally includes pornography, explicit sexual messages, depictions, and other adult themes that may not be erotica."
+      },
+      "shieldgemma": {
+        "target_ids": [
+          "sexually_explicit_information"
+        ],
+        "relation": "direct",
+        "rationale": "Both definitions cover sexual acts and lewd or arousal-oriented explicit content, including explicit sexual text, while distinguishing such content from permitted medical, scientific, or educational treatment."
+      }
+    },
+    {
+      "source_id": "terrorism,organized_crime",
+      "llama_guard_3": {
+        "target_ids": [
+          "S1",
+          "S2"
+        ],
+        "relation": "partial_overlap",
+        "rationale": "S1 explicitly includes terrorism and S2 covers non-violent crimes often conducted by organized crime, but the source also includes participation, propaganda, and broadly related content, while S1 and S2 encompass many crimes unrelated to terrorist or organized groups."
+      },
+      "shieldgemma": {
+        "target_ids": [
+          "dangerous_content"
+        ],
+        "relation": "partial_overlap",
+        "rationale": "dangerous_content explicitly covers promotion of terrorism, but it does not define organized crime or all terrorism-related participation and propaganda, and it also covers weapons, self-harm, and other harms."
+      }
+    },
+    {
+      "source_id": "violence,aiding_and_abetting,incitement",
+      "llama_guard_3": {
+        "target_ids": [
+          "S1",
+          "S2"
+        ],
+        "relation": "partial_overlap",
+        "rationale": "S1 covers enabling, encouraging, or endorsing unlawful violence and S2 covers analogous support for non-violent crime, matching the source's aiding and incitement components; the source also covers physical harm, threats, and harmful acts more generally, while both targets enumerate broader crime classes."
+      },
+      "shieldgemma": {
+        "target_ids": [
+          "dangerous_content",
+          "harassment",
+          "hate_speech"
+        ],
+        "relation": "partial_overlap",
+        "rationale": "dangerous_content covers harm to others, harassment covers physical threats against individuals, and hate_speech covers calls to violence against protected groups; the source additionally covers aiding or provoking illegal conduct generally, while the target policies contain substantial non-violent or identity-specific content."
+      }
+    }
+  ]
+}

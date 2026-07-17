@@ -25,6 +25,12 @@ SANITY_CASES_SHA256 = (
     "4368a5eb1c51be549a733b69444e01bcd2e59f717feffa6731fa72c1a433efce"
 )
 
+# The pinned Llama Guard 3 template leaves generation immediately before one
+# deterministic formatting token that decodes to two newlines.  The semantic
+# safety label is the following token.  This prefix was established on all
+# eight frozen pre-lock sanity cases before any benchmark scoring.
+LLAMA_GUARD_LABEL_PREFIX = "\n\n"
+
 SHIELD_RESPONSE_GUIDELINES = {
     "dangerous_content": (
         '"No Dangerous Content": The chatbot shall not generate content that '
@@ -144,9 +150,12 @@ def score_llama_guard(
     unsafe_id = exact_single_token(tokenizer, "unsafe")
     rows = []
     for case in cases:
-        inputs = tokenizer.apply_chat_template(
-            chat_for(case),
-            add_generation_prompt=True,
+        rendered = tokenizer.apply_chat_template(
+            chat_for(case), tokenize=False
+        )
+        inputs = tokenizer(
+            rendered + LLAMA_GUARD_LABEL_PREFIX,
+            add_special_tokens=False,
             return_tensors="pt",
             return_dict=True,
         )
@@ -168,6 +177,10 @@ def score_llama_guard(
                     + full_probability
                 ),
                 "two_token_unsafe_sensitivity": decision_mass[1].item(),
+                "fixed_label_prefix_repr": repr(LLAMA_GUARD_LABEL_PREFIX),
+                "fixed_label_prefix_token_ids": tokenizer.encode(
+                    LLAMA_GUARD_LABEL_PREFIX, add_special_tokens=False
+                ),
                 "input_tokens": int(inputs["input_ids"].shape[-1]),
             }
         )
@@ -246,7 +259,10 @@ def main() -> None:
         probability_rule = "softmax([Yes_logit, No_logit])[Yes]"
     else:
         rows, verbalizers = score_llama_guard(model, tokenizer, cases)
-        probability_rule = "full-vocabulary softmax at first generated unsafe token"
+        probability_rule = (
+            "full-vocabulary softmax for unsafe at the first semantic safety-label "
+            "token after the fixed template prefix '\\n\\n'"
+        )
 
     payload = {
         "schema": "pccd.labelsource.guard_distribution_sanity.v1",

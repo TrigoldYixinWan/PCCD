@@ -35,7 +35,10 @@ def main() -> None:
             "meta-llama/Llama-Guard-3-8B",
             "7327bd9f6efbbe6101dc6cc4736302b3cbb6e425",
             "llama3.1",
-            "full-vocabulary softmax at first generated unsafe token",
+            (
+                "full-vocabulary softmax for unsafe at the first semantic "
+                "safety-label token after the fixed template prefix '\\n\\n'"
+            ),
             args.prelock_dir / "llama_guard_tokenizer_registry.json",
             args.prelock_dir / "llama_guard_weight_verification.json",
         ),

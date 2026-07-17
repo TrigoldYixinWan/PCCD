@@ -1,17 +1,17 @@
 # Guard registry pre-lock audit
 
-**Status:** `BLOCKED_AT_§11.2` — source metadata and the ShieldGemma tokenizer
-interface are pinned, but Llama Guard access is awaiting Meta approval. The
-registry is not frozen and the distribution-only probability sanity has not
-run.
+**Status:** `§11.2_SANITY_PASS_PENDING_REVIEW` — all three pinned weight sets
+verify, the corrected registry is frozen, and all three distribution-only
+sanity checks pass. Formal scoring remains unauthorized until the other
+pre-lock gates and human signature are complete. See
+`reports/day12_guard_sanity_intervention.md`.
 
 **Audit date:** 2026-07-17
 
-No guard outcome, calibration statistic, ECE, ranking, or BeaverTails label was
-inspected. The exact Hub heads below were resolved through the official Hugging
-Face metadata API. After owner authentication, both ShieldGemma repositories
-became accessible; Llama Guard 3 continued to return `Access denied. This
-repository requires approval.`
+No formal guard outcome, calibration statistic, ECE, ranking, or BeaverTails
+label was inspected. The exact Hub heads below were resolved through the
+official Hugging Face metadata API. Owner authentication and gated access now
+succeed for all three repositories.
 
 ## Source metadata
 
@@ -22,14 +22,13 @@ repository requires approval.`
 | ShieldGemma 9B | `google/shieldgemma-9b` | `b8b636016df4540721a098c7aab91c97ec6ee508` | Gemma Terms of Use (`gemma`) | `2a5630d6014583c0adf891e777a76dde42bdc287e7a9d48801270519026d98ee` |
 
 All three repositories have Hugging Face `gated=manual`. AutoDL authentication
-now succeeds. Access is confirmed for both ShieldGemma repositories but not for
-Llama Guard 3.
+and owner approval are confirmed for all three pinned revisions.
 
 ## ShieldGemma tokenizer/interface freeze
 
-The 2B tokenizer files are downloaded from the pinned revision. The 9B model
-references the same tokenizer blobs and will be independently hash-checked
-after its pinned download completes.
+The 2B and 9B tokenizer files are downloaded from their pinned revisions. The
+two revisions reference the same tokenizer blobs, and both local copies were
+independently hash-checked.
 
 - `tokenizer_config.json` SHA-256:
   `20dc327cc0ddb4bad2ebc5042f561f89fc980855a87db593ed80ac07ca5efcba`
@@ -53,14 +52,16 @@ response guidelines are Dangerous Content, Harassment, Hate Speech, and
 Sexually Explicit Information, using the model card's response-specific
 wording (“The chatbot shall not generate ...”).
 
-## Llama Guard interface still to freeze
+## Llama Guard interface freeze
 
-The intended input is the pinned tokenizer's `apply_chat_template` on the same
-two-message chat. The model card specifies the probability of the first
-generated `unsafe` token. Before lock, the exact template, decision token
-ID/bytes, and whether the documented full-vocabulary probability or a
-safe/unsafe-renormalized probability is used must be explicit. No inference or
-silent choice is permitted before repository access is granted.
+The input is the pinned tokenizer's `apply_chat_template` on the same
+two-message chat. A pre-lock token diagnostic established that all 8/8 frozen
+sanity cases first generate exact token ID `271` (decoded `"\n\n"`) and only
+then the semantic `safe`/`unsafe` label. The frozen primary probability is the
+full-vocabulary probability of exact token `unsafe` (ID `39257`) at that
+semantic-label position. Safe/unsafe renormalization is retained as a
+diagnostic only. See the dated CHANGES report for the original failed-time-step
+artifact and correction.
 
 The full registry must also freeze dtype, padding, truncation, malformed-score
 handling, all tokenizer/config hashes, and exact response prompt serialization.
@@ -77,13 +78,9 @@ runner must recheck this hash immediately before the first sanity run.
 
 ## Blocking condition and resolution
 
-Authentication is resolved, and both ShieldGemma downloads are proceeding on
-the data disk. The remaining owner action is to open
-`meta-llama/Llama-Guard-3-8B` using the same Hugging Face account and submit the
-access request, or wait if its status is `Pending`. The exact pinned download
-will then be retried without changing the registered guard.
-
-Until all three pinned models pass the distribution-only sanity,
-`PREREG_LABELSOURCE_GUARD.md` remains `DRAFT`; taxonomy adjudication, Qwen schema
-freeze, formal guard scoring, annotation, ECE, and ranking remain unauthorized.
-No mirror or substitute checkpoint will be used.
+The access and distribution-sanity blocker is resolved. All three exact pinned
+weight sets verify, and all three guards pass the frozen non-degeneracy check.
+`PREREG_LABELSOURCE_GUARD.md` nevertheless remains `DRAFT`: taxonomy
+adjudication, Qwen schema/objective-subjective freeze, and the human-signed
+`LOCKED` commit are still required. Formal guard scoring, annotation, ECE, and
+ranking remain unauthorized. No mirror or substitute checkpoint was used.

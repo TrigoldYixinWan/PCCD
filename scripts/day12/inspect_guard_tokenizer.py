@@ -101,9 +101,8 @@ def main() -> None:
         rendered = tokenizer.apply_chat_template(
             chat,
             tokenize=False,
-            add_generation_prompt=True,
         )
-        render_kwargs = {"add_generation_prompt": True}
+        render_kwargs = {}
 
     file_hashes = {}
     for name in sorted(required + ["tokenizer.model"]):
@@ -130,6 +129,15 @@ def main() -> None:
             "input_token_count": len(tokenizer.encode(rendered, add_special_tokens=False)),
         },
     }
+    if args.guard == "llama_guard":
+        label_prefix = "\n\n"
+        record["label_position"] = {
+            "fixed_prefix_repr": repr(label_prefix),
+            "fixed_prefix_token_ids": tokenizer.encode(
+                label_prefix, add_special_tokens=False
+            ),
+            "rule": "score the following semantic safe/unsafe label token",
+        }
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_bytes(
         (json.dumps(record, indent=2, ensure_ascii=False, sort_keys=True) + "\n").encode(

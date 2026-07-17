@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -14,6 +15,14 @@ from huggingface_hub import HfApi, get_token, hf_hub_url
 
 
 OFFICIAL_HOSTS = {"huggingface.co", "www.huggingface.co"}
+
+
+def sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(8 * 1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def signed_url(repo: str, revision: str, filename: str, token: str) -> str:
@@ -82,9 +91,22 @@ def main() -> None:
     lines = []
     for row in selected:
         destination = args.model_dir / row["filename"]
+        aria_control = Path(f"{destination}.aria2")
         if destination.exists() and destination.stat().st_size == row["size"]:
-            row["already_size_complete"] = True
-            continue
+            observed_sha256 = sha256_file(destination)
+            row["observed_sha256"] = observed_sha256
+            if observed_sha256 == row["sha256"]:
+                row["already_size_complete"] = True
+                # A verified complete payload makes any leftover aria2 range
+                # state stale.  Removing only that control file prevents a
+                # later invocation from reopening a known-good shard.
+                aria_control.unlink(missing_ok=True)
+                continue
+            if not aria_control.exists():
+                raise ValueError(
+                    f"size-complete hash mismatch without aria2 resume state: "
+                    f"{destination}"
+                )
         row["already_size_complete"] = False
         url = signed_url(args.repo, args.revision, row["filename"], token)
         lines.extend(

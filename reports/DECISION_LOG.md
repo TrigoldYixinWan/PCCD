@@ -310,3 +310,18 @@ previously frozen result.
   taxonomy freeze, guard registry, substantive-domain freeze, source-only
   diagnostic, or target scoring. Await PaperGuru's decision to recover native
   WildGuardTest categories or add a third benchmark.
+
+## DL-016 — isolate a human-authorized Beaver teacher-compatibility pilot
+
+- Date: 2026-07-16
+- Authority: explicit human-PI instruction while PaperGuru is unavailable.
+- Decision: run one exploratory, outcome-blindly frozen comparison of the
+  Qwen2.5-32B label-only teacher against BeaverTails multi-annotator human
+  labels on six prespecified common safety criteria.
+- Isolation: use only exact-pair-disjoint `330k_train` units; permanently ban
+  pilot IDs from later confirmation. No guard scoring, ECE, drift,
+  cancellation, or ranking is authorized by this decision.
+- Interpretation: the pilot is a cost-control feasibility gate for future
+  human work, not confirmation of the external pivot or the retired adaptation
+  thesis. The full protocol and fixed thresholds are in
+  `reports/PREREG_BEAVER_PILOT.md`.

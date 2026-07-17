@@ -311,6 +311,24 @@ previously frozen result.
   diagnostic, or target scoring. Await PaperGuru's decision to recover native
   WildGuardTest categories or add a third benchmark.
 
+## DL-016 — BeaverTails teacher–human compatibility pilot is GO
+
+- Date: 2026-07-17
+- Scope: one frozen exploratory pilot on 1,032 unique, multi-annotator
+  BeaverTails QA pairs. No guard score, ECE, ranking, or PCCD lockbox was
+  inspected.
+- Result: strict six-key Qwen output parsed on 1,030/1,032 items (99.806%).
+  Macro balanced accuracy was 0.8935 (bootstrap 95% CI [0.8811, 0.9055]); all
+  six prespecified criteria had balanced-accuracy CI lower bounds above 0.70.
+- Decision: pilot verdict `GO`; the Qwen teacher is not globally incompatible
+  with these human QA-pair labels, so a separately designed human-labelled
+  external benchmark is worth the annotation investment.
+- Boundary: this does not validate criterion-wise calibration drift,
+  cancellation, guard ranking, adaptation, or any frozen PCCD verdict. It is
+  not a substitute for the failed AEGIS provenance/support gate. Keep
+  `PREREG_EXTERNAL_GUARD.md` in `DRAFT` until the replacement benchmark and
+  guard registry are approved and signed.
+
 ## DL-016 — isolate a human-authorized Beaver teacher-compatibility pilot
 
 - Date: 2026-07-16

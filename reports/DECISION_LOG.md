@@ -292,3 +292,73 @@ previously frozen result.
 - Next authorization: draft-only work in
   `reports/PREREG_EXTERNAL_GUARD.md`. No external experiment is authorized
   until PaperGuru resolves the listed feasibility items and locks the protocol.
+
+## DL-015 — AEGIS fails the pre-lock human criterion-support gate
+
+- Date: 2026-07-16
+- Evidence scope: official AEGIS 2.0 dataset card and NAACL 2025 paper plus a
+  hash-pinned, read-only audit of 28,216 original annotation units. No guard
+  output, ECE, or ranking was inspected.
+- Finding: AEGIS supplies a human full-dialogue annotation and uses an LLM jury
+  for unsafe response labels. All 5,236 base rows with
+  `response_label_source == human` are safe; human response-positive support is
+  zero for every native or aggregated criterion.
+- Decision: mark AEGIS `NOT_LOCKABLE` as a primary criterion benchmark. The
+  requirement of at least two human-labelled benchmarks with at least four
+  common criteria and 100 positive/100 negative support is not met.
+- Stop rule: keep `PREREG_EXTERNAL_GUARD.md` in `DRAFT` and do not perform the
+  taxonomy freeze, guard registry, substantive-domain freeze, source-only
+  diagnostic, or target scoring. Await PaperGuru's decision to recover native
+  WildGuardTest categories or add a third benchmark.
+
+## DL-016 — resolve AEGIS blocker via a redesigned single-benchmark label-source study
+
+- Date: 2026-07-16
+- Authority: PaperGuru, after (a) verifying no second human per-category
+  response-level benchmark exists (AEGIS, WildGuardTest, SALAD-Bench,
+  SimpleSafetyTests, HarmBench, ToxicChat, OpenAI-Moderation, XSTest,
+  BeaverTails-Eval all FAIL the human x per-category x response x >=100/100 bar;
+  only BeaverTails passes), and (b) a two-round collision audit (ICLR 2025 Liu;
+  Kumar 2026; Genovese 2026; AFaCTA 2024; He 2025; Yuming 2026) confirming the
+  Layer-2 gap SURVIVES.
+- Decision: DO NOT pursue a cross-benchmark human replication (data does not
+  exist). Redirect to the study locked-in-draft at
+  `reports/PREREG_LABELSOURCE_GUARD.md`: a SINGLE-benchmark (BeaverTails 330k_test)
+  multi-guard per-category calibration audit (Layer 1, H1-H3) PLUS a novel
+  label-source-sensitivity meta-study (Layer 2, H4) comparing HUMAN vs Qwen-32B
+  blind LLM annotation on the SAME items. `PREREG_EXTERNAL_GUARD.md` is
+  SUPERSEDED by `PREREG_LABELSOURCE_GUARD.md` (kept as a preserved draft).
+- Why this resolves DL-015: the ">=2 benchmarks" requirement was a proxy for
+  external validity; with no second human benchmark available, external validity
+  is instead sought across GUARD FAMILIES (>=3 guards, >=2 families) and across
+  LABEL SOURCES (human vs LLM), not across corpora. This is a defensible,
+  data-feasible redesign, not a relaxation to force a pass.
+- Feasibility verified (metadata only, no scoring): 3 guards with documented
+  unsafe-probability extraction across 2 families (Llama-Guard-3-8B; ShieldGemma
+  2B & 9B); BeaverTails 330k_test gives >=100/100 for ~6-10 common categories
+  (rare categories reported low-N); same-items human-vs-Qwen-32B is the clean
+  label-source design; Qwen-32B is NOT an evaluated guard (no circularity).
+- Frozen boundaries (unchanged): all PCCD P1-P8/G1-G6/CORE_NOT_ESTABLISHED
+  verdicts frozen; Qwen labels never called human ground truth; ceded to prior
+  work the objective/subjective per-category reliability observation (Kumar 2026)
+  and label-source-as-variable-for-equivalence (He 2025).
+- Research expectation (what PaperGuru expects Codex to deliver, in order):
+  1. Pre-lock metadata gates (PREREG §11), NO scoring: (i) inference-free
+     per-category positive/negative count on BeaverTails 330k_test -> freeze
+     PRIMARY vs RARE category lists + IDs/hashes (need >=6 primary); (ii) guard
+     registry freeze (repo+revision hashes, licenses, templates, verbalizers) +
+     a distribution-only non-degeneracy sanity check per guard; (iii) two-reviewer
+     signed + SHA taxonomy map BeaverTails-14 -> each guard's native policies;
+     (iv) freeze the Qwen-32B blind-annotation prompt/schema + objective/subjective
+     grouping. Report all four; if any fails, STOP and return to PaperGuru.
+  2. Only after PaperGuru signs a LOCKED commit: run guard scoring + Qwen-32B
+     LLM-proxy annotation + `analyze_labelsource.py`, ONCE, under locked thresholds
+     (§6/§7), and produce the verdict per §8.
+  3. Honest-verdict discipline as in PCCD: every category/guard/label-source cell
+     reported incl. null/reversed; no second run, benchmark swap, guard addition,
+     threshold change, or category regrouping after outcome access.
+- Anti-repeat-of-PCCD note: the central objects are AUDIT and SENSITIVITY
+  questions (H1-H4), not a forward causal law, so a "not established" outcome on
+  any single H still yields a reportable finding via the §8 ladder
+  (AUDIT_ONLY / LABELSOURCE_ONLY). This is deliberate: the design cannot collapse
+  the way the PCCD mean-degradation causal claim did.

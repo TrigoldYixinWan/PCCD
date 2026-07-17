@@ -423,3 +423,28 @@ previously frozen result.
   guard scoring, Qwen batch annotation, or reliability/ranking analysis until
   the project owner or PaperGuru explicitly accepts this complete package and a
   separate commit records `LOCKED`.
+
+## DL-019 — project-owner lock signature and single-run authorization
+
+- Date: 2026-07-17
+- Authority: direct, explicit project-owner instruction in the active Codex
+  session while PaperGuru remains unavailable.
+- Exact authorization: “我以项目负责人身份审查并接受 PR #14 的完整 pre-lock 包，授权将预注册设为
+  LOCKED、合并 PR #14，并启动唯一一次正式实验。”
+- Accepted package: PR #14, merged into `main` as `01f8bca`, with pre-lock
+  manifest SHA-256
+  `353d884d02d8daefce23b45d9a9e5997fd564c95af8a00ee17b8bbc4145d6d23`.
+- Decision: change `reports/PREREG_LABELSOURCE_GUARD.md` from `DRAFT` to
+  `LOCKED`; authorize exactly one formal execution of the frozen guard-scoring,
+  Qwen-32B blind annotation, and preregistered analysis pipeline.
+- Immutability boundary: after this lock, no hypothesis, threshold,
+  PRIMARY/RARE assignment, objective/subjective grouping, taxonomy mapping,
+  model revision, prompt/schema, retry/repair rule, parsing rule, bootstrap
+  seed, multiplicity correction, or verdict logic may change. Every cell,
+  including malformed, null, reversed, low-support, or unfavorable outcomes,
+  must be retained and reported.
+- Execution rule: code may be added only to implement the already locked
+  estimands. Implementation defects may be fixed only when demonstrated without
+  using outcome direction; the original artifact and a CHANGES report must be
+  retained. No benchmark/guard substitution or second confirmatory run is
+  authorized.

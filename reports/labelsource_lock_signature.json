@@ -1,0 +1,31 @@
+{
+  "schema": "pccd.labelsource.lock_signature.v1",
+  "status": "LOCKED_ONE_FORMAL_RUN_AUTHORIZED",
+  "signed_at": "2026-07-17T17:25:35-04:00",
+  "authority": "project_owner",
+  "authorization_quote": "我以项目负责人身份审查并接受 PR #14 的完整 pre-lock 包，授权将预注册设为 LOCKED、合并 PR #14，并启动唯一一次正式实验。",
+  "accepted_pull_request": 14,
+  "accepted_merge_commit": "01f8bca7a715c6be4bdec4f6136ccda8a6aed9b9",
+  "prelock_manifest": {
+    "path": "reports/labelsource_prelock_manifest.json",
+    "sha256": "353d884d02d8daefce23b45d9a9e5997fd564c95af8a00ee17b8bbc4145d6d23"
+  },
+  "locked_preregistration": {
+    "path": "reports/PREREG_LABELSOURCE_GUARD.md",
+    "sha256": "05744cc7c5e643bc60cd3dadc34f1083453e580116cef3dd3e79e9d9f4678079"
+  },
+  "formal_runs_authorized": 1,
+  "formal_runs_consumed": 0,
+  "outcomes_seen_at_lock": false,
+  "immutable_after_lock": [
+    "hypotheses",
+    "thresholds_and_verdict_logic",
+    "primary_rare_category_lists",
+    "objective_subjective_partition",
+    "guard_and_qwen_model_revisions",
+    "taxonomy_mappings",
+    "prompts_and_output_schema",
+    "retry_repair_and_parsing_rules",
+    "bootstrap_and_multiplicity_rules"
+  ]
+}

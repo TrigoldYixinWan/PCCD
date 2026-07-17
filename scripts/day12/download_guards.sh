@@ -4,14 +4,16 @@ set -euo pipefail
 cd /root/PCCD
 source scripts/setup/env.sh
 source /etc/network_turbo
-# AutoDL's academic proxy reaches the Hub HTTPS/LFS endpoints but the Xet
-# transfer backend stalls on CAS.  Force the standard resumable HTTP path.
-export HF_HUB_DISABLE_XET=1
+# Default to the standard resumable HTTP path on AutoDL.  A caller may set
+# HF_HUB_DISABLE_XET=0 for an explicit Xet probe without changing revisions.
+: "${HF_HUB_DISABLE_XET:=1}"
+export HF_HUB_DISABLE_XET
 
 download_llama_guard() {
   hf download meta-llama/Llama-Guard-3-8B \
     --revision 7327bd9f6efbbe6101dc6cc4736302b3cbb6e425 \
     --local-dir "$MODELS_DIR/llama-guard-3-8b-7327bd9" \
+    --exclude "original/*" --exclude "*.png" \
     --max-workers 4
 }
 

@@ -1,16 +1,19 @@
 # Guard registry pre-lock audit
 
-**Status:** `BLOCKED_AT_§11.2` — source metadata is pinned, but the registry is
-not frozen and the distribution-only probability sanity has not run.
+**Status:** `BLOCKED_AT_§11.2` — source metadata and the ShieldGemma tokenizer
+interface are pinned, but Llama Guard access is awaiting Meta approval. The
+registry is not frozen and the distribution-only probability sanity has not
+run.
 
 **Audit date:** 2026-07-17
 
-No guard output, calibration statistic, ECE, ranking, or BeaverTails label was
-inspected in this gate.  The exact Hub heads below were resolved through the
-official Hugging Face repository metadata API.  Public model cards were read at
-those commits; gated tokenizer/config/weights were not accessible.
+No guard outcome, calibration statistic, ECE, ranking, or BeaverTails label was
+inspected. The exact Hub heads below were resolved through the official Hugging
+Face metadata API. After owner authentication, both ShieldGemma repositories
+became accessible; Llama Guard 3 continued to return `Access denied. This
+repository requires approval.`
 
-## Source metadata pinned so far
+## Source metadata
 
 | Guard | Official repository | Revision | License | README SHA-256 |
 |---|---|---|---|---|
@@ -18,69 +21,69 @@ those commits; gated tokenizer/config/weights were not accessible.
 | ShieldGemma 2B | `google/shieldgemma-2b` | `d1dffc9c8c9237a90aab09c61383791e718ef9e8` | Gemma Terms of Use (`gemma`) | `9184d3f33bb542841cb14436a938d9f53fae194f555c20e9c8e6ae60219b5893` |
 | ShieldGemma 9B | `google/shieldgemma-9b` | `b8b636016df4540721a098c7aab91c97ec6ee508` | Gemma Terms of Use (`gemma`) | `2a5630d6014583c0adf891e777a76dde42bdc287e7a9d48801270519026d98ee` |
 
-All three repositories have Hugging Face `gated=manual`.  The AutoDL
-environment currently has neither a saved Hugging Face login nor an accessible
-token for these repositories.
+All three repositories have Hugging Face `gated=manual`. AutoDL authentication
+now succeeds. Access is confirmed for both ShieldGemma repositories but not for
+Llama Guard 3.
 
-## Official interfaces to be verified after access
+## ShieldGemma tokenizer/interface freeze
 
-The model cards specify the following response-classification interfaces.  They
-are recorded here but are not yet frozen because exact tokenizer templates and
-token IDs must be read from the pinned gated files.
+The 2B tokenizer files are downloaded from the pinned revision. The 9B model
+references the same tokenizer blobs and will be independently hash-checked
+after its pinned download completes.
 
-### Llama Guard 3 8B
+- `tokenizer_config.json` SHA-256:
+  `20dc327cc0ddb4bad2ebc5042f561f89fc980855a87db593ed80ac07ca5efcba`
+- exact chat-template SHA-256:
+  `19acd33317c8f50293a85a53c141f282e4175da3da68473c30967c4ef9e366d0`
+- `tokenizer.json` SHA-256:
+  `3f289bc05132635a8bc7aca7aa21255efd5e18f3710f43e3cdb96bcd41be4922`
+- `Yes`: exact single token, ID `3553`
+- `No`: exact single token, ID `1294`
+- fixed probability rule:
+  `softmax([logit(token 3553), logit(token 1294)])[0]`
+- deterministic metadata record:
+  `$PCCD_OUT/labelsource/prelock/shieldgemma_2b_tokenizer_registry.json`,
+  SHA-256
+  `a66328c6c74671baab506c9bc4a201dd29908c209980675740057540d3091f94`.
 
-- Input construction: pinned tokenizer's `apply_chat_template` on a two-message
-  chat, `[{role: user, content: prompt}, {role: assistant, content: response}]`.
-- Model-card probability: the first generated-token probability for the
-  `unsafe` decision.  Before lock, the registry must record the exact decision
-  token ID/decoded bytes and settle whether the card's full-vocabulary
-  probability or a safe/unsafe-renormalized probability is used.  The
-  preregistration currently says the card-documented first-token unsafe
-  probability; it must not be silently changed after sanity output.
-- Native response policies: S1–S14 as embedded by the pinned chat template.
+Input construction is the pinned tokenizer's `apply_chat_template` on
+`[{role: user, content: prompt}, {role: assistant, content: response}]`, with
+exactly one official response guideline passed through `guideline`. The four
+response guidelines are Dangerous Content, Harassment, Hate Speech, and
+Sexually Explicit Information, using the model card's response-specific
+wording (“The chatbot shall not generate ...”).
 
-### ShieldGemma 2B and 9B
+## Llama Guard interface still to freeze
 
-- Input construction: pinned tokenizer's `apply_chat_template` on the same
-  user/assistant messages, with exactly one official response guideline passed
-  through the `guideline` argument.
-- Model-card probability: `softmax([logit(Yes), logit(No)])[Yes]` at the next
-  token.  Exact `Yes`/`No` token IDs and decoded bytes remain to be recorded.
-- Native response guidelines: Dangerous Content, Harassment, Hate Speech, and
-  Sexually Explicit Information, using the model card's response-specific
-  wording ("The chatbot shall not generate ...").
+The intended input is the pinned tokenizer's `apply_chat_template` on the same
+two-message chat. The model card specifies the probability of the first
+generated `unsafe` token. Before lock, the exact template, decision token
+ID/bytes, and whether the documented full-vocabulary probability or a
+safe/unsafe-renormalized probability is used must be explicit. No inference or
+silent choice is permitted before repository access is granted.
 
-The exact serialized chat template, response-guideline strings, tokenizer file
-hashes, verbalizer IDs, dtype, padding, truncation, and malformed-score rule
-remain mandatory registry fields.  They cannot be inferred safely from the
-public README alone.
+The full registry must also freeze dtype, padding, truncation, malformed-score
+handling, all tokenizer/config hashes, and exact response prompt serialization.
 
 ## Frozen sanity inputs
 
 `configs/guard_sanity_cases.json` (SHA-256
 `4368a5eb1c51be549a733b69444e01bcd2e59f717feffa6731fa72c1a433efce`)
-freezes eight obvious benign/unsafe
-prompt-response pairs before guard access.  The sanity is intentionally weaker
-than an evaluation: it checks only finite in-range values, more than one exact
-value per interface, and pooled range >0.05 per guard.  It forbids ECE, AUROC,
-F1, accuracy, threshold selection, reliability plots, or guard ranking.  The
-The runner must recheck this exact hash immediately before the first sanity
-run and stop on any mismatch.
+freezes eight obvious benign/unsafe prompt-response pairs before guard access.
+The sanity checks only finite in-range values, at least two exact values per
+interface, and pooled probability range >0.05 per guard. It forbids ECE, AUROC,
+F1, accuracy, threshold selection, reliability plots, or guard ranking. The
+runner must recheck this hash immediately before the first sanity run.
 
 ## Blocking condition and resolution
 
-The §11.2 gate cannot pass without reading the pinned tokenizer/config files,
-downloading the exact official weights, and running the one allowed
-distribution-only sanity.  The project owner must:
+Authentication is resolved, and both ShieldGemma downloads are proceeding on
+the data disk. The remaining owner action is to open
+`meta-llama/Llama-Guard-3-8B` using the same Hugging Face account and submit the
+access request, or wait if its status is `Pending`. The exact pinned download
+will then be retried without changing the registered guard.
 
-1. accept the access terms on all three official Hugging Face model pages;
-2. authenticate on AutoDL after `source scripts/setup/env.sh` using a read-only
-   Hugging Face token (`hf auth login`), without pasting the token into chat or
-   a tracked file; and
-3. confirm `hf auth whoami` succeeds in that same environment.
-
-Until then, `PREREG_LABELSOURCE_GUARD.md` remains `DRAFT`; taxonomy mapping,
-Qwen schema freeze, guard scoring, annotation, ECE, and ranking are not
-authorized.  No mirror or substitute checkpoint will be used to manufacture a
-passing sanity result.
+Until all three pinned models pass the distribution-only sanity,
+`PREREG_LABELSOURCE_GUARD.md` remains `DRAFT`; taxonomy adjudication, Qwen schema
+freeze, formal guard scoring, annotation, ECE, and ranking remain unauthorized.
+No mirror or substitute checkpoint will be used.

@@ -292,3 +292,54 @@ previously frozen result.
 - Next authorization: draft-only work in
   `reports/PREREG_EXTERNAL_GUARD.md`. No external experiment is authorized
   until PaperGuru resolves the listed feasibility items and locks the protocol.
+
+## DL-015 — AEGIS fails the pre-lock human criterion-support gate
+
+- Date: 2026-07-16
+- Evidence scope: official AEGIS 2.0 dataset card and NAACL 2025 paper plus a
+  hash-pinned, read-only audit of 28,216 original annotation units. No guard
+  output, ECE, or ranking was inspected.
+- Finding: AEGIS supplies a human full-dialogue annotation and uses an LLM jury
+  for unsafe response labels. All 5,236 base rows with
+  `response_label_source == human` are safe; human response-positive support is
+  zero for every native or aggregated criterion.
+- Decision: mark AEGIS `NOT_LOCKABLE` as a primary criterion benchmark. The
+  requirement of at least two human-labelled benchmarks with at least four
+  common criteria and 100 positive/100 negative support is not met.
+- Stop rule: keep `PREREG_EXTERNAL_GUARD.md` in `DRAFT` and do not perform the
+  taxonomy freeze, guard registry, substantive-domain freeze, source-only
+  diagnostic, or target scoring. Await PaperGuru's decision to recover native
+  WildGuardTest categories or add a third benchmark.
+
+## DL-016 — BeaverTails teacher–human compatibility pilot is GO
+
+- Date: 2026-07-17
+- Scope: one frozen exploratory pilot on 1,032 unique, multi-annotator
+  BeaverTails QA pairs. No guard score, ECE, ranking, or PCCD lockbox was
+  inspected.
+- Result: strict six-key Qwen output parsed on 1,030/1,032 items (99.806%).
+  Macro balanced accuracy was 0.8935 (bootstrap 95% CI [0.8811, 0.9055]); all
+  six prespecified criteria had balanced-accuracy CI lower bounds above 0.70.
+- Decision: pilot verdict `GO`; the Qwen teacher is not globally incompatible
+  with these human QA-pair labels, so a separately designed human-labelled
+  external benchmark is worth the annotation investment.
+- Boundary: this does not validate criterion-wise calibration drift,
+  cancellation, guard ranking, adaptation, or any frozen PCCD verdict. It is
+  not a substitute for the failed AEGIS provenance/support gate. Keep
+  `PREREG_EXTERNAL_GUARD.md` in `DRAFT` until the replacement benchmark and
+  guard registry are approved and signed.
+
+## DL-016 — isolate a human-authorized Beaver teacher-compatibility pilot
+
+- Date: 2026-07-16
+- Authority: explicit human-PI instruction while PaperGuru is unavailable.
+- Decision: run one exploratory, outcome-blindly frozen comparison of the
+  Qwen2.5-32B label-only teacher against BeaverTails multi-annotator human
+  labels on six prespecified common safety criteria.
+- Isolation: use only exact-pair-disjoint `330k_train` units; permanently ban
+  pilot IDs from later confirmation. No guard scoring, ECE, drift,
+  cancellation, or ranking is authorized by this decision.
+- Interpretation: the pilot is a cost-control feasibility gate for future
+  human work, not confirmation of the external pivot or the retired adaptation
+  thesis. The full protocol and fixed thresholds are in
+  `reports/PREREG_BEAVER_PILOT.md`.

@@ -47,19 +47,22 @@ Ceded to prior work (cite, do NOT claim as novel):
 ## 2. Data (verified feasible; see §11 for pre-lock confirmation counts)
 
 Primary human benchmark: **BeaverTails** (`PKU-Alignment/BeaverTails`), split **`330k_test`
-(~33.4k QA pairs, ~18.5k unsafe)**. Human, response-level (QA-pair) safety with 14 category
+(33,396 annotation rows aggregated to 11,088 unique exact QA pairs; 6,152 majority-unsafe)**.
+Human, response-level (QA-pair) safety with 14 category
 flags + `is_safe`; category and safety decision are co-located on the SAME unit (confirmed).
 330k_test chosen over 30k_test because: (a) the >=100-positive bar per category drops from
 ~5.8% to ~0.54% of unsafe, so most categories qualify; (b) higher annotation quality
 (~3.34 annotations/pair vs 1). Native taxonomy is used; no category merging.
 
-Category eligibility (to be CONFIRMED by an inference-free boolean-flag count in §11):
-- Expected PRIMARY (>=100 positives): violence/aiding_and_abetting, non_violent_unethical,
-  discrimination/stereotype, hate_speech/offensive, financial_crime/property_crime/theft,
-  drug_abuse/weapons/banned_substance (6 head categories), likely also sexually_explicit,
-  privacy_violation, controversial/politics, misinformation.
-- Expected RARE (<100 even in 330k_test, report with low-N caveat, excluded from primary
-  aggregate): child_abuse, animal_abuse, self_harm, terrorism/organized_crime.
+Category eligibility (confirmed inference-free in §11):
+- PRIMARY (>=100 positives and >=100 benign negatives): `animal_abuse`,
+  `controversial_topics,politics`, `discrimination,stereotype,injustice`,
+  `drug_abuse,weapons,banned_substance`, `financial_crime,property_crime,theft`,
+  `hate_speech,offensive_language`, `non_violent_unethical_behavior`, `privacy_violation`,
+  `sexually_explicit,adult_content`, and `violence,aiding_and_abetting,incitement`.
+- RARE (mandatory descriptive low-N cells; excluded from the primary aggregate):
+  `child_abuse`, `misinformation_regarding_ethics,laws_and_safety`, `self_harm`, and
+  `terrorism,organized_crime`.
 A category enters the PRIMARY per-category analysis iff it has >=100 human positives AND
 >=100 human negatives (benign) in 330k_test. This threshold is frozen before scoring.
 
@@ -79,11 +82,14 @@ context ceiling. A genuinely second corpus is NOT used as the label-source compa
 confound corpus+taxonomy+items); if reported at all it is a clearly-labelled cross-corpus
 robustness note only.
 
-Objective/subjective pre-grouping (LOCKED before scoring, ceded framing per Kumar 2026):
-- OBJECTIVE categories (expected human-LLM agreement): violence, drug/weapons, financial/theft,
-  privacy, sexually_explicit.
-- SUBJECTIVE categories (expected divergence): hate/offensive, discrimination/stereotype,
-  controversial/politics, misinformation, self_harm-boundary.
+Objective/subjective pre-grouping (frozen before scoring, ceded framing per Kumar 2026):
+- OBJECTIVE: `animal_abuse`, `child_abuse`, `drug_abuse,weapons,banned_substance`,
+  `financial_crime,property_crime,theft`, `privacy_violation`,
+  `sexually_explicit,adult_content`, `terrorism,organized_crime`, and
+  `violence,aiding_and_abetting,incitement`.
+- SUBJECTIVE: `controversial_topics,politics`, `discrimination,stereotype,injustice`,
+  `hate_speech,offensive_language`, `misinformation_regarding_ethics,laws_and_safety`,
+  `non_violent_unethical_behavior`, and `self_harm`.
 This grouping is a pre-registered hypothesis about WHERE divergence appears; it is fixed now and
 not revised after seeing results.
 
@@ -96,14 +102,17 @@ Primary guards (all expose a documented unsafe-probability):
    logits, per-policy (card-documented). Native 4 policies.
 3. **ShieldGemma-9B** (`google/shieldgemma-9b`, ShieldGemma family, different scale) — same
    mechanism.
-Hard-label comparators (reported at hard operating point ONLY; NOT counted toward the
-defensible-probability minimum, NOT in primary calibration): WildGuard (`allenai/wildguard`),
-NemoGuard/Aegis-2.0 (`nvidia/llama-3.1-nemoguard-8b-content-safety`).
+The earlier draft listed WildGuard and NemoGuard/Aegis-2.0 as optional hard-label comparators.
+They are removed from this single confirmatory run before outcome access: they do not contribute
+to the defensible-probability minimum or primary calibration hypotheses, and retaining them would
+add an unregistered hard-decision estimand. This is a scope clarification, not an outcome-driven
+guard substitution.
 
 Before lock, freeze per guard: exact repo + revision hash, license, chat template, decision
-verbalizer token(s), and the response-classification prompt. Probability extraction:
-normalize the decision-token logits (Llama Guard: first-token unsafe prob; ShieldGemma: softmax
-Yes/No per supplied policy); deterministic inference; malformed outputs retained, never repaired.
+verbalizer token(s), and the response-classification prompt. Probability extraction: Llama Guard
+uses full-vocabulary `P(unsafe)` at the first semantic safety-label token after its fixed template
+token `"\n\n"` (two-token renormalization diagnostic only); ShieldGemma uses softmax Yes/No per
+supplied policy. Inference is deterministic; malformed outputs are retained and never repaired.
 ShieldGemma per-category analysis restricted to categories its 4 policies cover; Llama Guard 3
 carries the full-taxonomy anchor. Taxonomy map from BeaverTails-14 to each guard's native policy
 set is written out, two-reviewer signed, SHA-frozen before scoring (native results primary).
@@ -172,8 +181,9 @@ outcome access.
 ## 9. Asset reuse map (from the frozen PCCD infrastructure)
 
 - environment/paths: `scripts/setup/env.sh` + download scripts (direct reuse; add guard repos).
-- label-only annotation (for Qwen-32B LLM-proxy labels): `src/gen_labels.py` +
-  `configs/teacher_schema.json` -> adapt schema to BeaverTails-14 categories (Green change).
+- label-only annotation (for Qwen-32B LLM-proxy labels):
+  `src/label_beavertails_qwen.py` + `configs/beavertails_qwen32b_schema.json`; one
+  temperature-0 call per item, no retry or repair, strict 14-category + `is_safe` JSON.
 - calibration/bootstrap analysis: reuse `src/eval_critic.py` ECE/adaptive-ECE/bootstrap
   primitives (numerically validated) -> wrap for per-category guard scores.
 - NEW code to write: `src/guard_score.py` (probability extraction per guard registry),
@@ -201,4 +211,3 @@ outcome access.
    subjective grouping, SHA-frozen.
 Only after 1-4 are frozen and PaperGuru flips this header to LOCKED may guard scoring, LLM-proxy
 annotation, and analysis run — once, under the locked thresholds.
-

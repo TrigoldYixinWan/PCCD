@@ -1,0 +1,79 @@
+{
+  "artifacts": {
+    "guard_registry": {
+      "path": "reports/guard_registry.md",
+      "sha256": "b9de0a5872edc3770454d1942437b597b0a7f045379c67689757c1a33769e219",
+      "size": 4557
+    },
+    "guard_report": {
+      "path": "reports/day12_guard_sanity_intervention.md",
+      "sha256": "c6c8054dd4b4d1a2c2576806a5a7e74bf851b5db5a520070cb6ceef4f4b0b308",
+      "size": 1970
+    },
+    "prereg_draft": {
+      "path": "reports/PREREG_LABELSOURCE_GUARD.md",
+      "sha256": "8f68e88fce41bba3c883c87b3cd1359fc95d35abbd801b92743e6b3341323116",
+      "size": 14414
+    },
+    "qwen_runner": {
+      "path": "src/label_beavertails_qwen.py",
+      "sha256": "fd43ab77ea075302efd9a909aa83fa3438dbdf4302a1a98d3cdef5b2b28c5dcc",
+      "size": 7529
+    },
+    "qwen_schema": {
+      "path": "configs/beavertails_qwen32b_schema.json",
+      "sha256": "3620d9c48a71ead307da7ec3a3c31d454051f2b4a83a8ef874589113a1c6e9aa",
+      "size": 8619
+    },
+    "support_report": {
+      "path": "reports/beavertails_support_audit.md",
+      "sha256": "67463e1661f479d912d8b6400ffeb3aabcdcdce8a3f86fde3fe5637dd78691a2",
+      "size": 4650
+    },
+    "taxonomy_definition_packet": {
+      "path": "configs/labelsource_taxonomy_definition_packet.json",
+      "sha256": "71ea53cb5e7a7f64b7b8e4fa5c5c1711b4b3db06bfae890d075bb61d07fe860d",
+      "size": 9344
+    },
+    "taxonomy_map": {
+      "path": "reports/taxonomy_map.json",
+      "sha256": "443f837bcc265ddafc35dff60edc3a49eadeae8e11e91e2422b7f484576bb8ed",
+      "size": 16799
+    }
+  },
+  "formal_outcomes_authorized": false,
+  "frozen_constants": {
+    "blind_manifest_sha256": "602de7160b536ae8567bda8a14ae6394a7413710c15b22157384c4d503a0c142",
+    "independent_items": 11088,
+    "majority_unsafe_items": 6152,
+    "objective_categories": [
+      "animal_abuse",
+      "child_abuse",
+      "drug_abuse,weapons,banned_substance",
+      "financial_crime,property_crime,theft",
+      "privacy_violation",
+      "sexually_explicit,adult_content",
+      "terrorism,organized_crime",
+      "violence,aiding_and_abetting,incitement"
+    ],
+    "qwen_repo": "Qwen/Qwen2.5-32B-Instruct",
+    "qwen_revision": "5ede1c97bbab6ce5cda5812749b4c0bdf79b18dd",
+    "subjective_categories": [
+      "controversial_topics,politics",
+      "discrimination,stereotype,injustice",
+      "hate_speech,offensive_language",
+      "misinformation_regarding_ethics,laws_and_safety",
+      "non_violent_unethical_behavior",
+      "self_harm"
+    ]
+  },
+  "gates": {
+    "11.1_support": "PASS_10_PRIMARY_OF_14",
+    "11.2_guard_registry_and_sanity": "PASS_3_GUARDS_2_FAMILIES",
+    "11.3_taxonomy_map": "PASS_TWO_BLIND_REVIEWS_ADJUDICATED",
+    "11.4_qwen_annotation_protocol": "PASS_FROZEN_ONE_CALL_BLIND_SCHEMA"
+  },
+  "next_gate": "Human project owner or PaperGuru reviews this package, records acceptance in DECISION_LOG, changes the prereg header to LOCKED in a commit, and only then authorizes the single formal run.",
+  "schema": "pccd.labelsource.prelock_package.v1",
+  "status": "READY_FOR_HUMAN_LOCK_NO_OUTCOMES_AUTHORIZED"
+}

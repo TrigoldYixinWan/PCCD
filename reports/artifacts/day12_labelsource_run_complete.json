@@ -1,0 +1,17 @@
+{
+  "artifacts": {
+    "labelsource_analysis.json": "9eb62e14472cd31ef6b95d2e91d83be87a22d5a57c3968a53e24bdfaa1d930ee",
+    "labelsource_joined.jsonl": "f6785917160950f2bcf40bd78bef915592db85f3194a270ef7a007a313e40050",
+    "llama_guard_3_8b_scores.jsonl": "4df952dd12981687578563310f1632c626c7bc2959f92c5c956a7eefa1018ef7",
+    "qwen32b_proxy_labels.jsonl": "974b5e669e179613b7632024022574a431ec995fd118be99de5a6615ecb6cee6",
+    "shieldgemma_2b_scores.jsonl": "1d870436346885feb09b50a60a94988c3536ad2fcaf0aead14c1d331b8fe6e91",
+    "shieldgemma_9b_scores.jsonl": "b1c3701818a1e80584cd30f606bb5a6375ba2a641277865b6dbdc59a766df9d9"
+  },
+  "completed_at_utc": "2026-07-17T22:31:36.677619+00:00",
+  "report": {
+    "path": "reports/day12_labelsource_confirmatory.md",
+    "sha256": "1d691b305249d210f34e633ed84f2fefea404c28c0b2334be7b472d1ac05a076"
+  },
+  "schema": "pccd.labelsource.formal_run_complete.v1",
+  "status": "FORMAL_COMPLETE"
+}
